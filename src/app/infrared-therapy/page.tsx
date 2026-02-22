@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { SimulationPanel } from "@/components/SimulationPanel";
