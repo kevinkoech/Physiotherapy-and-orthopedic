@@ -21,8 +21,9 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - [x] Assessment sections for all original 8 modules
 - [x] Print/Export PDF functionality for all modules
 - [x] Interactive simulation panels for all 12 equipment types
-- [x] Graphical visualizations (bar charts and gauges) for simulation results
-- [x] Enhanced print/export to capture simulation results with charts
+- [x] Line chart visualization for simulation results (matplotlib/MATLAB style)
+- [x] Practical report format with experiment title, theory, observations, data, results, conclusion, and sign-off sections
+- [x] Trainee information capture (name and admission number) via dialog
 
 ## Current Structure
 
@@ -50,9 +51,16 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 
 ### Print/Export PDF
 - Each equipment page has a "Print/Export PDF" button
-- Opens a new window with formatted printable content
-- Includes all learning notes, diagrams, and tables
-- **NEW**: Captures simulation results with graphical visualizations (bar charts and gauges)
+- Prompts for trainee name and admission number before generating report
+- Generates a practical report with structured sections:
+  1. Experiment Title/Topic
+  2. Theory
+  3. Observations
+  4. Data (simulation parameters and results tables)
+  5. Results (with line chart visualization)
+  6. Conclusion
+  7. Sign-off (trainee and trainer signature areas)
+- Includes line chart visualization of simulation results
 - Simulation results stored in data attributes for print capture
 
 ### Interactive Simulations
@@ -60,9 +68,9 @@ Each equipment page has a simulation panel with:
 - Adjustable parameters (sliders and dropdowns)
 - Real-time calculation of derived values
 - Safety status indicators (normal/warning/danger)
-- **NEW**: Bar chart visualization of all numeric results
-- **NEW**: Gauge visualizations for parameters with min/max ranges
-- Print results functionality with charts included
+- Line chart visualization of all numeric results (matplotlib/MATLAB style)
+- Results table with parameter values and status
+- Summary showing counts of normal/warning/danger parameters
 
 ### Simulation Parameters by Equipment
 
@@ -92,3 +100,4 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Added Print/Export PDF and interactive simulation features to all 12 equipment pages |
 | 2026-02-22 | Enhanced simulation panel with bar charts and gauge visualizations |
 | 2026-02-22 | Updated print/export to capture simulation results with graphical charts as SVG |
+| 2026-02-22 | Removed gauge visualizations, restructured report as practical format with experiment title, theory, observations, data, results, conclusion, and sign-off sections |
