@@ -1,1 +1,118 @@
 @import "tailwindcss";
+
+/* Custom styles for learning content */
+.diagram-box {
+  font-family: monospace;
+  white-space: pre;
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.circuit-diagram {
+  font-family: monospace;
+  white-space: pre;
+  background: #0f172a;
+  color: #4ade80;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  border: 1px solid #22c55e;
+}
+
+.note-box {
+  border-left: 4px solid #3b82f6;
+  background: #eff6ff;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.warning-box {
+  border-left: 4px solid #ef4444;
+  background: #fef2f2;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.tip-box {
+  border-left: 4px solid #22c55e;
+  background: #f0fdf4;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+th {
+  background: #1e40af;
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+.section-header {
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0 1rem 0;
+}
+
+.component-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.fault-table tr:hover td {
+  background: #fef3c7;
+}
+
+.simulation-box {
+  background: #0f172a;
+  border: 2px solid #6366f1;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: #e2e8f0;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+}
