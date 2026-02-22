@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
+import { useState, useCallback, useSyncExternalStore } from "react";
 
 const ONBOARDING_KEY = "physiomaint-onboarding-complete";
 
@@ -44,25 +44,21 @@ const slides: OnboardingSlide[] = [
   },
 ];
 
-// Check localStorage for onboarding status
+// Subscribe to localStorage changes
+function subscribeToStorage(callback: () => void) {
+  const handleChange = () => callback();
+  window.addEventListener("storage", handleChange);
+  return () => window.removeEventListener("storage", handleChange);
+}
+
+// Get snapshot of onboarding status
 function getOnboardingSnapshot() {
-  if (typeof window === "undefined") return true; // Show by default on server
+  if (typeof window === "undefined") return false;
   return !localStorage.getItem(ONBOARDING_KEY);
 }
 
-function getOnboardingServerSnapshot() {
-  return true; // Show by default on server
-}
-
-// Subscribe to storage changes
-function subscribeToStorage(callback: () => void) {
-  const handleStorageChange = (e: StorageEvent) => {
-    if (e.key === ONBOARDING_KEY) {
-      callback();
-    }
-  };
-  window.addEventListener("storage", handleStorageChange);
-  return () => window.removeEventListener("storage", handleStorageChange);
+function getServerSnapshot() {
+  return false;
 }
 
 export function OnboardingScreen() {
@@ -72,13 +68,13 @@ export function OnboardingScreen() {
   const needsOnboarding = useSyncExternalStore(
     subscribeToStorage,
     getOnboardingSnapshot,
-    getOnboardingServerSnapshot
+    getServerSnapshot
   );
 
   const handleComplete = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, "true");
-    // Dispatch storage event to update the sync store
-    window.dispatchEvent(new StorageEvent("storage", { key: ONBOARDING_KEY }));
+    // Trigger storage event to update the store
+    window.dispatchEvent(new StorageEvent("storage"));
   }, []);
 
   const handleNext = useCallback(() => {

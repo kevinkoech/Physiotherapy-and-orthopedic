@@ -2,13 +2,20 @@
 
 import { useState, useEffect, useSyncExternalStore } from "react";
 
-// Check if running in standalone mode
+// Subscribe to display mode changes
+function subscribeToDisplayMode(callback: () => void) {
+  const mediaQuery = window.matchMedia("(display-mode: standalone)");
+  mediaQuery.addEventListener("change", callback);
+  return () => mediaQuery.removeEventListener("change", callback);
+}
+
+// Get snapshot of standalone status
 function getStandaloneSnapshot() {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(display-mode: standalone)").matches;
 }
 
-function getStandaloneServerSnapshot() {
+function getServerSnapshot() {
   return false;
 }
 
@@ -18,9 +25,9 @@ export function SplashScreen() {
   
   // Use useSyncExternalStore for standalone check
   const isStandalone = useSyncExternalStore(
-    () => () => {}, // No subscription needed
+    subscribeToDisplayMode,
     getStandaloneSnapshot,
-    getStandaloneServerSnapshot
+    getServerSnapshot
   );
 
   useEffect(() => {

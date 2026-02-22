@@ -7,13 +7,20 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-// Check if running in standalone mode
+// Subscribe to display mode changes
+function subscribeToDisplayMode(callback: () => void) {
+  const mediaQuery = window.matchMedia("(display-mode: standalone)");
+  mediaQuery.addEventListener("change", callback);
+  return () => mediaQuery.removeEventListener("change", callback);
+}
+
+// Get snapshot of standalone status
 function getStandaloneSnapshot() {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(display-mode: standalone)").matches;
 }
 
-function getStandaloneServerSnapshot() {
+function getServerSnapshot() {
   return false;
 }
 
@@ -23,9 +30,9 @@ export function PWAInstallButton() {
   
   // Use useSyncExternalStore for standalone check
   const isInstalled = useSyncExternalStore(
-    () => () => {}, // No subscription needed
+    subscribeToDisplayMode,
     getStandaloneSnapshot,
-    getStandaloneServerSnapshot
+    getServerSnapshot
   );
 
   // Listen for the beforeinstallprompt event
