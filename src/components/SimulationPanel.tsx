@@ -45,7 +45,13 @@ interface SimulationParameter {
 function LineChart({ results, title }: { results: SimulationResult[]; title: string }) {
   const numericResults = results.filter(r => r.numericValue !== undefined);
   
-  if (numericResults.length === 0) return null;
+  if (numericResults.length === 0) {
+    return (
+      <div className="p-4 bg-gray-100 rounded-lg text-center text-gray-500">
+        No numeric data available for chart
+      </div>
+    );
+  }
   
   const chartWidth = 600;
   const chartHeight = 300;
@@ -57,11 +63,11 @@ function LineChart({ results, title }: { results: SimulationResult[]; title: str
   const values = numericResults.map(r => r.numericValue || 0);
   const maxValue = Math.max(...values) * 1.1; // Add 10% padding
   const minValue = Math.min(0, Math.min(...values));
-  const valueRange = maxValue - minValue;
+  const valueRange = maxValue - minValue || 1; // Prevent division by zero
   
   // Generate points for line plot
   const points = numericResults.map((result, index) => {
-    const x = padding.left + (index / (numericResults.length - 1 || 1)) * plotWidth;
+    const x = padding.left + (index / Math.max(numericResults.length - 1, 1)) * plotWidth;
     const y = padding.top + plotHeight - ((result.numericValue! - minValue) / valueRange) * plotHeight;
     return { x, y, result, index };
   });

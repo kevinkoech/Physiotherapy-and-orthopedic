@@ -1,5 +1,5 @@
-const CACHE_NAME = 'physio-maint-v1';
-const urlsToCache = [
+const CACHE_NAME = 'physio-maint-v2';
+const STATIC_PAGES = [
   '/',
   '/short-wave-diathermy',
   '/muscle-stimulator',
@@ -15,13 +15,13 @@ const urlsToCache = [
   '/implants',
 ];
 
-// Install event - cache resources
+// Install event - cache static pages only
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(STATIC_PAGES);
       })
       .catch((err) => {
         console.log('Cache error:', err);
@@ -30,33 +30,63 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network first for JS/CSS, cache first for pages
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then((response) => {
-          // Don't cache non-successful responses
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+  const url = new URL(event.request.url);
+  
+  // Skip caching for Next.js static chunks and dynamic routes
+  const isStaticChunk = url.pathname.startsWith('/_next/static/');
+  const isApiRoute = url.pathname.startsWith('/api/');
+  
+  // For static chunks and API routes, always fetch from network
+  if (isStaticChunk || isApiRoute) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+  
+  // For navigation requests (pages), try cache first
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          if (response) {
             return response;
           }
-          // Clone the response
+          return fetch(event.request).then((networkResponse) => {
+            // Cache successful page responses
+            if (networkResponse && networkResponse.status === 200) {
+              const responseToCache = networkResponse.clone();
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                });
+            }
+            return networkResponse;
+          });
+        })
+        .catch(() => caches.match('/'))
+    );
+    return;
+  }
+  
+  // For other requests, network first with cache fallback
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Cache successful responses
+        if (response && response.status === 200) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME)
             .then((cache) => {
               cache.put(event.request, responseToCache);
             });
-          return response;
-        });
+        }
+        return response;
       })
-      .catch(() => {
-        // Return offline page if available
-        return caches.match('/');
-      })
+      .catch(() => caches.match(event.request))
   );
 });
 

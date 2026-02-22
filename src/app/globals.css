@@ -116,3 +116,43 @@ tr:nth-child(even) td {
   color: #64748b;
   margin-bottom: 1rem;
 }
+
+/* Simulation Chart Styles */
+.simulation-chart {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.simulation-chart svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.simulation-chart.line-chart {
+  background: #fafafa;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+/* Ensure simulation results are visible */
+.simulation-results {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Print styles for charts */
+@media print {
+  .simulation-chart {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  .simulation-chart svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
