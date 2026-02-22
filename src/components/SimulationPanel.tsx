@@ -18,6 +18,8 @@ interface SimulationPanelProps {
   parameters: SimulationParameter[];
   simulate: (params: Record<string, number | string>) => SimulationResult[];
   defaultValues?: Record<string, number | string>;
+  theoryText?: string;
+  observationsText?: string;
 }
 
 interface SimulationParameter {
@@ -32,80 +34,300 @@ interface SimulationParameter {
   options?: { value: string; label: string }[];
 }
 
-// Bar Chart Component for visualization
-function BarChart({ results }: { results: SimulationResult[] }) {
+// Line Chart Component - matplotlib/MATLAB style
+function LineChart({ results, title }: { results: SimulationResult[]; title: string }) {
   const numericResults = results.filter(r => r.numericValue !== undefined);
   
   if (numericResults.length === 0) return null;
   
-  const maxValue = Math.max(...numericResults.map(r => r.numericValue || 0));
-  const chartHeight = 200;
-  const barWidth = 60;
-  const gap = 20;
-  const chartWidth = numericResults.length * (barWidth + gap) + 40;
+  const chartWidth = 600;
+  const chartHeight = 300;
+  const padding = { top: 40, right: 40, bottom: 60, left: 70 };
+  const plotWidth = chartWidth - padding.left - padding.right;
+  const plotHeight = chartHeight - padding.top - padding.bottom;
+  
+  // Calculate data range
+  const values = numericResults.map(r => r.numericValue || 0);
+  const maxValue = Math.max(...values) * 1.1; // Add 10% padding
+  const minValue = Math.min(0, Math.min(...values));
+  const valueRange = maxValue - minValue;
+  
+  // Generate points for line plot
+  const points = numericResults.map((result, index) => {
+    const x = padding.left + (index / (numericResults.length - 1 || 1)) * plotWidth;
+    const y = padding.top + plotHeight - ((result.numericValue! - minValue) / valueRange) * plotHeight;
+    return { x, y, result, index };
+  });
+  
+  // Create path for line
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  
+  // Create area fill under the line
+  const areaPath = `${linePath} L ${points[points.length - 1]?.x || 0} ${padding.top + plotHeight} L ${padding.left} ${padding.top + plotHeight} Z`;
+  
+  // Generate Y-axis ticks
+  const yTicks = 5;
+  const yTickValues = Array.from({ length: yTicks + 1 }, (_, i) => minValue + (valueRange * i / yTicks));
+  
+  // Colors for different status
+  const getPointColor = (status: string) => {
+    switch (status) {
+      case 'warning': return '#f59e0b';
+      case 'danger': return '#ef4444';
+      default: return '#10b981';
+    }
+  };
 
   return (
-    <div className="simulation-chart" data-chart-type="bar">
-      <svg width={chartWidth} height={chartHeight + 60} viewBox={`0 0 ${chartWidth} ${chartHeight + 60}`}>
-        {/* Y-axis */}
-        <line x1="30" y1="10" x2="30" y2={chartHeight + 10} stroke="#374151" strokeWidth="2" />
-        {/* X-axis */}
-        <line x1="30" y1={chartHeight + 10} x2={chartWidth - 10} y2={chartHeight + 10} stroke="#374151" strokeWidth="2" />
+    <div className="simulation-chart line-chart" data-chart-type="line">
+      <svg width={chartWidth} height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+        {/* Background */}
+        <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#fafafa" />
         
-        {/* Grid lines */}
-        {[0, 25, 50, 75, 100].map((percent) => (
-          <g key={percent}>
-            <line 
-              x1="30" 
-              y1={chartHeight + 10 - (percent / 100) * chartHeight} 
-              x2={chartWidth - 10} 
-              y2={chartHeight + 10 - (percent / 100) * chartHeight} 
-              stroke="#e5e7eb" 
-              strokeWidth="1" 
-              strokeDasharray="4"
-            />
-            <text x="25" y={chartHeight + 14 - (percent / 100) * chartHeight} textAnchor="end" fontSize="10" fill="#6b7280">
-              {Math.round(maxValue * percent / 100)}
-            </text>
-          </g>
-        ))}
+        {/* Plot area background */}
+        <rect 
+          x={padding.left} 
+          y={padding.top} 
+          width={plotWidth} 
+          height={plotHeight} 
+          fill="white" 
+          stroke="#e5e7eb"
+        />
         
-        {/* Bars */}
-        {numericResults.map((result, index) => {
-          const barHeight = ((result.numericValue || 0) / maxValue) * chartHeight;
-          const x = 40 + index * (barWidth + gap);
-          const y = chartHeight + 10 - barHeight;
-          
-          let color = "#10b981"; // green for normal
-          if (result.status === "warning") color = "#f59e0b"; // amber
-          if (result.status === "danger") color = "#ef4444"; // red
-          
+        {/* Grid lines - horizontal */}
+        {yTickValues.map((tick, i) => {
+          const y = padding.top + plotHeight - ((tick - minValue) / valueRange) * plotHeight;
           return (
-            <g key={index}>
-              <rect
-                x={x}
-                y={y}
-                width={barWidth}
-                height={barHeight}
-                fill={color}
-                rx="4"
-                className="transition-all duration-300"
+            <g key={i}>
+              <line 
+                x1={padding.left} 
+                y1={y} 
+                x2={chartWidth - padding.right} 
+                y2={y} 
+                stroke="#e5e7eb" 
+                strokeWidth="1" 
+                strokeDasharray="4"
               />
-              {/* Value label */}
-              <text x={x + barWidth / 2} y={y - 5} textAnchor="middle" fontSize="11" fontWeight="bold" fill="#374151">
-                {result.value}
-              </text>
-              {/* Parameter label */}
-              <text x={x + barWidth / 2} y={chartHeight + 25} textAnchor="middle" fontSize="9" fill="#6b7280">
-                {result.parameter.length > 10 ? result.parameter.substring(0, 10) + "..." : result.parameter}
-              </text>
-              {/* Unit label */}
-              <text x={x + barWidth / 2} y={chartHeight + 38} textAnchor="middle" fontSize="8" fill="#9ca3af">
-                ({result.unit})
+              <text 
+                x={padding.left - 10} 
+                y={y + 4} 
+                textAnchor="end" 
+                fontSize="11" 
+                fill="#6b7280"
+              >
+                {tick.toFixed(1)}
               </text>
             </g>
           );
         })}
+        
+        {/* Grid lines - vertical */}
+        {points.map((p, i) => (
+          <line 
+            key={i}
+            x1={p.x} 
+            y1={padding.top} 
+            x2={p.x} 
+            y2={padding.top + plotHeight} 
+            stroke="#f3f4f6" 
+            strokeWidth="1" 
+          />
+        ))}
+        
+        {/* Area fill */}
+        <path 
+          d={areaPath} 
+          fill="url(#gradient)" 
+          opacity="0.3"
+        />
+        
+        {/* Gradient definition */}
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        
+        {/* Line */}
+        <path 
+          d={linePath} 
+          fill="none" 
+          stroke="#3b82f6" 
+          strokeWidth="3" 
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        
+        {/* Data points */}
+        {points.map((p, i) => (
+          <g key={i}>
+            {/* Point shadow */}
+            <circle 
+              cx={p.x} 
+              cy={p.y} 
+              r="8" 
+              fill="white" 
+              stroke={getPointColor(p.result.status)}
+              strokeWidth="3"
+            />
+            {/* Point inner */}
+            <circle 
+              cx={p.x} 
+              cy={p.y} 
+              r="4" 
+              fill={getPointColor(p.result.status)}
+            />
+            {/* Value label */}
+            <text 
+              x={p.x} 
+              y={p.y - 15} 
+              textAnchor="middle" 
+              fontSize="10" 
+              fontWeight="bold"
+              fill="#374151"
+            >
+              {p.result.value}
+            </text>
+          </g>
+        ))}
+        
+        {/* X-axis labels */}
+        {points.map((p, i) => (
+          <text 
+            key={i}
+            x={p.x} 
+            y={chartHeight - 25} 
+            textAnchor="middle" 
+            fontSize="9" 
+            fill="#6b7280"
+            transform={`rotate(-45, ${p.x}, ${chartHeight - 25})`}
+          >
+            {p.result.parameter.length > 12 ? p.result.parameter.substring(0, 12) + '...' : p.result.parameter}
+          </text>
+        ))}
+        
+        {/* Y-axis label */}
+        <text 
+          x={20} 
+          y={chartHeight / 2} 
+          textAnchor="middle" 
+          fontSize="12" 
+          fill="#374151"
+          transform={`rotate(-90, 20, ${chartHeight / 2})`}
+        >
+          Value
+        </text>
+        
+        {/* X-axis label */}
+        <text 
+          x={chartWidth / 2} 
+          y={chartHeight - 5} 
+          textAnchor="middle" 
+          fontSize="12" 
+          fill="#374151"
+        >
+          Parameters
+        </text>
+        
+        {/* Chart title */}
+        <text 
+          x={chartWidth / 2} 
+          y={20} 
+          textAnchor="middle" 
+          fontSize="14" 
+          fontWeight="bold"
+          fill="#1e40af"
+        >
+          {title}
+        </text>
+        
+        {/* Legend */}
+        <g transform={`translate(${chartWidth - 120}, ${padding.top})`}>
+          <rect x="0" y="0" width="100" height="70" fill="white" stroke="#e5e7eb" rx="4" />
+          <circle cx="15" cy="15" r="5" fill="#10b981" />
+          <text x="25" y="19" fontSize="10" fill="#374151">Normal</text>
+          <circle cx="15" cy="35" r="5" fill="#f59e0b" />
+          <text x="25" y="39" fontSize="10" fill="#374151">Warning</text>
+          <circle cx="15" cy="55" r="5" fill="#ef4444" />
+          <text x="25" y="59" fontSize="10" fill="#374151">Danger</text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+// Multi-parameter Line Chart for time-series style visualization
+function TimeSeriesChart({ 
+  dataPoints, 
+  title,
+  xLabel,
+  yLabel 
+}: { 
+  dataPoints: { x: number; y: number; label: string }[];
+  title: string;
+  xLabel: string;
+  yLabel: string;
+}) {
+  if (dataPoints.length === 0) return null;
+  
+  const chartWidth = 600;
+  const chartHeight = 300;
+  const padding = { top: 40, right: 40, bottom: 60, left: 70 };
+  const plotWidth = chartWidth - padding.left - padding.right;
+  const plotHeight = chartHeight - padding.top - padding.bottom;
+  
+  const xValues = dataPoints.map(p => p.x);
+  const yValues = dataPoints.map(p => p.y);
+  const minX = Math.min(...xValues);
+  const maxX = Math.max(...xValues);
+  const minY = Math.min(0, Math.min(...yValues));
+  const maxY = Math.max(...yValues) * 1.1;
+  
+  const xRange = maxX - minX || 1;
+  const yRange = maxY - minY;
+  
+  const points = dataPoints.map(p => ({
+    x: padding.left + ((p.x - minX) / xRange) * plotWidth,
+    y: padding.top + plotHeight - ((p.y - minY) / yRange) * plotHeight,
+    data: p
+  }));
+  
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  
+  return (
+    <div className="simulation-chart timeseries-chart" data-chart-type="timeseries">
+      <svg width={chartWidth} height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+        <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#fafafa" />
+        <rect x={padding.left} y={padding.top} width={plotWidth} height={plotHeight} fill="white" stroke="#e5e7eb" />
+        
+        {/* Grid */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+          const y = padding.top + plotHeight * (1 - ratio);
+          const value = minY + yRange * ratio;
+          return (
+            <g key={i}>
+              <line x1={padding.left} y1={y} x2={chartWidth - padding.right} y2={y} stroke="#e5e7eb" strokeDasharray="4" />
+              <text x={padding.left - 10} y={y + 4} textAnchor="end" fontSize="11" fill="#6b7280">{value.toFixed(1)}</text>
+            </g>
+          );
+        })}
+        
+        {/* Line */}
+        <path d={linePath} fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        
+        {/* Points */}
+        {points.map((p, i) => (
+          <g key={i}>
+            <circle cx={p.x} cy={p.y} r="6" fill="white" stroke="#3b82f6" strokeWidth="2" />
+            <text x={p.x} y={p.y - 12} textAnchor="middle" fontSize="9" fill="#374151">{p.data.y.toFixed(1)}</text>
+          </g>
+        ))}
+        
+        {/* Axes labels */}
+        <text x={chartWidth / 2} y={chartHeight - 10} textAnchor="middle" fontSize="12" fill="#374151">{xLabel}</text>
+        <text x={20} y={chartHeight / 2} textAnchor="middle" fontSize="12" fill="#374151" transform={`rotate(-90, 20, ${chartHeight / 2})`}>{yLabel}</text>
+        <text x={chartWidth / 2} y={20} textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e40af">{title}</text>
       </svg>
     </div>
   );
@@ -121,9 +343,9 @@ function Gauge({ result }: { result: SimulationResult }) {
   const percentage = Math.min(100, Math.max(0, ((numericValue - min) / (max - min)) * 100));
   const angle = (percentage / 100) * 180 - 90;
   
-  let color = "#10b981"; // green
-  if (status === "warning") color = "#f59e0b"; // amber
-  if (status === "danger") color = "#ef4444"; // red
+  let color = "#10b981";
+  if (status === "warning") color = "#f59e0b";
+  if (status === "danger") color = "#ef4444";
   
   const centerX = 100;
   const centerY = 90;
@@ -135,7 +357,6 @@ function Gauge({ result }: { result: SimulationResult }) {
   return (
     <div className="simulation-gauge" data-chart-type="gauge">
       <svg width="200" height="130" viewBox="0 0 200 130">
-        {/* Background arc */}
         <path
           d={`M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}`}
           fill="none"
@@ -143,7 +364,6 @@ function Gauge({ result }: { result: SimulationResult }) {
           strokeWidth="12"
           strokeLinecap="round"
         />
-        {/* Colored arc segments */}
         <path
           d={`M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX - 30} ${centerY - radius + 10}`}
           fill="none"
@@ -165,7 +385,6 @@ function Gauge({ result }: { result: SimulationResult }) {
           strokeWidth="12"
           strokeLinecap="round"
         />
-        {/* Needle */}
         <line
           x1={centerX}
           y1={centerY}
@@ -175,16 +394,12 @@ function Gauge({ result }: { result: SimulationResult }) {
           strokeWidth="3"
           strokeLinecap="round"
         />
-        {/* Center circle */}
         <circle cx={centerX} cy={centerY} r="8" fill={color} />
-        {/* Value text */}
         <text x={centerX} y={centerY + 35} textAnchor="middle" fontSize="16" fontWeight="bold" fill="#374151">
           {result.value} {result.unit}
         </text>
-        {/* Min/Max labels */}
         <text x="25" y={centerY + 15} textAnchor="middle" fontSize="10" fill="#6b7280">{min}</text>
         <text x="175" y={centerY + 15} textAnchor="middle" fontSize="10" fill="#6b7280">{max}</text>
-        {/* Parameter name */}
         <text x={centerX} y={centerY + 52} textAnchor="middle" fontSize="11" fill="#6b7280">
           {result.parameter}
         </text>
@@ -196,9 +411,9 @@ function Gauge({ result }: { result: SimulationResult }) {
 // Status Indicator Component
 function StatusIndicator({ status }: { status: "normal" | "warning" | "danger" }) {
   const config = {
-    normal: { color: "#10b981", bg: "#d1fae5", label: "NORMAL", icon: "✓" },
-    warning: { color: "#f59e0b", bg: "#fef3c7", label: "WARNING", icon: "⚠" },
-    danger: { color: "#ef4444", bg: "#fee2e2", label: "DANGER", icon: "✕" },
+    normal: { color: "#10b981", bg: "#d1fae5", label: "NORMAL", icon: "OK" },
+    warning: { color: "#f59e0b", bg: "#fef3c7", label: "WARNING", icon: "!" },
+    danger: { color: "#ef4444", bg: "#fee2e2", label: "DANGER", icon: "X" },
   };
   
   const { color, bg, label, icon } = config[status];
@@ -218,7 +433,7 @@ function StatusIndicator({ status }: { status: "normal" | "warning" | "danger" }
         fontSize: "12px"
       }}
     >
-      <span>{icon}</span>
+      <span style={{ fontWeight: "bold" }}>[{icon}]</span>
       <span>{label}</span>
     </div>
   );
@@ -230,6 +445,8 @@ export function SimulationPanel({
   parameters,
   simulate,
   defaultValues = {},
+  theoryText,
+  observationsText,
 }: SimulationPanelProps) {
   const [paramValues, setParamValues] = useState<Record<string, number | string>>(() => {
     const initial: Record<string, number | string> = {};
@@ -241,6 +458,7 @@ export function SimulationPanel({
 
   const [results, setResults] = useState<SimulationResult[] | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [runHistory, setRunHistory] = useState<{ params: Record<string, number | string>; results: SimulationResult[] }[]>([]);
   const resultsRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -249,8 +467,12 @@ export function SimulationPanel({
     if (results && panelRef.current) {
       panelRef.current.setAttribute('data-simulation-results', JSON.stringify(results));
       panelRef.current.setAttribute('data-simulation-params', JSON.stringify(paramValues));
+      panelRef.current.setAttribute('data-simulation-history', JSON.stringify(runHistory));
+      panelRef.current.setAttribute('data-simulation-title', title);
+      if (theoryText) panelRef.current.setAttribute('data-theory-text', theoryText);
+      if (observationsText) panelRef.current.setAttribute('data-observations-text', observationsText);
     }
-  }, [results, paramValues]);
+  }, [results, paramValues, runHistory, title, theoryText, observationsText]);
 
   const handleParamChange = (key: string, value: number | string) => {
     setParamValues((prev) => ({ ...prev, [key]: value }));
@@ -260,13 +482,12 @@ export function SimulationPanel({
   const runSimulation = () => {
     setIsRunning(true);
     
-    // Simulate processing time
     setTimeout(() => {
       const simResults = simulate(paramValues);
       setResults(simResults);
+      setRunHistory(prev => [...prev, { params: { ...paramValues }, results: simResults }]);
       setIsRunning(false);
       
-      // Scroll to results
       setTimeout(() => {
         resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
@@ -280,252 +501,21 @@ export function SimulationPanel({
     });
     setParamValues(initial);
     setResults(null);
-  };
-
-  const printResults = () => {
-    if (!results) return;
-
-    // Generate chart SVGs as strings for print
-    const numericResults = results.filter(r => r.numericValue !== undefined);
-    const maxValue = Math.max(...numericResults.map(r => r.numericValue || 0));
-    const chartHeight = 200;
-    const barWidth = 60;
-    const gap = 20;
-    const chartWidth = numericResults.length * (barWidth + gap) + 40;
-    
-    // Generate bar chart SVG
-    let barChartSVG = '';
-    if (numericResults.length > 0) {
-      barChartSVG = `
-        <svg width="${chartWidth}" height="${chartHeight + 60}" viewBox="0 0 ${chartWidth} ${chartHeight + 60}">
-          <line x1="30" y1="10" x2="30" y2="${chartHeight + 10}" stroke="#374151" stroke-width="2" />
-          <line x1="30" y1="${chartHeight + 10}" x2="${chartWidth - 10}" y2="${chartHeight + 10}" stroke="#374151" stroke-width="2" />
-          ${[0, 25, 50, 75, 100].map((percent) => `
-            <line x1="30" y1="${chartHeight + 10 - (percent / 100) * chartHeight}" x2="${chartWidth - 10}" y2="${chartHeight + 10 - (percent / 100) * chartHeight}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4" />
-            <text x="25" y="${chartHeight + 14 - (percent / 100) * chartHeight}" text-anchor="end" font-size="10" fill="#6b7280">${Math.round(maxValue * percent / 100)}</text>
-          `).join('')}
-          ${numericResults.map((result, index) => {
-            const barHeight = ((result.numericValue || 0) / maxValue) * chartHeight;
-            const x = 40 + index * (barWidth + gap);
-            const y = chartHeight + 10 - barHeight;
-            let color = "#10b981";
-            if (result.status === "warning") color = "#f59e0b";
-            if (result.status === "danger") color = "#ef4444";
-            return `
-              <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${color}" rx="4" />
-              <text x="${x + barWidth / 2}" y="${y - 5}" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">${result.value}</text>
-              <text x="${x + barWidth / 2}" y="${chartHeight + 25}" text-anchor="middle" font-size="9" fill="#6b7280">${result.parameter.length > 10 ? result.parameter.substring(0, 10) + "..." : result.parameter}</text>
-              <text x="${x + barWidth / 2}" y="${chartHeight + 38}" text-anchor="middle" font-size="8" fill="#9ca3af">(${result.unit})</text>
-            `;
-          }).join('')}
-        </svg>
-      `;
-    }
-
-    // Generate gauges SVG
-    let gaugesSVG = '';
-    const gaugeResults = results.filter(r => r.numericValue !== undefined && r.min !== undefined && r.max !== undefined);
-    if (gaugeResults.length > 0) {
-      gaugesSVG = gaugeResults.map((result) => {
-        const percentage = Math.min(100, Math.max(0, ((result.numericValue! - result.min!) / (result.max! - result.min!)) * 100));
-        const angle = (percentage / 100) * 180 - 90;
-        const centerX = 100;
-        const centerY = 90;
-        const radius = 70;
-        const needleLength = 55;
-        const needleX = centerX + needleLength * Math.cos((angle * Math.PI) / 180);
-        const needleY = centerY + needleLength * Math.sin((angle * Math.PI) / 180);
-        let color = "#10b981";
-        if (result.status === "warning") color = "#f59e0b";
-        if (result.status === "danger") color = "#ef4444";
-        
-        return `
-          <svg width="200" height="130" viewBox="0 0 200 130" style="margin: 10px;">
-            <path d="M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}" fill="none" stroke="#e5e7eb" stroke-width="12" stroke-linecap="round" />
-            <path d="M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX - 30} ${centerY - radius + 10}" fill="none" stroke="#10b981" stroke-width="12" stroke-linecap="round" />
-            <path d="M ${centerX - 30} ${centerY - radius + 10} A ${radius} ${radius} 0 0 1 ${centerX + 30} ${centerY - radius + 10}" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round" />
-            <path d="M ${centerX + 30} ${centerY - radius + 10} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round" />
-            <line x1="${centerX}" y1="${centerY}" x2="${needleX}" y2="${needleY}" stroke="${color}" stroke-width="3" stroke-linecap="round" />
-            <circle cx="${centerX}" cy="${centerY}" r="8" fill="${color}" />
-            <text x="${centerX}" y="${centerY + 35}" text-anchor="middle" font-size="16" font-weight="bold" fill="#374151">${result.value} ${result.unit}</text>
-            <text x="25" y="${centerY + 15}" text-anchor="middle" font-size="10" fill="#6b7280">${result.min}</text>
-            <text x="175" y="${centerY + 15}" text-anchor="middle" font-size="10" fill="#6b7280">${result.max}</text>
-            <text x="${centerX}" y="${centerY + 52}" text-anchor="middle" font-size="11" fill="#6b7280">${result.parameter}</text>
-          </svg>
-        `;
-      }).join('');
-    }
-
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      alert("Please allow popups to print the results");
-      return;
-    }
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${title} - Simulation Results</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body {
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              padding: 20px;
-              max-width: 900px;
-              margin: 0 auto;
-              color: #1f2937;
-            }
-            h1 {
-              color: #1e40af;
-              border-bottom: 2px solid #1e40af;
-              padding-bottom: 10px;
-              margin-bottom: 20px;
-            }
-            h2 {
-              color: #374151;
-              margin-top: 25px;
-              margin-bottom: 15px;
-              font-size: 18px;
-            }
-            h3 {
-              color: #4b5563;
-              margin-top: 20px;
-              margin-bottom: 10px;
-              font-size: 16px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 15px 0;
-            }
-            th, td {
-              border: 1px solid #d1d5db;
-              padding: 10px 12px;
-              text-align: left;
-            }
-            th {
-              background: #f3f4f6;
-              font-weight: 600;
-            }
-            .status-normal { color: #059669; font-weight: bold; }
-            .status-warning { color: #d97706; font-weight: bold; }
-            .status-danger { color: #dc2626; font-weight: bold; }
-            .timestamp {
-              color: #6b7280;
-              font-size: 14px;
-              margin-bottom: 20px;
-            }
-            .chart-container {
-              background: #f9fafb;
-              border: 1px solid #e5e7eb;
-              border-radius: 8px;
-              padding: 20px;
-              margin: 20px 0;
-              text-align: center;
-            }
-            .gauges-container {
-              display: flex;
-              flex-wrap: wrap;
-              justify-content: center;
-              gap: 10px;
-              margin: 20px 0;
-            }
-            .summary-box {
-              background: #eff6ff;
-              border-left: 4px solid #3b82f6;
-              padding: 15px;
-              margin: 20px 0;
-            }
-            @media print {
-              body { padding: 0; }
-              .page-break { page-break-before: always; }
-            }
-          </style>
-        </head>
-        <body>
-          <h1>${title} - Simulation Results</h1>
-          <p class="timestamp">Generated: ${new Date().toLocaleString()}</p>
-          
-          <h2>Input Parameters</h2>
-          <table>
-            <tr><th>Parameter</th><th>Value</th><th>Unit</th></tr>
-            ${parameters.map((p) => `
-              <tr>
-                <td>${p.name}</td>
-                <td><strong>${paramValues[p.key]}</strong></td>
-                <td>${p.unit}</td>
-              </tr>
-            `).join("")}
-          </table>
-          
-          <h2>Simulation Results</h2>
-          <table>
-            <tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Status</th></tr>
-            ${results.map((r) => `
-              <tr>
-                <td>${r.parameter}</td>
-                <td><strong>${r.value}</strong></td>
-                <td>${r.unit}</td>
-                <td class="status-${r.status}">${r.status.toUpperCase()}</td>
-              </tr>
-            `).join("")}
-          </table>
-          
-          ${barChartSVG ? `
-          <div class="chart-container">
-            <h3>Results Visualization - Bar Chart</h3>
-            ${barChartSVG}
-          </div>
-          ` : ''}
-          
-          ${gaugesSVG ? `
-          <div class="chart-container">
-            <h3>Results Visualization - Gauges</h3>
-            <div class="gauges-container">
-              ${gaugesSVG}
-            </div>
-          </div>
-          ` : ''}
-          
-          <div class="summary-box">
-            <h3>Summary</h3>
-            <p>Total parameters simulated: ${results.length}</p>
-            <p>Normal: ${results.filter(r => r.status === 'normal').length} | 
-               Warning: ${results.filter(r => r.status === 'warning').length} | 
-               Danger: ${results.filter(r => r.status === 'danger').length}</p>
-          </div>
-        </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
+    setRunHistory([]);
   };
 
   return (
     <div 
-      ref={panelRef} 
-      className="simulation-panel bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-lg p-6 mb-6 border border-indigo-100"
-      data-simulation-title={title}
+      ref={panelRef}
+      className="simulation-panel bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6 my-6"
     >
-      <div className="flex items-center gap-3 mb-4">
-        <div className="bg-indigo-600 text-white p-2 rounded-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <div>
-          <h3 className="text-xl font-bold text-gray-800">{title}</h3>
-          <p className="text-gray-600 text-sm">{description}</p>
-        </div>
+      <div className="mb-4">
+        <h3 className="text-lg font-bold text-indigo-800 mb-2">{title}</h3>
+        <p className="text-gray-600 text-sm">{description}</p>
       </div>
-
-      {/* Parameters Input */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      
+      {/* Parameters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {parameters.map((param) => (
           <div key={param.key} className="bg-white rounded-lg p-4 shadow-sm">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -544,55 +534,46 @@ export function SimulationPanel({
                 ))}
               </select>
             ) : (
-              <div className="space-y-2">
-                <input
-                  type="range"
-                  min={param.min}
-                  max={param.max}
-                  step={param.step || 1}
-                  value={paramValues[param.key] as number}
-                  onChange={(e) => handleParamChange(param.key, parseFloat(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-                />
-                <input
-                  type="number"
-                  min={param.min}
-                  max={param.max}
-                  step={param.step || 1}
-                  value={paramValues[param.key] as number}
-                  onChange={(e) => handleParamChange(param.key, parseFloat(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
+              <input
+                type="range"
+                min={param.min}
+                max={param.max}
+                step={param.step || 1}
+                value={paramValues[param.key] as number}
+                onChange={(e) => handleParamChange(param.key, parseFloat(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
             )}
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>Min: {param.min}</span>
-              <span>Max: {param.max}</span>
+              <span>{param.min}</span>
+              <span className="font-bold text-indigo-600">
+                {paramValues[param.key]} {param.unit}
+              </span>
+              <span>{param.max}</span>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3 mb-6 no-print">
+      
+      {/* Buttons */}
+      <div className="flex gap-3 mb-6">
         <button
           onClick={runSimulation}
           disabled={isRunning}
-          className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 font-medium"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
         >
           {isRunning ? (
             <>
-              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              Running Simulation...
+              Running...
             </>
           ) : (
             <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
               </svg>
               Run Simulation
             </>
@@ -600,54 +581,35 @@ export function SimulationPanel({
         </button>
         <button
           onClick={resetSimulation}
-          className="flex items-center gap-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+          className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
           Reset
         </button>
-        {results && (
-          <button
-            onClick={printResults}
-            className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Print Results
-          </button>
-        )}
       </div>
-
-      {/* Results Display */}
+      
+      {/* Results */}
       {results && (
         <div ref={resultsRef} className="simulation-results bg-white rounded-lg p-6 shadow-sm">
-          <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Simulation Results
-          </h4>
+          <h4 className="text-lg font-bold text-gray-800 mb-4">Simulation Results</h4>
           
           {/* Results Table */}
           <div className="overflow-x-auto mb-6">
-            <table className="w-full">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Parameter</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Value</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Unit</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <tr className="bg-gray-100">
+                  <th className="px-4 py-2 text-left font-semibold">Parameter</th>
+                  <th className="px-4 py-2 text-left font-semibold">Value</th>
+                  <th className="px-4 py-2 text-left font-semibold">Unit</th>
+                  <th className="px-4 py-2 text-left font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((result, index) => (
                   <tr key={index} className="border-b border-gray-100">
-                    <td className="px-4 py-3 text-gray-800">{result.parameter}</td>
-                    <td className="px-4 py-3 font-mono font-medium">{result.value}</td>
-                    <td className="px-4 py-3 text-gray-600">{result.unit}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2">{result.parameter}</td>
+                    <td className="px-4 py-2 font-bold">{result.value}</td>
+                    <td className="px-4 py-2">{result.unit}</td>
+                    <td className="px-4 py-2">
                       <StatusIndicator status={result.status} />
                     </td>
                   </tr>
@@ -656,29 +618,16 @@ export function SimulationPanel({
             </table>
           </div>
           
-          {/* Bar Chart Visualization */}
-          <div className="mb-6">
-            <h5 className="text-md font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Results Bar Chart
-            </h5>
-            <div className="bg-gray-50 rounded-lg p-4 overflow-x-auto">
-              <BarChart results={results} />
-            </div>
+          {/* Line Chart */}
+          <div className="mb-6 overflow-x-auto">
+            <LineChart results={results} title={`${title} - Parameter Analysis`} />
           </div>
           
-          {/* Gauge Visualizations */}
-          {results.some(r => r.numericValue !== undefined && r.min !== undefined && r.max !== undefined) && (
-            <div>
-              <h5 className="text-md font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Parameter Gauges
-              </h5>
-              <div className="flex flex-wrap justify-center gap-4 bg-gray-50 rounded-lg p-4">
+          {/* Gauges */}
+          {results.filter(r => r.numericValue !== undefined && r.min !== undefined && r.max !== undefined).length > 0 && (
+            <div className="mb-6">
+              <h5 className="text-md font-semibold text-gray-700 mb-3">Parameter Gauges</h5>
+              <div className="flex flex-wrap justify-center gap-4">
                 {results
                   .filter(r => r.numericValue !== undefined && r.min !== undefined && r.max !== undefined)
                   .map((result, index) => (
@@ -687,6 +636,37 @@ export function SimulationPanel({
               </div>
             </div>
           )}
+          
+          {/* History Chart - shows trend over multiple runs */}
+          {runHistory.length > 1 && (
+            <div className="mb-6">
+              <h5 className="text-md font-semibold text-gray-700 mb-3">Run History Trend</h5>
+              <div className="overflow-x-auto">
+                <TimeSeriesChart 
+                  dataPoints={runHistory.map((run, i) => {
+                    const avgValue = run.results
+                      .filter(r => r.numericValue !== undefined)
+                      .reduce((sum, r) => sum + (r.numericValue || 0), 0) / run.results.filter(r => r.numericValue !== undefined).length || 0;
+                    return { x: i + 1, y: avgValue, label: `Run ${i + 1}` };
+                  })}
+                  title="Average Parameter Value Over Runs"
+                  xLabel="Run Number"
+                  yLabel="Average Value"
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* Summary */}
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <h5 className="font-semibold text-blue-800 mb-2">Summary</h5>
+            <p className="text-sm text-gray-700">
+              Total parameters: {results.length} | 
+              Normal: {results.filter(r => r.status === 'normal').length} | 
+              Warning: {results.filter(r => r.status === 'warning').length} | 
+              Danger: {results.filter(r => r.status === 'danger').length}
+            </p>
+          </div>
         </div>
       )}
     </div>
