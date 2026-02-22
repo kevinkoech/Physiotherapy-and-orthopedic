@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   title: "PhysioMaint - Physiotherapy Equipment Maintenance Learning",
   description: "Comprehensive learning notes for physiotherapy equipment maintenance including SWD, muscle stimulators, infrared therapy, and more. Interactive simulations and PDF export.",
   manifest: "/manifest.json",
-  themeColor: "#0f766e",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -30,12 +29,14 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#0f766e",
 };
 
 export default function RootLayout({
