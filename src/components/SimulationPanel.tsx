@@ -26,6 +26,7 @@ interface SimulationPanelProps {
 interface TraineeInfo {
   name: string;
   registrationNumber: string;
+  className: string;
 }
 
 interface SimulationParameter {
@@ -419,6 +420,22 @@ export function SimulationPanel({
             padding-bottom: 20px; 
             margin-bottom: 30px;
           }
+          .header .institution {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 4px;
+          }
+          .header .department {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 2px;
+          }
+          .header .unit-trainer {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 10px;
+          }
           .header h1 { 
             color: #1e40af; 
             font-size: 24px; 
@@ -435,9 +452,12 @@ export function SimulationPanel({
             margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
           }
           .trainee-info div {
             flex: 1;
+            min-width: 150px;
+            margin: 5px 10px;
           }
           .trainee-info label {
             font-size: 12px;
@@ -515,10 +535,21 @@ export function SimulationPanel({
             body { padding: 20px; }
             .no-print { display: none; }
           }
+          @page {
+            margin: 20mm 15mm;
+            @bottom-center {
+              content: "Page " counter(page) " of " counter(pages);
+              font-size: 10px;
+              color: #9ca3af;
+            }
+          }
         </style>
       </head>
       <body>
         <div class="header">
+          <div class="institution">The Nyeri National Polytechnic</div>
+          <div class="department">EEE Department - Biomedical Engineering</div>
+          <div class="unit-trainer">Unit Trainer: Kevin Koech</div>
           <h1>Simulation Report</h1>
           <div class="subtitle">${equipmentName || title}</div>
           <div class="subtitle">${currentDate} at ${currentTime}</div>
@@ -532,6 +563,10 @@ export function SimulationPanel({
           <div>
             <label>Registration Number</label>
             <div class="value">${info.registrationNumber}</div>
+          </div>
+          <div>
+            <label>Class</label>
+            <div class="value">${info.className}</div>
           </div>
         </div>
         
@@ -600,16 +635,21 @@ export function SimulationPanel({
         
         <div class="signatures">
           <div class="signature-box">
+            <div style="font-weight: bold; color: #1e40af;">${info.name}</div>
+            <div style="font-size: 11px; color: #6b7280;">Admission No: ${info.registrationNumber}</div>
+            <div style="font-size: 11px; color: #6b7280;">Class: ${info.className}</div>
             <div class="signature-line">Trainee Signature</div>
           </div>
           <div class="signature-box">
+            <div style="font-weight: bold; color: #1e40af;">Kevin Koech</div>
+            <div style="font-size: 11px; color: #6b7280;">Unit Trainer</div>
             <div class="signature-line">Trainer Signature</div>
           </div>
         </div>
         
         <div class="footer">
           <p>Generated on ${currentDate} at ${currentTime}</p>
-          <p>Physiotherapy Equipment Maintenance Learning App</p>
+          <p>The Nyeri National Polytechnic - EEE Department - Biomedical Engineering</p>
         </div>
         
         <script>
@@ -874,8 +914,9 @@ export function SimulationPanel({
               const info: TraineeInfo = {
                 name: formData.get('name') as string,
                 registrationNumber: formData.get('regNumber') as string,
+                className: formData.get('className') as string,
               };
-              if (info.name.trim() && info.registrationNumber.trim()) {
+              if (info.name.trim() && info.registrationNumber.trim() && info.className.trim()) {
                 generateSimulationReport(info);
               }
             }}>
@@ -893,7 +934,7 @@ export function SimulationPanel({
                 />
               </div>
               
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="sim-regNumber" className="block text-sm font-medium text-gray-700 mb-1">
                   Registration Number <span className="text-red-500">*</span>
                 </label>
@@ -903,6 +944,20 @@ export function SimulationPanel({
                   name="regNumber"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your registration number"
+                  required
+                />
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="sim-className" className="block text-sm font-medium text-gray-700 mb-1">
+                  Class <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="sim-className"
+                  name="className"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter your class"
                   required
                 />
               </div>

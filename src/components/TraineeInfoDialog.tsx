@@ -5,6 +5,7 @@ import { useState } from "react";
 interface TraineeInfo {
   name: string;
   registrationNumber: string;
+  className: string;
 }
 
 interface TraineeInfoDialogProps {
@@ -17,13 +18,15 @@ interface TraineeInfoDialogProps {
 export function TraineeInfoDialog({ isOpen, onClose, onSubmit, title }: TraineeInfoDialogProps) {
   const [name, setName] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
+  const [className, setClassName] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim() && registrationNumber.trim()) {
-      onSubmit({ name: name.trim(), registrationNumber: registrationNumber.trim() });
+    if (name.trim() && registrationNumber.trim() && className.trim()) {
+      onSubmit({ name: name.trim(), registrationNumber: registrationNumber.trim(), className: className.trim() });
       setName("");
       setRegistrationNumber("");
+      setClassName("");
     }
   };
 
@@ -53,7 +56,7 @@ export function TraineeInfoDialog({ isOpen, onClose, onSubmit, title }: TraineeI
             />
           </div>
           
-          <div className="mb-6">
+          <div className="mb-4">
             <label htmlFor="regNumber" className="block text-sm font-medium text-gray-700 mb-1">
               Registration Number <span className="text-red-500">*</span>
             </label>
@@ -64,6 +67,21 @@ export function TraineeInfoDialog({ isOpen, onClose, onSubmit, title }: TraineeI
               onChange={(e) => setRegistrationNumber(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your registration number"
+              required
+            />
+          </div>
+          
+          <div className="mb-6">
+            <label htmlFor="className" className="block text-sm font-medium text-gray-700 mb-1">
+              Class <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="className"
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your class"
               required
             />
           </div>

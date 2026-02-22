@@ -12,6 +12,7 @@ interface PrintButtonProps {
 interface TraineeInfo {
   name: string;
   registrationNumber: string;
+  className: string;
 }
 
 export function PrintButton({ title, theoryText, observationsText }: PrintButtonProps) {
@@ -230,6 +231,22 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
               padding-bottom: 15px;
               margin-bottom: 20px;
             }
+            .report-header .institution {
+              font-size: 18px;
+              font-weight: bold;
+              color: #1e40af;
+              margin-bottom: 4px;
+            }
+            .report-header .department {
+              font-size: 14px;
+              color: #374151;
+              margin-bottom: 2px;
+            }
+            .report-header .unit-trainer {
+              font-size: 12px;
+              color: #6b7280;
+              margin-bottom: 10px;
+            }
             .report-header h1 {
               font-size: 24px;
               color: #1e40af;
@@ -255,9 +272,11 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
               display: flex;
               justify-content: space-around;
               align-items: center;
+              flex-wrap: wrap;
             }
             .trainee-info .info-item {
               text-align: center;
+              margin: 5px 10px;
             }
             .trainee-info .label {
               font-size: 11px;
@@ -434,11 +453,31 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
                 page-break-inside: avoid;
               }
             }
+            
+            /* Page Number Footer */
+            .page-footer {
+              position: running(footer);
+              text-align: center;
+              font-size: 10px;
+              color: #9ca3af;
+            }
+            
+            @page {
+              margin: 20mm 15mm;
+              @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 10px;
+                color: #9ca3af;
+              }
+            }
           </style>
         </head>
         <body>
           <!-- Report Header -->
           <div class="report-header">
+            <div class="institution">The Nyeri National Polytechnic</div>
+            <div class="department">EEE Department - Biomedical Engineering</div>
+            <div class="unit-trainer">Unit Trainer: Kevin Koech</div>
             <h1>PRACTICAL REPORT</h1>
             <div class="subtitle">Physiotherapy Equipment Maintenance Training</div>
             <div class="date-time">
@@ -455,6 +494,10 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
             <div class="info-item">
               <div class="label">Admission No.</div>
               <div class="value">${traineeInfo.registrationNumber}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">Class</div>
+              <div class="value">${traineeInfo.className}</div>
             </div>
           </div>
           
@@ -549,6 +592,7 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
                 <div class="role">Trainee</div>
                 <div style="font-weight: bold; color: #1e40af;">${traineeInfo.name}</div>
                 <div style="font-size: 11px; color: #6b7280;">Admission No: ${traineeInfo.registrationNumber}</div>
+                <div style="font-size: 11px; color: #6b7280;">Class: ${traineeInfo.className}</div>
                 <div class="name-line"></div>
                 <div class="label">Signature</div>
                 <div class="date-line"></div>
@@ -556,9 +600,10 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
               </div>
               <div class="sign-off-box">
                 <div class="role">Trainer</div>
-                <div style="height: 20px;"></div>
+                <div style="font-weight: bold; color: #1e40af;">Kevin Koech</div>
+                <div style="font-size: 11px; color: #6b7280;">Unit Trainer</div>
                 <div class="name-line"></div>
-                <div class="label">Name & Signature</div>
+                <div class="label">Signature</div>
                 <div class="date-line"></div>
                 <div class="label">Date</div>
               </div>

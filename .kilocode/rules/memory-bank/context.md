@@ -23,8 +23,10 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - [x] Interactive simulation panels for all 12 equipment types
 - [x] Line chart visualization for simulation results (matplotlib/MATLAB style)
 - [x] Practical report format with experiment title, theory, observations, data, results, conclusion, and sign-off sections
-- [x] Trainee information capture (name and admission number) via dialog
+- [x] Trainee information capture (name, admission number, and class) via dialog
 - [x] Standalone simulation report print button next to simulate button
+- [x] Institution header on reports (The Nyeri National Polytechnic, EEE Department, Biomedical Engineering, Unit Trainer: Kevin Koech)
+- [x] Page numbers on printed/exported PDF reports
 
 ## Current Structure
 
@@ -118,3 +120,4 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Removed gauge visualizations, restructured report as practical format with experiment title, theory, observations, data, results, conclusion, and sign-off sections |
 | 2026-02-22 | Fixed print/export to capture simulation panels - moved SimulationPanel inside printable-content div for all 12 equipment pages |
 | 2026-02-22 | Added standalone simulation report print feature with trainee info capture - "Print Report" button appears next to simulate button after running simulation |
+| 2026-02-22 | Added institution header (The Nyeri National Polytechnic, EEE Department, Biomedical Engineering, Unit Trainer: Kevin Koech), page numbers, and class field to trainee info in PDF reports |
