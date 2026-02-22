@@ -101,3 +101,4 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Enhanced simulation panel with bar charts and gauge visualizations |
 | 2026-02-22 | Updated print/export to capture simulation results with graphical charts as SVG |
 | 2026-02-22 | Removed gauge visualizations, restructured report as practical format with experiment title, theory, observations, data, results, conclusion, and sign-off sections |
+| 2026-02-22 | Fixed print/export to capture simulation panels - moved SimulationPanel inside printable-content div for all 12 equipment pages |
