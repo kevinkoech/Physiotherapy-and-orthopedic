@@ -562,6 +562,55 @@ export default function InfraredTherapyPage() {
         </div>
       </div>
 
+      {/* Section 8: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">8. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. What are the two main types of emitters used in infrared lamps?", a: "Luminous (tungsten filament) emitters that produce visible light with IR, and non-luminous (ceramic/element) emitters that produce pure IR with no visible light." },
+            { q: "2. What is the primary physiological effect sought from infrared therapy?", a: "Deep tissue heating that increases blood flow, relaxes muscles, reduces pain, and promotes tissue healing through vasodilation." },
+            { q: "3. What is the key difference between luminous and non-luminous infrared generators?", a: "Luminous generators use a visible tungsten filament (wavelength ~0.8-1.5 μm) and produce visible light with IR. Non-luminous generators use a ceramic element (wavelength ~2-10 μm) and produce pure IR without visible light." },
+            { q: "4. The lamp turns on but emits no heat/light. What is the most likely faulty part?", a: "The lamp filament/element is burned out and needs replacement." },
+            { q: "5. What is the most important safety precaution regarding the distance and duration of treatment?", a: "Maintain proper distance (typically 50-75 cm) to prevent burns, and limit treatment duration (typically 15-30 minutes) with regular patient checks for comfort." },
+            { q: "6. What should be regularly checked on the lamp's stand or mounting?", a: "Check the stability of the base, locking mechanisms on adjustable arms, castor wheels/brakes, and ensure the lamp stays securely in position." },
+            { q: "7. Why must the lamp's reflector be kept clean?", a: "A dirty reflector reduces IR output efficiency, can cause uneven heating, and may create hot spots that could damage the lamp or reduce therapeutic effectiveness." },
+            { q: "8. What simple test can indicate if a non-luminous element is functioning?", a: "Place your hand at a safe distance (30-40 cm) from the lamp - you should feel radiant heat within 1-2 minutes of turning it on." },
+            { q: "9. Name one skin condition that is a contraindication for infrared therapy.", a: "Acute inflammation, infected wounds, malignant tumors, impaired skin sensation, recent scar tissue, or dermatological conditions in the treatment area." },
+            { q: "10. What component protects the circuit from power surges?", a: "The fuse or circuit breaker in the power supply circuit protects against overcurrent and power surges." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Explain the principle of heat transfer in infrared therapy and the depth of tissue penetration achieved.",
+            "2. Compare the characteristics, advantages, and disadvantages of tungsten filament (luminous) versus ceramic (non-luminous) infrared lamps.",
+            "3. Describe a logical troubleshooting approach for an infrared lamp that fails to power on at all.",
+            "4. Detail the complete maintenance procedure for an infrared lamp, including cleaning the emitter and reflector, checking the housing, and testing the safety timer.",
+            "5. Discuss the safety tests that must be performed, focusing on mechanical stability, electrical insulation, and timer accuracy.",
+            "6. Explain why calibration of output intensity is not typically performed on basic infrared lamps, and what is verified instead.",
+            "7. Analyze the potential for burns from infrared therapy and the factors (distance, time, skin sensation) that must be controlled to prevent them.",
+            "8. Describe the correct setup for treating a patient's lower back with an infrared lamp, including patient positioning and safety instructions.",
+            "9. Develop a checklist for the visual and functional inspection of an infrared therapy lamp during a routine service.",
+            "10. Evaluate the importance of the device's mechanical components (adjustable stand, locking mechanisms) in ensuring safe and effective treatment delivery.",
+          ].map((q, i) => (
+            <details key={i} className="bg-red-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/muscle-stimulator" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">

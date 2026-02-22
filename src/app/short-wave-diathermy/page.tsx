@@ -667,6 +667,55 @@ export default function ShortWaveDiathermyPage() {
         </div>
       </div>
 
+      {/* Section 8: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">8. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. Name the main component that generates high-frequency currents in a SWD machine.", a: "The oscillator circuit (typically a Hartley or Colpitts oscillator) generates the high-frequency alternating current at 27.12 MHz." },
+            { q: "2. What is the primary therapeutic use of short-wave diathermy?", a: "Deep tissue heating for pain relief, muscle relaxation, increased blood flow, and accelerated tissue healing in conditions like arthritis, muscle spasms, and chronic inflammation." },
+            { q: "3. What are the two main operational modes (types of application) for SWD?", a: "Capacitive (condenser field) method using electrodes, and Inductive (cable/drum) method using induction coils." },
+            { q: "4. If a patient reports a sudden hot spot during treatment, what is the most likely immediate cause?", a: "Poor electrode contact, uneven spacing, metal objects near the treatment area, or concentration of the electromagnetic field at a specific point." },
+            { q: "5. What is the most critical safety check to perform before applying SWD electrodes to a patient?", a: "Check for metal implants, jewelry, and ensure the patient has no contraindications such as pacemakers or pregnancy in the treatment area." },
+            { q: "6. Name one common visual inspection item for SWD machine cables.", a: "Check for frayed insulation, exposed wires, cracks in the cable jacket, or loose connectors at the electrode ends." },
+            { q: "7. What does the term 'tuning' refer to in SWD operation?", a: "Adjusting the resonant circuit to match the patient's tissue impedance, indicated by maximum output on the tuning meter." },
+            { q: "8. What instrument is typically used to calibrate SWD power output?", a: "An RF power meter with a 50Ω dummy load, or a specialized SWD analyzer." },
+            { q: "9. State one contraindication for SWD therapy.", a: "Pacemakers, metal implants, pregnancy, malignancy, acute inflammation, or impaired sensation." },
+            { q: "10. What is the purpose of the timing circuit in a SWD machine?", a: "To automatically terminate treatment after a preset duration (typically 10-30 minutes) to prevent over-treatment and ensure patient safety." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Explain the principle of operation of a short-wave diathermy machine, focusing on how it generates deep tissue heat.",
+            "2. Compare and contrast the capacitive (condenser field) and inductive (cable/drum) methods of applying SWD, including their target tissues.",
+            "3. Describe a systematic, step-by-step fault diagnosis procedure for a SWD machine that powers on but produces no output.",
+            "4. Detail the maintenance procedure for addressing a common fault: a frayed or damaged patient cable.",
+            "5. Discuss the critical safety tests that must be performed on a SWD machine during a routine preventive maintenance check, explaining the rationale for each.",
+            "6. Explain the calibration process for SWD output power, including the required equipment and acceptable tolerance ranges.",
+            "7. Analyze the potential hazards associated with improper use of SWD (e.g., burns, interference with implants) and the safety features designed to mitigate them.",
+            "8. Describe the correct setup and patient positioning for a SWD treatment using a capacitive technique for a knee joint, highlighting safety precautions.",
+            "9. Develop a troubleshooting flowchart for a therapist's report of 'uneven heating' during SWD treatment.",
+            "10. Evaluate the importance of regular calibration and documentation in ensuring both therapeutic efficacy and patient safety with SWD equipment.",
+          ].map((q, i) => (
+            <details key={i} className="bg-blue-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">

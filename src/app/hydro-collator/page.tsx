@@ -539,6 +539,55 @@ export default function HydroCollatorPage() {
         </div>
       </div>
 
+      {/* Section 7: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">7. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. What is the core component that heats the water in a hydrocollator?", a: "An electric immersion heating element, typically 1000-2000W, located at the bottom of the tank." },
+            { q: "2. What is the standard temperature range maintained for hydrocollator packs?", a: "70-80°C (158-176°F) to keep the hot packs at therapeutic temperature without boiling the water." },
+            { q: "3. What are the two main types of hydrocollator units based on capacity?", a: "Large stationary units (holding 6-12 packs) for clinic use, and smaller portable units (holding 2-4 packs) for mobile therapy." },
+            { q: "4. The unit is powered but not heating. Name the first two components to check.", a: "The heating element (for continuity/burnout) and the thermostat (for proper operation and calibration)." },
+            { q: "5. What is the critical safety device that must be tested to prevent overheating?", a: "The over-temperature safety cutout (thermal fuse or high-limit thermostat) that trips if water temperature exceeds safe limits (typically 95°C)." },
+            { q: "6. Why is regular draining and cleaning of the tank necessary?", a: "To remove mineral scale buildup, bacterial growth, and debris that can affect heating efficiency, water quality, and hygiene." },
+            { q: "7. What common issue occurs with the pack covers over time?", a: "The canvas or fabric covers can develop tears, fraying, or become thin from repeated use, requiring replacement." },
+            { q: "8. How should a leaking thermal pack be handled?", a: "Remove it from the unit immediately, dispose of it properly, and replace with a new pack. Leaking packs contaminate the water and can cause burns." },
+            { q: "9. What is the recommended method for cleaning the exterior of the unit?", a: "Wipe with a damp cloth and mild detergent, then dry thoroughly. Avoid abrasive cleaners or excessive water that could enter electrical components." },
+            { q: "10. What should be checked on the unit's power cord regularly?", a: "Check for fraying, cracks, exposed wires, damaged plug, or signs of overheating at connections." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Describe the working principle of a hydrocollator unit, explaining how it maintains a constant moist heat.",
+            "2. Compare the use and maintenance requirements of a large stationary hydrocollator tank versus a smaller portable unit.",
+            "3. Outline a diagnostic procedure for a hydrocollator that is heating too slowly or cannot reach the set temperature.",
+            "4. Detail the step-by-step process for draining, descaling, and refilling a hydrocollator tank.",
+            "5. Discuss the safety mechanisms in a hydrocollator (thermostat, over-temperature cut-out) and how to functionally test them.",
+            "6. Explain the proper inspection, cleaning, and storage procedures for the silicone or fabric-covered moist heat packs.",
+            "7. Analyze the infection control considerations related to hydrocollator use, including water treatment and pack hygiene.",
+            "8. Describe the correct procedure for preparing and applying a moist heat pack to a patient, including the use of towelling layers.",
+            "9. Develop a maintenance log template for a hydrocollator unit, listing daily, weekly, and monthly tasks.",
+            "10. Evaluate the risks associated with a malfunctioning thermostat (e.g., scalding) and the importance of redundant safety controls.",
+          ].map((q, i) => (
+            <details key={i} className="bg-cyan-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/infrared-therapy" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">

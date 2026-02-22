@@ -618,13 +618,62 @@ export default function TractionTherapyPage() {
         </div>
       </div>
 
+      {/* Section 7: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">7. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. What is the main component that provides the pulling force in a mechanical traction machine?", a: "An electric motor (typically DC servo or stepper motor) connected through a gearbox to a cable/winch system, or a pneumatic/hydraulic actuator." },
+            { q: "2. What is the primary therapeutic goal of lumbar traction?", a: "To relieve pressure on spinal discs and nerves, reduce muscle spasm, increase intervertebral space, and alleviate pain from conditions like herniated discs or sciatica." },
+            { q: "3. What are the two broad categories of traction based on force application (static vs. intermittent)?", a: "Static (continuous) traction applies constant force throughout treatment. Intermittent traction alternates between hold and rest phases in a rhythmic pattern." },
+            { q: "4. The machine pulls but does not hold tension. What mechanical part might be slipping?", a: "The cable/winch drum, gearbox, or the clutch mechanism may be worn or slipping, preventing the machine from maintaining consistent tension." },
+            { q: "5. What is the single most important safety feature that must be functional?", a: "The emergency stop mechanism that immediately releases all traction force when activated by the patient or operator." },
+            { q: "6. What must be inspected regularly on the harnesses, straps, and cuffs?", a: "Check for fraying, tears, worn stitching, broken buckles, and ensure all fasteners are secure and functioning properly." },
+            { q: "7. How should the moving parts (rails, pulleys) be maintained?", a: "Clean regularly, lubricate per manufacturer specifications, check for wear, and ensure smooth operation without binding or excessive play." },
+            { q: "8. What electronic component failure could cause inaccurate force readings?", a: "The load cell (force transducer), its amplifier, or the analog-to-digital converter in the control system could cause inaccurate force display." },
+            { q: "9. What simple test verifies the accuracy of the force gauge?", a: "Apply known calibrated weights to the traction system and compare the displayed force to the actual weight applied." },
+            { q: "10. Why is it important to check the stability and locking mechanisms of the treatment table?", a: "To prevent the table from shifting during treatment, which could cause injury or affect the accuracy of the applied traction force." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Describe the mechanical and/or electronic systems of a typical traction machine, explaining how force is generated, measured, and controlled.",
+            "2. Compare the setup, application, and maintenance considerations for cervical traction versus lumbar traction equipment.",
+            "3. Detail a fault-finding procedure for an electronic traction unit that displays an error code or fails to initiate a pull cycle.",
+            "4. Explain the maintenance procedure for the machine's core mechanical components: the motor, gearbox, cable, and pulley system.",
+            "5. Discuss the comprehensive safety tests, including functional checks of the emergency release mechanism, force limit switches, and timer accuracy.",
+            "6. Describe the process for calibrating the traction force indicator using known weights or a force meter.",
+            "7. Analyze the potential patient risks during traction therapy (e.g., nerve impingement, strain) and how machine safety features and proper setup mitigate them.",
+            "8. Create a pre-treatment checklist for a therapist using a traction machine, covering both device and patient setup safety.",
+            "9. Explain the correct cleaning and inspection protocol for the patient interface components (head halter, pelvic harness, straps).",
+            "10. Evaluate the importance of maintaining accurate treatment records (force, time, rhythm) stored or displayed by the machine for patient progress tracking.",
+          ].map((q, i) => (
+            <details key={i} className="bg-teal-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/hot-air-oven" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
           ← Hot Air Oven
         </Link>
-        <Link href="/" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
-          Back to Home →
+        <Link href="/electrosurgical-unit" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+          Next: Electrosurgical Unit →
         </Link>
       </div>
     </div>

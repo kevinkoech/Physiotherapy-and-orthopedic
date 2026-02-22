@@ -73,6 +73,42 @@ const modules = [
     topics: ["Main parts", "Uses", "Types", "Fault diagnosis", "Maintenance", "Safety tests"],
     description: "Study traction therapy machines used for spinal decompression and musculoskeletal treatment.",
   },
+  {
+    id: 9,
+    title: "Electrosurgical Unit (ESU)",
+    href: "/electrosurgical-unit",
+    icon: "⚡",
+    color: "bg-red-700",
+    topics: ["Main parts", "RF generator circuit", "Waveform types", "Fault diagnosis", "Safety tests", "Calibration"],
+    description: "Learn about electrosurgical units that use high-frequency current for surgical cutting and coagulation.",
+  },
+  {
+    id: 10,
+    title: "Microwave Diathermy",
+    href: "/microwave-diathermy",
+    icon: "📡",
+    color: "bg-orange-600",
+    topics: ["Main parts", "Magnetron circuit", "Tissue penetration", "Fault diagnosis", "Safety tests", "Calibration"],
+    description: "Study microwave diathermy machines that use 2450 MHz radiation for deep tissue heating therapy.",
+  },
+  {
+    id: 11,
+    title: "Orthopaedic Saw",
+    href: "/orthopaedic-saw",
+    icon: "🔧",
+    color: "bg-slate-600",
+    topics: ["Main parts", "Oscillation mechanism", "Pneumatic circuit", "Fault diagnosis", "Maintenance", "Safety tests"],
+    description: "Understand orthopaedic saws used for bone cutting in joint replacement and fracture surgery.",
+  },
+  {
+    id: 12,
+    title: "Orthopaedic Implants",
+    href: "/implants",
+    icon: "🦴",
+    color: "bg-teal-700",
+    topics: ["Types of implants", "Materials science", "Sterilization", "Failure diagnosis", "Quality control", "Regulatory"],
+    description: "Comprehensive guide to orthopaedic implants including fracture fixation, joint replacement, and quality control.",
+  },
 ];
 
 export default function HomePage() {

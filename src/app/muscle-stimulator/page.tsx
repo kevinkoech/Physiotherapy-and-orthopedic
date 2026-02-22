@@ -654,6 +654,55 @@ export default function MuscleStimulatorPage() {
         </div>
       </div>
 
+      {/* Section 8: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">8. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. What are the two main output terminals of a muscle stimulator called?", a: "The active (anode) and dispersive/return (cathode) electrodes. The active electrode is smaller and delivers the stimulation, while the dispersive electrode is larger to spread the current." },
+            { q: "2. List two therapeutic uses of neuromuscular electrical stimulation (NMES).", a: "Muscle strengthening/re-education, prevention of muscle atrophy, edema reduction, improving range of motion, and wound healing." },
+            { q: "3. What type of current waveform is most commonly used for muscle strengthening?", a: "Symmetrical or asymmetrical biphasic rectangular pulses, typically at frequencies of 50-100 Hz with pulse widths of 200-400 microseconds." },
+            { q: "4. If no current is perceived by the patient despite the unit being on, name the first component to check.", a: "The electrode connections and lead wires - check for loose connections, broken cables, or dried-out electrode gel." },
+            { q: "5. What is the primary purpose of performing an earth leakage test on this device?", a: "To ensure that leakage current from the device to earth does not exceed safe limits (typically ≤500μA), protecting both patient and operator from electric shock." },
+            { q: "6. What is the function of the 'ramp up/down' setting on a stimulator?", a: "It gradually increases (ramp up) or decreases (ramp down) the intensity at the start and end of stimulation, preventing sudden muscle contraction and providing patient comfort." },
+            { q: "7. Name one contraindication for the use of electrical muscle stimulation.", a: "Pacemakers or implanted defibrillators, pregnancy over the uterus, over malignant tumors, over carotid sinus, or in areas with impaired sensation." },
+            { q: "8. What parameter is typically calibrated on a muscle stimulator?", a: "Output current (mA), pulse frequency (Hz), pulse width (μs), and timer accuracy." },
+            { q: "9. What safety feature prevents excessive current delivery?", a: "Current limiting circuit, isolation transformer, and patient isolation from mains power." },
+            { q: "10. What common accessory is prone to deterioration and must be inspected regularly?", a: "Electrode pads and lead wires - electrodes can dry out, lose adhesive properties, or develop cracks; cables can fray or develop internal breaks." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Describe the main functional components of a typical muscle stimulator (e.g., oscillator, amplifier, output stage) and their roles.",
+            "2. Compare and contrast the applications and typical parameters of TENS (Transcutaneous Electrical Nerve Stimulation) vs. NMES (Neuromuscular Electrical Stimulation) units.",
+            "3. Outline a fault-finding procedure for a muscle stimulator where the output current is unstable or fluctuates erratically.",
+            "4. Detail the steps involved in cleaning, inspecting, and maintaining electrode pads and lead wires.",
+            "5. Discuss the comprehensive electrical safety tests (earth resistance, insulation, leakage current) required for a muscle stimulator and their pass/fail criteria.",
+            "6. Explain how to calibrate the output current of a muscle stimulator using a load resistor and a true-RMS multimeter.",
+            "7. Analyze the physiological basis for the different pulse frequencies used in muscle stimulation (e.g., low for denervated muscle, higher for innervated muscle).",
+            "8. Describe the correct procedure for applying electrodes for stimulation of the quadriceps muscle, including skin preparation and safety checks.",
+            "9. Develop a preventive maintenance schedule for a clinic's fleet of muscle stimulators, specifying weekly, monthly, and annual tasks.",
+            "10. Evaluate the risks associated with improper electrode placement (e.g., over the heart, carotid sinus) and the built-in device safeguards.",
+          ].map((q, i) => (
+            <details key={i} className="bg-purple-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/short-wave-diathermy" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">

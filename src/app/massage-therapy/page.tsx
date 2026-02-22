@@ -451,6 +451,55 @@ export default function MassageTherapyPage() {
         </div>
       </div>
 
+      {/* Section 7: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">7. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. Name the main electric motor type commonly found in percussion-style massage guns.", a: "Brushless DC (BLDC) motors are commonly used in percussion massage guns for their efficiency, longevity, and variable speed control." },
+            { q: "2. What is the primary therapeutic goal of using a mechanical massage device?", a: "To relax muscles, reduce pain, improve blood circulation, decrease muscle tension, and enhance tissue healing through mechanical vibration or percussion." },
+            { q: "3. What are two common modalities found in combination massage units?", a: "Vibration (oscillating motion), percussion (tapping motion), kneading (rotational motion), compression, or heat therapy." },
+            { q: "4. The device vibrates but makes a grinding noise. What component is likely failing?", a: "The gearbox, bearings, or internal mechanism (eccentric cam) may be worn, damaged, or require lubrication." },
+            { q: "5. What is the most important pre-use check for any handheld massage device?", a: "Check the integrity of the housing, attachment heads, power cord/battery, and ensure all guards and covers are securely in place." },
+            { q: "6. What part of a percussion massager requires regular lubrication?", a: "The internal mechanism including the gearbox, cam assembly, and bearings require periodic lubrication per manufacturer specifications." },
+            { q: "7. How should the attachment heads be cleaned and disinfected?", a: "Wipe with a damp cloth and mild detergent, then disinfect with an approved disinfectant wipe or solution. Allow to dry completely before storage." },
+            { q: "8. What should be inspected on the device's housing?", a: "Check for cracks, loose parts, damaged switches, worn grip surfaces, and ensure all screws and fasteners are tight." },
+            { q: "9. Name one condition where mechanical massage is contraindicated.", a: "Acute inflammation, fractures, blood clots, malignant tumors, skin infections, open wounds, or over areas with impaired sensation." },
+            { q: "10. What electrical safety test is paramount for mains-powered massage units?", a: "Earth continuity test (for Class I devices) to ensure the protective earth connection is intact and can carry fault current safely." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Describe the mechanical operation of a percussion massage therapy device, from motor to head movement.",
+            "2. Compare the mechanisms, indications, and maintenance needs of vibration massage units versus percussive massage devices.",
+            "3. Detail a troubleshooting process for a battery-operated massage gun that will not hold a charge or power on.",
+            "4. Explain the disassembly, cleaning, and reassembly procedure for a removable massage head and its internal mechanism.",
+            "5. Discuss the safety tests for a mains-powered massage unit, including earth bond continuity, insulation resistance, and load testing.",
+            "6. Describe the proper care and maintenance of rechargeable batteries in portable massage devices to maximize lifespan.",
+            "7. Analyze the potential for tissue injury from overuse or incorrect application of mechanical massage and the safety features (speed settings, timers) that mitigate risk.",
+            "8. Create a user guide for therapists on the daily inspection and cleaning of a shared massage therapy machine.",
+            "9. Explain how to diagnose and resolve a common issue: reduced intensity or 'weak' operation of the device.",
+            "10. Evaluate the importance of manufacturer-specific maintenance procedures for specialized massage devices with unique mechanisms.",
+          ].map((q, i) => (
+            <details key={i} className="bg-green-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/hydro-collator" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">

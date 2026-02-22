@@ -28,6 +28,10 @@ const navItems = [
   { href: "/orthopaedic-oscillator", label: "Orthopaedic Oscillator" },
   { href: "/hot-air-oven", label: "Hot Air Oven" },
   { href: "/traction-therapy", label: "Traction Therapy" },
+  { href: "/electrosurgical-unit", label: "Electrosurgical Unit" },
+  { href: "/microwave-diathermy", label: "Microwave Diathermy" },
+  { href: "/orthopaedic-saw", label: "Orthopaedic Saw" },
+  { href: "/implants", label: "Implants" },
 ];
 
 export default function RootLayout({

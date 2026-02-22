@@ -428,6 +428,55 @@ export default function OrthopaedicOscillatorPage() {
         </div>
       </div>
 
+      {/* Section 7: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">7. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. What is the common name for an orthopaedic oscillator used for cast removal?", a: "A cast saw or oscillating cast saw - it uses a high-frequency oscillating blade that cuts through rigid casting material but stops when it contacts flexible skin." },
+            { q: "2. What is the primary function of the oscillating blade?", a: "To cut through rigid materials (plaster, fiberglass cast) while minimizing risk to soft tissue - the oscillating motion allows the blade to cut hard materials but stops when it encounters flexible skin." },
+            { q: "3. What are the two main power sources for these devices?", a: "Electric (AC mains or battery-powered) and pneumatic (compressed air or nitrogen gas)." },
+            { q: "4. The oscillator blade does not vibrate, but the motor runs. What linkage might be broken?", a: "The eccentric cam mechanism, connecting rod, or the blade chuck mechanism that converts rotary motion to oscillation may be broken or disconnected." },
+            { q: "5. What safety device must be engaged for the blade to operate?", a: "The blade guard or safety switch/interlock that prevents accidental activation and protects the operator from the moving blade." },
+            { q: "6. What is the most critical maintenance task after each use?", a: "Thorough cleaning, inspection for damage, and proper sterilization of all components that contact patients or the surgical field." },
+            { q: "7. How should the cutting blade be inspected for wear?", a: "Check for dull teeth, cracks, bends, corrosion, or any damage. A worn blade will cut poorly and may generate excessive heat." },
+            { q: "8. What component requires regular lubrication in a pneumatic oscillator?", a: "The air turbine bearings, O-rings, seals, and the blade chuck mechanism require lubrication per manufacturer specifications." },
+            { q: "9. What should be checked on the device's handpiece or grip?", a: "Check for cracks, secure housing, proper trigger operation, and ensure the grip surface is not worn or slippery." },
+            { q: "10. Why is it important to check the integrity of the power cord/hose?", a: "Damaged cords can cause electric shock; damaged pneumatic hoses can leak air, reduce power, or whip dangerously if they burst under pressure." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Explain the working principle of an orthopaedic oscillator, describing how the rotary motion of the motor is converted to a safe oscillating motion.",
+            "2. Compare the advantages, disadvantages, and maintenance requirements of electric versus pneumatic (air-powered) orthopaedic oscillators.",
+            "3. Describe a systematic fault diagnosis for an electric oscillator that has lost power or runs at reduced speed.",
+            "4. Detail the complete post-procedure cleaning, disinfection, and sterilization protocol for the removable components of an oscillator (blades, guards).",
+            "5. Discuss the mechanical safety tests, including blade guard integrity, clutch function, and switch reliability, that must be performed.",
+            "6. Explain the maintenance procedure for the gearbox or cam mechanism that converts motor rotation to oscillation.",
+            "7. Analyze the specific hazards associated with cast saws (skin abrasion, burns) and the design features (blade tip guards, oscillating action) that minimize them.",
+            "8. Describe the correct procedure for replacing a worn or damaged cutting blade.",
+            "9. Develop a preventive maintenance schedule for a pneumatic oscillator, including filter checks and lubrication points.",
+            "10. Evaluate the importance of torque calibration (if applicable) in devices used for driving screws or other precision orthopaedic tasks.",
+          ].map((q, i) => (
+            <details key={i} className="bg-orange-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/massage-therapy" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">

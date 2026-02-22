@@ -545,6 +545,55 @@ export default function HotAirOvenPage() {
         </div>
       </div>
 
+      {/* Section 7: Assessment */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <div className="section-header">
+          <h2 className="text-xl font-bold">7. Assessment Questions</h2>
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-4 mb-3">📝 Short-Answer Questions</h3>
+        <div className="space-y-3">
+          {[
+            { q: "1. What is the heating element in a hot air oven typically made of?", a: "Nichrome (nickel-chromium alloy) resistance wire, or Kanthal (iron-chromium-aluminum alloy), wound on ceramic insulators." },
+            { q: "2. What is the primary use of a hot air oven in a physiotherapy context?", a: "Dry heat sterilization of instruments, glassware, and heat-resistant materials that cannot be steam sterilized." },
+            { q: "3. What are the two main types based on air circulation (natural vs. forced)?", a: "Natural convection ovens (rely on gravity for air circulation) and forced convection ovens (use a fan/blower for uniform heat distribution)." },
+            { q: "4. The oven heats unevenly. What component in a forced-air oven might be faulty?", a: "The circulation fan or blower motor may be malfunctioning, causing uneven temperature distribution." },
+            { q: "5. What is the most critical safety device to prevent temperature runaway?", a: "The over-temperature safety cutout (independent safety thermostat or thermal fuse) that disconnects power if the main thermostat fails." },
+            { q: "6. What regular cleaning task is essential for performance and safety?", a: "Cleaning the interior chamber, shelves, door gasket, and ventilation openings to remove debris and ensure proper air circulation." },
+            { q: "7. How is the door seal inspected for integrity?", a: "Close the door on a piece of paper - the paper should be held firmly. Check the gasket for cracks, hardening, or gaps." },
+            { q: "8. What instrument is used to calibrate the oven's temperature?", a: "A calibrated reference thermometer or thermocouple probe with digital readout, traceable to national standards." },
+            { q: "9. Why must vents and filters be kept clean?", a: "To ensure proper air circulation, temperature uniformity, and prevent overheating or fire hazards from accumulated debris." },
+            { q: "10. What common issue is indicated by a constantly cycling thermostat?", a: "Poor insulation, door seal failure, or a thermostat that is out of calibration - the oven struggles to maintain stable temperature." },
+          ].map((item, i) => (
+            <details key={i} className="bg-gray-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{item.q}</summary>
+              <p className="mt-2 text-gray-600 text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+
+        <h3 className="font-bold text-gray-800 mt-6 mb-3">✍️ Essay Questions</h3>
+        <div className="space-y-3">
+          {[
+            "1. Describe the construction and key components of a hot air oven (chamber, heater, blower, thermostat, safety thermostat).",
+            "2. Compare the principles and applications of dry heat (hot air oven) versus moist heat (autoclave/hydrocollator) in therapeutic settings.",
+            "3. Outline a troubleshooting procedure for a hot air oven that fails to reach its set temperature.",
+            "4. Detail the calibration process for the oven's thermostat and temperature display using a calibrated reference thermometer.",
+            "5. Discuss the safety tests, including verification of the independent over-temperature cut-out and door interlock (if present).",
+            "6. Explain the proper cleaning procedure for the oven interior, shelves, and air circulation pathways.",
+            "7. Analyze the fire risks associated with hot air ovens and the safety protocols for their operation and location.",
+            "8. Describe how to perform a temperature uniformity mapping test within the oven chamber.",
+            "9. Develop a log sheet for recording daily temperature checks and periodic calibration results.",
+            "10. Evaluate the factors that affect the heating efficiency and lifespan of the oven, such as load placement and cleanliness.",
+          ].map((q, i) => (
+            <details key={i} className="bg-yellow-50 rounded-lg p-3">
+              <summary className="font-medium text-gray-800 cursor-pointer">{q}</summary>
+              <p className="mt-2 text-gray-600 text-sm italic">[Extended response required - refer to the learning content above for detailed answers]</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Link href="/orthopaedic-oscillator" className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
