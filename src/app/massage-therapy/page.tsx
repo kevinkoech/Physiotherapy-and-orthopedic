@@ -79,6 +79,9 @@ export default function MassageTherapyPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="Massage Therapy Simulator"
@@ -105,9 +108,6 @@ export default function MassageTherapyPage() {
         ]}
         simulate={simulateMassageTherapy}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

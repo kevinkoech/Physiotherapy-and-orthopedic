@@ -106,6 +106,9 @@ export default function ElectrosurgicalUnitPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
+
         {/* Simulation Panel */}
         <SimulationPanel
           title="ESU Output Simulator"
@@ -146,9 +149,6 @@ export default function ElectrosurgicalUnitPage() {
           ]}
           simulate={simulateESU}
         />
-
-        {/* Printable Content Wrapper */}
-        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">

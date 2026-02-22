@@ -75,6 +75,9 @@ export default function MuscleStimulatorPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="Muscle Stimulation Simulator"
@@ -102,9 +105,6 @@ export default function MuscleStimulatorPage() {
         ]}
         simulate={simulateMuscleStimulator}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

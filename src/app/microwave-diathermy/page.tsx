@@ -87,6 +87,9 @@ export default function MicrowaveDiathermyPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
+
         {/* Simulation Panel */}
         <SimulationPanel
           title="Microwave Diathermy Simulator"
@@ -111,9 +114,6 @@ export default function MicrowaveDiathermyPage() {
           ]}
           simulate={simulateMicrowaveDiathermy}
         />
-
-        {/* Printable Content Wrapper */}
-        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">

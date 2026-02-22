@@ -123,6 +123,9 @@ export default function ImplantsPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
+
         {/* Simulation Panel */}
         <SimulationPanel
           title="Implant Material Selector"
@@ -176,9 +179,6 @@ export default function ImplantsPage() {
           ]}
           simulate={simulateImplant}
         />
-
-        {/* Printable Content Wrapper */}
-        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">

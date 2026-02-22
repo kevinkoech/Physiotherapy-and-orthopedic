@@ -61,6 +61,9 @@ export default function ShortWaveDiathermyPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="SWD Treatment Simulator"
@@ -73,9 +76,6 @@ export default function ShortWaveDiathermyPage() {
         ]}
         simulate={simulateSWD}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

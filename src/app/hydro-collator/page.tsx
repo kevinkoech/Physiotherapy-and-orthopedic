@@ -77,6 +77,9 @@ export default function HydroCollatorPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="Hydro-Collator Simulator"
@@ -102,9 +105,6 @@ export default function HydroCollatorPage() {
         ]}
         simulate={simulateHydroCollator}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

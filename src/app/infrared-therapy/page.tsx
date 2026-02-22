@@ -73,6 +73,9 @@ export default function InfraredTherapyPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="IR Therapy Simulator"
@@ -97,9 +100,6 @@ export default function InfraredTherapyPage() {
         ]}
         simulate={simulateInfraredTherapy}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

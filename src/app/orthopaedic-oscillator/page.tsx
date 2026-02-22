@@ -84,6 +84,9 @@ export default function OrthopaedicOscillatorPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="PEMF Bone Healing Simulator"
@@ -109,9 +112,6 @@ export default function OrthopaedicOscillatorPage() {
         ]}
         simulate={simulateOrthopaedicOscillator}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

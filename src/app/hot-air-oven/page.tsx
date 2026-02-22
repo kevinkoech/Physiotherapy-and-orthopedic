@@ -81,6 +81,9 @@ export default function HotAirOvenPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="Sterilization Cycle Simulator"
@@ -93,9 +96,6 @@ export default function HotAirOvenPage() {
         ]}
         simulate={simulateHotAirOven}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">

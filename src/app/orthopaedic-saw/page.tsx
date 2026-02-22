@@ -105,6 +105,9 @@ export default function OrthopaedicSawPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
+
         {/* Simulation Panel */}
         <SimulationPanel
           title="Orthopaedic Saw Simulator"
@@ -143,9 +146,6 @@ export default function OrthopaedicSawPage() {
           ]}
           simulate={simulateOrthopaedicSaw}
         />
-
-        {/* Printable Content Wrapper */}
-        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">

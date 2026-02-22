@@ -80,6 +80,9 @@ export default function TractionTherapyPage() {
         </div>
       </div>
 
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
+
       {/* Simulation Panel */}
       <SimulationPanel
         title="Traction Therapy Simulator"
@@ -105,9 +108,6 @@ export default function TractionTherapyPage() {
         ]}
         simulate={simulateTractionTherapy}
       />
-
-      {/* Printable Content Wrapper */}
-      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
