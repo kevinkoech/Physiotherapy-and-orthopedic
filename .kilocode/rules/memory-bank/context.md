@@ -24,6 +24,7 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - [x] Line chart visualization for simulation results (matplotlib/MATLAB style)
 - [x] Practical report format with experiment title, theory, observations, data, results, conclusion, and sign-off sections
 - [x] Trainee information capture (name and admission number) via dialog
+- [x] Standalone simulation report print button next to simulate button
 
 ## Current Structure
 
@@ -33,7 +34,7 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 | `src/app/layout.tsx` | Root layout | ✅ Complete |
 | `src/app/globals.css` | Global styles | ✅ Complete |
 | `src/components/PrintButton.tsx` | PDF export component with chart capture | ✅ Complete |
-| `src/components/SimulationPanel.tsx` | Interactive simulation with charts | ✅ Complete |
+| `src/components/SimulationPanel.tsx` | Interactive simulation with charts and standalone print | ✅ Complete |
 | `src/app/short-wave-diathermy/` | SWD module | ✅ Complete |
 | `src/app/muscle-stimulator/` | Muscle stimulator module | ✅ Complete |
 | `src/app/infrared-therapy/` | IR therapy module | ✅ Complete |
@@ -49,8 +50,8 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 
 ## Features
 
-### Print/Export PDF
-- Each equipment page has a "Print/Export PDF" button
+### Print/Export PDF (Full Content)
+- Each equipment page has a "Print/Export PDF" button at the top
 - Prompts for trainee name and admission number before generating report
 - Generates a practical report with structured sections:
   1. Experiment Title/Topic
@@ -63,6 +64,19 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - Includes line chart visualization of simulation results
 - Simulation results stored in data attributes for print capture
 
+### Standalone Simulation Report
+- "Print Report" button appears next to "Run Simulation" button after simulation runs
+- Captures trainee name and registration number via dialog
+- Generates a standalone PDF report with:
+  - Header with equipment name and date/time
+  - Trainee information section
+  - Simulation parameters table
+  - Simulation results table with status indicators
+  - Line chart visualization of results
+  - Summary section
+  - Signature areas for trainee and trainer
+- Opens in new window for printing/saving
+
 ### Interactive Simulations
 Each equipment page has a simulation panel with:
 - Adjustable parameters (sliders and dropdowns)
@@ -71,6 +85,7 @@ Each equipment page has a simulation panel with:
 - Line chart visualization of all numeric results (matplotlib/MATLAB style)
 - Results table with parameter values and status
 - Summary showing counts of normal/warning/danger parameters
+- Standalone print report button after simulation runs
 
 ### Simulation Parameters by Equipment
 
@@ -102,3 +117,4 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Updated print/export to capture simulation results with graphical charts as SVG |
 | 2026-02-22 | Removed gauge visualizations, restructured report as practical format with experiment title, theory, observations, data, results, conclusion, and sign-off sections |
 | 2026-02-22 | Fixed print/export to capture simulation panels - moved SimulationPanel inside printable-content div for all 12 equipment pages |
+| 2026-02-22 | Added standalone simulation report print feature with trainee info capture - "Print Report" button appears next to simulate button after running simulation |
