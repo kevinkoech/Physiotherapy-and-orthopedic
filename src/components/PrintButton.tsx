@@ -109,35 +109,6 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
     `;
   };
 
-  const generateGaugeSVG = (result: any) => {
-    const percentage = Math.min(100, Math.max(0, ((result.numericValue - result.min) / (result.max - result.min)) * 100));
-    const angle = (percentage / 100) * 180 - 90;
-    const centerX = 100;
-    const centerY = 90;
-    const radius = 70;
-    const needleLength = 55;
-    const needleX = centerX + needleLength * Math.cos((angle * Math.PI) / 180);
-    const needleY = centerY + needleLength * Math.sin((angle * Math.PI) / 180);
-    let color = "#10b981";
-    if (result.status === "warning") color = "#f59e0b";
-    if (result.status === "danger") color = "#ef4444";
-    
-    return `
-      <svg width="200" height="130" viewBox="0 0 200 130" style="margin: 10px;">
-        <path d="M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}" fill="none" stroke="#e5e7eb" stroke-width="12" stroke-linecap="round" />
-        <path d="M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX - 30} ${centerY - radius + 10}" fill="none" stroke="#10b981" stroke-width="12" stroke-linecap="round" />
-        <path d="M ${centerX - 30} ${centerY - radius + 10} A ${radius} ${radius} 0 0 1 ${centerX + 30} ${centerY - radius + 10}" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round" />
-        <path d="M ${centerX + 30} ${centerY - radius + 10} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round" />
-        <line x1="${centerX}" y1="${centerY}" x2="${needleX}" y2="${needleY}" stroke="${color}" stroke-width="3" stroke-linecap="round" />
-        <circle cx="${centerX}" cy="${centerY}" r="8" fill="${color}" />
-        <text x="${centerX}" y="${centerY + 35}" text-anchor="middle" font-size="16" font-weight="bold" fill="#374151">${result.value} ${result.unit}</text>
-        <text x="25" y="${centerY + 15}" text-anchor="middle" font-size="10" fill="#6b7280">${result.min}</text>
-        <text x="175" y="${centerY + 15}" text-anchor="middle" font-size="10" fill="#6b7280">${result.max}</text>
-        <text x="${centerX}" y="${centerY + 52}" text-anchor="middle" font-size="11" fill="#6b7280">${result.parameter}</text>
-      </svg>
-    `;
-  };
-
   const handlePrintWithTraineeInfo = (traineeInfo: TraineeInfo) => {
     setShowDialog(false);
     generateReport(traineeInfo);
@@ -177,58 +148,48 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
           
           const lineChartSVG = generateLineChartSVG(results, `${simTitle} - Parameter Analysis`);
           
-          const gaugeResults = results.filter((r: any) => r.numericValue !== undefined && r.min !== undefined && r.max !== undefined);
-          const gaugesSVG = gaugeResults.map((result: any) => generateGaugeSVG(result)).join('');
-          
           simulationSectionsHTML += `
-            <div class="simulation-section" style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-              <h2 style="color: #1e40af; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #dbeafe; padding-bottom: 8px;">
-                SIMULATION: ${simTitle}
-              </h2>
+            <div class="simulation-section" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+              <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 12px; border-bottom: 1px solid #dbeafe; padding-bottom: 6px;">
+                ${simTitle}
+              </h3>
               
-              <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Input Parameters</h3>
-              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+              <h4 style="color: #374151; font-size: 13px; margin: 12px 0 8px;">Input Parameters (Data)</h4>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
                 <tr style="background: #f3f4f6;">
-                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Parameter</th>
-                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Value</th>
+                  <th style="border: 1px solid #d1d5db; padding: 6px; text-align: left;">Parameter</th>
+                  <th style="border: 1px solid #d1d5db; padding: 6px; text-align: left;">Value</th>
                 </tr>
                 ${Object.entries(params).map(([key, value]) => `
                   <tr>
-                    <td style="border: 1px solid #d1d5db; padding: 8px;">${key}</td>
-                    <td style="border: 1px solid #d1d5db; padding: 8px; font-weight: bold;">${value}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 6px;">${key}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold;">${value}</td>
                   </tr>
                 `).join('')}
               </table>
               
-              <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Results</h3>
-              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+              <h4 style="color: #374151; font-size: 13px; margin: 12px 0 8px;">Results</h4>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
                 <tr style="background: #f3f4f6;">
-                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Parameter</th>
-                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Value</th>
-                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Unit</th>
-                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Status</th>
+                  <th style="border: 1px solid #d1d5db; padding: 6px; text-align: left;">Parameter</th>
+                  <th style="border: 1px solid #d1d5db; padding: 6px; text-align: left;">Value</th>
+                  <th style="border: 1px solid #d1d5db; padding: 6px; text-align: left;">Unit</th>
+                  <th style="border: 1px solid #d1d5db; padding: 6px; text-align: left;">Status</th>
                 </tr>
                 ${results.map((r: any) => `
                   <tr>
-                    <td style="border: 1px solid #d1d5db; padding: 8px;">${r.parameter}</td>
-                    <td style="border: 1px solid #d1d5db; padding: 8px; font-weight: bold;">${r.value}</td>
-                    <td style="border: 1px solid #d1d5db; padding: 8px;">${r.unit}</td>
-                    <td style="border: 1px solid #d1d5db; padding: 8px; color: ${r.status === 'normal' ? '#059669' : r.status === 'warning' ? '#d97706' : '#dc2626'}; font-weight: bold;">${r.status.toUpperCase()}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 6px;">${r.parameter}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold;">${r.value}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 6px;">${r.unit}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 6px; color: ${r.status === 'normal' ? '#059669' : r.status === 'warning' ? '#d97706' : '#dc2626'}; font-weight: bold;">${r.status.toUpperCase()}</td>
                   </tr>
                 `).join('')}
               </table>
               
               ${lineChartSVG ? `
-                <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Results Visualization - Line Graph</h3>
-                <div style="background: white; padding: 15px; border-radius: 8px; text-align: center; overflow-x: auto;">
+                <h4 style="color: #374151; font-size: 13px; margin: 12px 0 8px;">Chart</h4>
+                <div style="background: white; padding: 10px; border-radius: 8px; text-align: center; overflow-x: auto;">
                   ${lineChartSVG}
-                </div>
-              ` : ''}
-              
-              ${gaugesSVG ? `
-                <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Parameter Gauges</h3>
-                <div style="background: white; padding: 15px; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                  ${gaugesSVG}
                 </div>
               ` : ''}
             </div>
@@ -247,7 +208,7 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
       <!DOCTYPE html>
       <html>
         <head>
-          <title>${title} - Training Report</title>
+          <title>${title} - Practical Report</title>
           <style>
             * {
               margin: 0;
@@ -266,104 +227,104 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
             .report-header {
               text-align: center;
               border-bottom: 3px double #1e40af;
-              padding-bottom: 20px;
-              margin-bottom: 30px;
+              padding-bottom: 15px;
+              margin-bottom: 20px;
             }
             .report-header h1 {
-              font-size: 28px;
+              font-size: 24px;
               color: #1e40af;
-              margin-bottom: 10px;
+              margin-bottom: 8px;
             }
             .report-header .subtitle {
-              font-size: 16px;
+              font-size: 14px;
               color: #6b7280;
             }
             .report-header .date-time {
-              font-size: 14px;
+              font-size: 12px;
               color: #9ca3af;
-              margin-top: 10px;
+              margin-top: 8px;
             }
             
             /* Trainee Info Box */
             .trainee-info {
               background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
               border: 2px solid #3b82f6;
-              border-radius: 12px;
-              padding: 20px;
-              margin-bottom: 30px;
+              border-radius: 8px;
+              padding: 15px;
+              margin-bottom: 20px;
               display: flex;
-              justify-content: space-between;
+              justify-content: space-around;
               align-items: center;
             }
             .trainee-info .info-item {
               text-align: center;
             }
             .trainee-info .label {
-              font-size: 12px;
+              font-size: 11px;
               color: #6b7280;
               text-transform: uppercase;
               letter-spacing: 1px;
             }
             .trainee-info .value {
-              font-size: 18px;
+              font-size: 16px;
               font-weight: bold;
               color: #1e40af;
-              margin-top: 5px;
+              margin-top: 4px;
             }
             
             /* Section Headers */
             h2 {
-              font-size: 20px;
+              font-size: 16px;
               color: #1e40af;
-              margin-top: 30px;
-              margin-bottom: 15px;
+              margin-top: 20px;
+              margin-bottom: 10px;
               border-bottom: 2px solid #dbeafe;
-              padding-bottom: 8px;
+              padding-bottom: 6px;
               text-transform: uppercase;
               letter-spacing: 1px;
             }
             h3 {
-              font-size: 16px;
-              color: #374151;
-              margin-top: 20px;
-              margin-bottom: 10px;
-            }
-            h4 {
               font-size: 14px;
-              color: #4b5563;
+              color: #374151;
               margin-top: 15px;
               margin-bottom: 8px;
+            }
+            h4 {
+              font-size: 12px;
+              color: #4b5563;
+              margin-top: 10px;
+              margin-bottom: 6px;
             }
             
             /* Content Sections */
             .section {
-              margin-bottom: 30px;
+              margin-bottom: 20px;
             }
             .section-title {
               background: #1e40af;
               color: white;
-              padding: 10px 20px;
-              border-radius: 8px 8px 0 0;
+              padding: 8px 15px;
+              border-radius: 6px 6px 0 0;
               font-weight: bold;
-              font-size: 16px;
+              font-size: 14px;
             }
             .section-content {
               background: #f8fafc;
               border: 1px solid #e2e8f0;
               border-top: none;
-              border-radius: 0 0 8px 8px;
-              padding: 20px;
+              border-radius: 0 0 6px 6px;
+              padding: 15px;
             }
             
             /* Tables */
             table {
               width: 100%;
               border-collapse: collapse;
-              margin: 15px 0;
+              margin: 10px 0;
             }
             th, td {
               border: 1px solid #d1d5db;
-              padding: 10px;
+              padding: 8px;
               text-align: left;
             }
             th {
@@ -375,92 +336,86 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
             .diagram-box, .circuit-diagram {
               background: #f8fafc;
               border: 1px solid #e2e8f0;
-              border-radius: 8px;
-              padding: 15px;
-              margin: 15px 0;
+              border-radius: 6px;
+              padding: 12px;
+              margin: 10px 0;
               font-family: 'Courier New', monospace;
-              font-size: 11px;
+              font-size: 10px;
               white-space: pre;
               overflow-x: auto;
             }
             .note-box {
               background: #eff6ff;
               border-left: 4px solid #3b82f6;
-              padding: 15px;
-              margin: 15px 0;
+              padding: 10px;
+              margin: 10px 0;
             }
             .warning-box {
               background: #fef3c7;
               border-left: 4px solid #f59e0b;
-              padding: 15px;
-              margin: 15px 0;
-            }
-            .tip-box {
-              background: #d1fae5;
-              border-left: 4px solid #10b981;
-              padding: 15px;
-              margin: 15px 0;
+              padding: 10px;
+              margin: 10px 0;
             }
             
             /* Simulation Section */
             .simulation-section {
               background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
               border: 1px solid #e2e8f0;
-              border-radius: 12px;
-              padding: 20px;
-              margin: 25px 0;
+              border-radius: 8px;
+              padding: 15px;
+              margin: 15px 0;
             }
             
             /* Sign-off Section */
             .sign-off-section {
-              margin-top: 50px;
+              margin-top: 40px;
               page-break-inside: avoid;
             }
             .sign-off-section h2 {
               text-align: center;
-              margin-bottom: 30px;
+              margin-bottom: 20px;
             }
             .sign-off-grid {
               display: grid;
               grid-template-columns: 1fr 1fr;
-              gap: 40px;
-              margin-top: 30px;
+              gap: 30px;
+              margin-top: 20px;
             }
             .sign-off-box {
               border: 2px solid #1e40af;
-              border-radius: 12px;
-              padding: 25px;
+              border-radius: 8px;
+              padding: 20px;
               text-align: center;
             }
             .sign-off-box .role {
-              font-size: 14px;
+              font-size: 12px;
               color: #6b7280;
               text-transform: uppercase;
               letter-spacing: 2px;
-              margin-bottom: 15px;
+              margin-bottom: 10px;
             }
             .sign-off-box .name-line {
               border-bottom: 1px solid #374151;
-              margin: 40px 0 10px 0;
+              margin: 30px 0 8px 0;
               height: 1px;
             }
             .sign-off-box .label {
-              font-size: 12px;
+              font-size: 11px;
               color: #9ca3af;
             }
             .sign-off-box .date-line {
               border-bottom: 1px solid #374151;
-              margin: 30px 0 10px 0;
+              margin: 20px 0 8px 0;
               height: 1px;
             }
             
             /* Footer */
             .report-footer {
-              margin-top: 50px;
-              padding-top: 20px;
+              margin-top: 30px;
+              padding-top: 15px;
               border-top: 1px solid #e5e7eb;
               text-align: center;
-              font-size: 12px;
+              font-size: 11px;
               color: #9ca3af;
             }
             
@@ -484,8 +439,8 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
         <body>
           <!-- Report Header -->
           <div class="report-header">
-            <h1>${title}</h1>
-            <div class="subtitle">Physiotherapy Equipment Maintenance Training Report</div>
+            <h1>PRACTICAL REPORT</h1>
+            <div class="subtitle">Physiotherapy Equipment Maintenance Training</div>
             <div class="date-time">
               <strong>Date:</strong> ${dateStr} | <strong>Time:</strong> ${timeStr}
             </div>
@@ -498,33 +453,29 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
               <div class="value">${traineeInfo.name}</div>
             </div>
             <div class="info-item">
-              <div class="label">Registration Number</div>
+              <div class="label">Admission No.</div>
               <div class="value">${traineeInfo.registrationNumber}</div>
             </div>
-            <div class="info-item">
-              <div class="label">Session Date</div>
-              <div class="value">${dateStr}</div>
-            </div>
           </div>
           
-          <!-- Topic Section -->
+          <!-- 1. EXPERIMENT TITLE / TOPIC -->
           <div class="section">
-            <div class="section-title">1. TOPIC</div>
+            <div class="section-title">1. EXPERIMENT TITLE / TOPIC</div>
             <div class="section-content">
               <h3>${title}</h3>
-              <p>This training module covers the principles, operation, and maintenance of ${title.toLowerCase()} equipment used in physiotherapy applications.</p>
+              <p style="margin-top: 8px;">This practical session covers the principles, operation, and maintenance of ${title.toLowerCase()} equipment used in physiotherapy applications.</p>
             </div>
           </div>
           
-          <!-- Theory Section -->
+          <!-- 2. THEORY -->
           <div class="section">
             <div class="section-title">2. THEORY</div>
             <div class="section-content">
               ${theoryText || `
                 <p>The theoretical foundation of ${title.toLowerCase()} involves understanding the physical principles, 
                 physiological effects, and clinical applications of this equipment in therapeutic settings.</p>
-                <p>Key concepts include:</p>
-                <ul>
+                <p style="margin-top: 8px;">Key concepts include:</p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
                   <li>Physical principles of operation</li>
                   <li>Physiological effects on tissues</li>
                   <li>Safety considerations and contraindications</li>
@@ -535,46 +486,58 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
             </div>
           </div>
           
-          <!-- Data Section -->
+          <!-- 3. OBSERVATIONS -->
           <div class="section">
-            <div class="section-title">3. DATA</div>
-            <div class="section-content">
-              <p>Technical specifications and operational parameters for ${title.toLowerCase()}.</p>
-            </div>
-          </div>
-          
-          <!-- Results Section -->
-          <div class="section">
-            <div class="section-title">4. RESULTS</div>
-            <div class="section-content">
-              ${simulationSectionsHTML}
-            </div>
-          </div>
-          
-          <!-- Plots Section -->
-          <div class="section">
-            <div class="section-title">5. PLOTS</div>
-            <div class="section-content">
-              <p>Graphical representations of simulation results are included in the Results section above.</p>
-              <p>Line graphs show parameter relationships and trends, while gauges indicate individual parameter status.</p>
-            </div>
-          </div>
-          
-          <!-- Observations Section -->
-          <div class="section">
-            <div class="section-title">6. OBSERVATIONS</div>
+            <div class="section-title">3. OBSERVATIONS</div>
             <div class="section-content">
               ${observationsText || `
-                <p>Key observations from the training session:</p>
-                <ul>
+                <p>Key observations from the practical session:</p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
                   <li>Equipment operated within normal parameters during simulation</li>
                   <li>Safety protocols were followed correctly</li>
                   <li>Maintenance procedures were demonstrated and understood</li>
                 </ul>
-                <div class="note-box">
+                <div class="note-box" style="margin-top: 10px;">
                   <strong>Note:</strong> Additional observations should be documented by the trainee based on hands-on experience with the equipment.
                 </div>
               `}
+            </div>
+          </div>
+          
+          <!-- 4. DATA (Simulation Parameters) -->
+          <div class="section">
+            <div class="section-title">4. DATA</div>
+            <div class="section-content">
+              <p>Technical specifications and operational parameters used in the simulation.</p>
+              ${simulationSectionsHTML}
+            </div>
+          </div>
+          
+          <!-- 5. RESULTS -->
+          <div class="section">
+            <div class="section-title">5. RESULTS</div>
+            <div class="section-content">
+              <p>Simulation results and analysis are documented in the Data section above, including parameter tables and graphical charts.</p>
+              <div class="note-box" style="margin-top: 10px;">
+                <strong>Summary:</strong> The simulation was conducted successfully with all parameters monitored and recorded. Results indicate equipment performance within expected ranges.
+              </div>
+            </div>
+          </div>
+          
+          <!-- 6. CONCLUSION -->
+          <div class="section">
+            <div class="section-title">6. CONCLUSION</div>
+            <div class="section-content">
+              <p>Based on the practical session, the following conclusions can be drawn:</p>
+              <ol style="margin-left: 20px; margin-top: 8px;">
+                <li>The ${title.toLowerCase()} equipment functions according to the specified operational parameters.</li>
+                <li>Regular maintenance and calibration are essential for optimal performance.</li>
+                <li>Safety protocols must be strictly followed during operation.</li>
+                <li>Understanding the theoretical principles enhances practical application skills.</li>
+              </ol>
+              <div class="warning-box" style="margin-top: 10px;">
+                <strong>Important:</strong> This practical session should be supplemented with hands-on training under qualified supervision before independent operation.
+              </div>
             </div>
           </div>
           
@@ -585,7 +548,7 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
               <div class="sign-off-box">
                 <div class="role">Trainee</div>
                 <div style="font-weight: bold; color: #1e40af;">${traineeInfo.name}</div>
-                <div style="font-size: 12px; color: #6b7280;">Reg. No: ${traineeInfo.registrationNumber}</div>
+                <div style="font-size: 11px; color: #6b7280;">Admission No: ${traineeInfo.registrationNumber}</div>
                 <div class="name-line"></div>
                 <div class="label">Signature</div>
                 <div class="date-line"></div>
@@ -593,7 +556,7 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
               </div>
               <div class="sign-off-box">
                 <div class="role">Trainer</div>
-                <div style="height: 24px;"></div>
+                <div style="height: 20px;"></div>
                 <div class="name-line"></div>
                 <div class="label">Name & Signature</div>
                 <div class="date-line"></div>
