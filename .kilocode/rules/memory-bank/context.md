@@ -85,3 +85,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-02-22 | Built comprehensive physiotherapy equipment maintenance learning notes app with 8 modules, ASCII diagrams, circuit diagrams, fault tables, safety tests, and calibration guides |
