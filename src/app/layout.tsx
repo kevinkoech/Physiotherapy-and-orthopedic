@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Physiotherapy Equipment Maintenance - Learning Notes",
   description: "Comprehensive learning notes for physiotherapy equipment maintenance including SWD, muscle stimulators, infrared therapy, and more.",
+  manifest: "/manifest.json",
+  themeColor: "#0f766e",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PhysioTech Maintenance",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 const navItems = [
@@ -41,9 +58,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="PhysioTech" />
+        <meta name="mobile-web-app-capable" content="yes" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
       >
+        <ServiceWorkerRegistration />
         {/* Top Navigation Bar */}
         <nav className="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4">

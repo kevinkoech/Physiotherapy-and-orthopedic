@@ -1,0 +1,46 @@
+{
+  "name": "Physio Equipment Maintenance",
+  "short_name": "PhysioMaint",
+  "description": "Physiotherapy Equipment Maintenance Learning Notes App",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f766e",
+  "theme_color": "#0f766e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["education", "medical"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Short Wave Diathermy",
+      "short_name": "SWD",
+      "url": "/short-wave-diathermy",
+      "description": "SWD Machine Maintenance"
+    },
+    {
+      "name": "Muscle Stimulator",
+      "short_name": "Stimulator",
+      "url": "/muscle-stimulator",
+      "description": "Muscle Stimulator Maintenance"
+    },
+    {
+      "name": "Hot Air Oven",
+      "short_name": "Oven",
+      "url": "/hot-air-oven",
+      "description": "Hot Air Oven Maintenance"
+    }
+  ]
+}
