@@ -121,3 +121,4 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Fixed print/export to capture simulation panels - moved SimulationPanel inside printable-content div for all 12 equipment pages |
 | 2026-02-22 | Added standalone simulation report print feature with trainee info capture - "Print Report" button appears next to simulate button after running simulation |
 | 2026-02-22 | Added institution header (The Nyeri National Polytechnic, EEE Department, Biomedical Engineering, Unit Trainer: Kevin Koech), page numbers, and class field to trainee info in PDF reports |
+| 2026-02-22 | Fixed chunk loading error by updating service worker to use network-first strategy for Next.js static chunks; Fixed chart display issues with CSS visibility and edge case handling |
