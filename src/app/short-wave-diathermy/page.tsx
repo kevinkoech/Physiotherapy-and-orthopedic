@@ -1,6 +1,40 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function ShortWaveDiathermyPage() {
+  // SWD Simulation Function
+  const simulateSWD = (params: Record<string, number | string>) => {
+    const power = params.power as number;
+    const frequency = params.frequency as number;
+    const treatmentTime = params.treatmentTime as number;
+    const electrodeGap = params.electrodeGap as number;
+    
+    // Calculate derived parameters
+    const wavelength = 299.79 / frequency; // Speed of light / frequency (in meters)
+    const penetrationDepth = 3 + (power / 100); // Approximate depth in cm
+    const energyDelivered = (power * treatmentTime * 60) / 1000; // kJ
+    const tissueTempRise = (power * 0.5 * treatmentTime) / 10; // Approximate temp rise in °C
+    const sar = power / 70; // Specific Absorption Rate approximation (W/kg for 70kg person)
+    
+    // Determine status
+    const powerStatus = power > 400 ? "danger" as const : power > 300 ? "warning" as const : "normal" as const;
+    const tempStatus = tissueTempRise > 4 ? "danger" as const : tissueTempRise > 3 ? "warning" as const : "normal" as const;
+    const sarStatus = sar > 4 ? "danger" as const : sar > 2 ? "warning" as const : "normal" as const;
+    const timeStatus = treatmentTime > 30 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Wavelength", value: wavelength.toFixed(2), unit: "m", status: "normal" as const },
+      { parameter: "Penetration Depth", value: penetrationDepth.toFixed(1), unit: "cm", status: "normal" as const },
+      { parameter: "Energy Delivered", value: energyDelivered.toFixed(1), unit: "kJ", status: "normal" as const },
+      { parameter: "Est. Tissue Temp Rise", value: tissueTempRise.toFixed(1), unit: "°C", status: tempStatus },
+      { parameter: "SAR (Specific Absorption Rate)", value: sar.toFixed(2), unit: "W/kg", status: sarStatus },
+      { parameter: "Output Power", value: power.toString(), unit: "W", status: powerStatus },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus },
+      { parameter: "Electrode Gap", value: electrodeGap.toString(), unit: "cm", status: "normal" as const },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +53,27 @@ export default function ShortWaveDiathermyPage() {
             <span key={t} className="bg-blue-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Short Wave Diathermy Machine - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="SWD Treatment Simulator"
+        description="Adjust parameters to simulate SWD treatment outcomes and safety thresholds"
+        parameters={[
+          { name: "Output Power", key: "power", unit: "W", min: 10, max: 500, step: 10, default: 100 },
+          { name: "Frequency", key: "frequency", unit: "MHz", min: 13.56, max: 40.68, step: 0.01, default: 27.12 },
+          { name: "Treatment Time", key: "treatmentTime", unit: "min", min: 5, max: 30, step: 1, default: 15 },
+          { name: "Electrode Gap", key: "electrodeGap", unit: "cm", min: 1, max: 5, step: 0.5, default: 2 },
+        ]}
+        simulate={simulateSWD}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -715,6 +769,7 @@ export default function ShortWaveDiathermyPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

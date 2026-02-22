@@ -1,6 +1,59 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function TractionTherapyPage() {
+  // Traction Therapy Simulation Function
+  const simulateTractionTherapy = (params: Record<string, number | string>) => {
+    const force = params.force as number;
+    const holdTime = params.holdTime as number;
+    const relaxTime = params.relaxTime as number;
+    const treatmentDuration = params.treatmentDuration as number;
+    const tractionType = params.tractionType as string;
+    
+    // Calculate cycles
+    const cycleTime = holdTime + relaxTime;
+    const totalCycles = Math.floor((treatmentDuration * 60) / cycleTime);
+    
+    // Calculate total traction time
+    const totalTractionTime = totalCycles * holdTime;
+    const totalRelaxTime = totalCycles * relaxTime;
+    
+    // Calculate work done (approximate)
+    // Work = Force × Distance (assume 1cm displacement per cycle)
+    const displacement = 0.01; // meters per cycle
+    const workPerCycle = force * 9.81 * displacement; // Joules
+    const totalWork = workPerCycle * totalCycles;
+    
+    // Spinal decompression estimate (disc height increase)
+    let decompression = 0;
+    if (tractionType === "Cervical") {
+      decompression = (force / 10) * 0.5; // mm
+    } else {
+      decompression = (force / 40) * 1.0; // mm for lumbar
+    }
+    
+    // Safety thresholds
+    let maxForce = tractionType === "Cervical" ? 20 : 80;
+    const forceStatus = force > maxForce ? "danger" as const : force > maxForce * 0.8 ? "warning" as const : "normal" as const;
+    const holdStatus = holdTime > 60 ? "warning" as const : "normal" as const;
+    const durationStatus = treatmentDuration > 30 ? "warning" as const : "normal" as const;
+    
+    // Patient weight recommendation (for lumbar)
+    const minBodyWeight = tractionType === "Lumbar" ? force * 2 : 0;
+    
+    return [
+      { parameter: "Total Cycles", value: totalCycles.toString(), unit: "cycles", status: "normal" as const },
+      { parameter: "Total Traction Time", value: totalTractionTime.toString(), unit: "sec", status: "normal" as const },
+      { parameter: "Total Relax Time", value: totalRelaxTime.toString(), unit: "sec", status: "normal" as const },
+      { parameter: "Est. Work Done", value: totalWork.toFixed(1), unit: "J", status: "normal" as const },
+      { parameter: "Est. Disc Decompression", value: decompression.toFixed(1), unit: "mm", status: "normal" as const },
+      { parameter: "Applied Force", value: force.toString(), unit: "kg", status: forceStatus },
+      { parameter: "Hold/Relax Ratio", value: `${holdTime}/${relaxTime}`, unit: "sec", status: holdStatus },
+      { parameter: "Treatment Duration", value: treatmentDuration.toString(), unit: "min", status: durationStatus },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +72,40 @@ export default function TractionTherapyPage() {
             <span key={t} className="bg-teal-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Traction Therapy Machine - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="Traction Therapy Simulator"
+        description="Configure traction parameters to calculate treatment cycles and decompression"
+        parameters={[
+          { name: "Force", key: "force", unit: "kg", min: 5, max: 80, step: 1, default: 25 },
+          { name: "Hold Time", key: "holdTime", unit: "sec", min: 10, max: 90, step: 5, default: 30 },
+          { name: "Relax Time", key: "relaxTime", unit: "sec", min: 5, max: 30, step: 5, default: 10 },
+          { name: "Treatment Duration", key: "treatmentDuration", unit: "min", min: 5, max: 30, step: 1, default: 15 },
+          { 
+            name: "Traction Type", 
+            key: "tractionType", 
+            unit: "", 
+            min: 0, 
+            max: 0, 
+            default: "Lumbar",
+            type: "select",
+            options: [
+              { value: "Cervical", label: "Cervical (Neck)" },
+              { value: "Lumbar", label: "Lumbar (Lower Back)" },
+            ]
+          },
+        ]}
+        simulate={simulateTractionTherapy}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -666,6 +752,7 @@ export default function TractionTherapyPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

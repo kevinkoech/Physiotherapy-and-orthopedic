@@ -1,4 +1,87 @@
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
+
 export default function ImplantsPage() {
+  // Implant Material Selection Simulation
+  const simulateImplant = (params: Record<string, number | string>) => {
+    const material = params.material as string;
+    const implantType = params.implantType as string;
+    const patientWeight = params.patientWeight as number;
+    const activityLevel = params.activityLevel as string;
+    
+    // Material properties
+    let yieldStrength = 0;
+    let elasticModulus = 0;
+    let density = 0;
+    let corrosionResistance = 0;
+    let biocompatibility = "";
+    
+    if (material === "Ti-6Al-4V") {
+      yieldStrength = 880; // MPa
+      elasticModulus = 110; // GPa
+      density = 4.43; // g/cm³
+      corrosionResistance = 95; // %
+      biocompatibility = "Excellent";
+    } else if (material === "316L SS") {
+      yieldStrength = 290; // MPa
+      elasticModulus = 200; // GPa
+      density = 8.0; // g/cm³
+      corrosionResistance = 70; // %
+      biocompatibility = "Good";
+    } else if (material === "CoCrMo") {
+      yieldStrength = 450; // MPa
+      elasticModulus = 210; // GPa
+      density = 8.3; // g/cm³
+      corrosionResistance = 90; // %
+      biocompatibility = "Good";
+    } else {
+      yieldStrength = 20; // MPa (UHMWPE)
+      elasticModulus = 0.5; // GPa
+      density = 0.94; // g/cm³
+      corrosionResistance = 100; // % (inert)
+      biocompatibility = "Excellent";
+    }
+    
+    // Load calculation based on implant type and patient weight
+    let loadFactor = 0;
+    if (implantType === "Hip") {
+      loadFactor = 2.5; // Joint force is 2.5x body weight during walking
+    } else if (implantType === "Knee") {
+      loadFactor = 3.0;
+    } else if (implantType === "Shoulder") {
+      loadFactor = 0.9;
+    } else {
+      loadFactor = 1.5; // Spine
+    }
+    
+    // Activity multiplier
+    let activityMultiplier = 1;
+    if (activityLevel === "Moderate") {
+      activityMultiplier = 1.5;
+    } else if (activityLevel === "High") {
+      activityMultiplier = 2.0;
+    }
+    
+    const estimatedLoad = patientWeight * 9.81 * loadFactor * activityMultiplier; // Newtons
+    const safetyFactor = (yieldStrength * 100) / (estimatedLoad / 100); // Simplified
+    
+    // Safety thresholds
+    const loadStatus = estimatedLoad > 3000 ? "warning" as const : "normal" as const;
+    const safetyStatus = safetyFactor < 2 ? "danger" as const : safetyFactor < 4 ? "warning" as const : "normal" as const;
+    const corrosionStatus = corrosionResistance < 80 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Yield Strength", value: yieldStrength.toString(), unit: "MPa", status: "normal" as const },
+      { parameter: "Elastic Modulus", value: elasticModulus.toString(), unit: "GPa", status: "normal" as const },
+      { parameter: "Density", value: density.toFixed(2), unit: "g/cm³", status: "normal" as const },
+      { parameter: "Corrosion Resistance", value: corrosionResistance.toString(), unit: "%", status: corrosionStatus },
+      { parameter: "Biocompatibility", value: biocompatibility, unit: "", status: "normal" as const },
+      { parameter: "Est. Peak Load", value: estimatedLoad.toFixed(0), unit: "N", status: loadStatus },
+      { parameter: "Safety Factor", value: safetyFactor.toFixed(1), unit: "", status: safetyStatus },
+      { parameter: "Material", value: material, unit: "", status: "normal" as const },
+    ];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -29,10 +112,70 @@ export default function ImplantsPage() {
               <div className="text-teal-200 text-sm">5832 Standard</div>
             </div>
           </div>
+          {/* Print/Export Buttons */}
+          <div className="mt-4">
+            <PrintButton title="Orthopaedic Implants - Learning Notes" />
+          </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Simulation Panel */}
+        <SimulationPanel
+          title="Implant Material Selector"
+          description="Select implant material and patient parameters to analyze suitability"
+          parameters={[
+            { 
+              name: "Material", 
+              key: "material", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Ti-6Al-4V",
+              type: "select",
+              options: [
+                { value: "Ti-6Al-4V", label: "Titanium Alloy (Ti-6Al-4V)" },
+                { value: "316L SS", label: "Stainless Steel (316L)" },
+                { value: "CoCrMo", label: "Cobalt-Chrome (CoCrMo)" },
+                { value: "UHMWPE", label: "Polyethylene (UHMWPE)" },
+              ]
+            },
+            { 
+              name: "Implant Type", 
+              key: "implantType", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Hip",
+              type: "select",
+              options: [
+                { value: "Hip", label: "Hip Replacement" },
+                { value: "Knee", label: "Knee Replacement" },
+                { value: "Shoulder", label: "Shoulder Replacement" },
+                { value: "Spine", label: "Spinal Implant" },
+              ]
+            },
+            { name: "Patient Weight", key: "patientWeight", unit: "kg", min: 40, max: 150, step: 5, default: 70 },
+            { 
+              name: "Activity Level", 
+              key: "activityLevel", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Moderate",
+              type: "select",
+              options: [
+                { value: "Low", label: "Low (Sedentary)" },
+                { value: "Moderate", label: "Moderate (Walking)" },
+                { value: "High", label: "High (Sports)" },
+              ]
+            },
+          ]}
+          simulate={simulateImplant}
+        />
+
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">
@@ -655,6 +798,8 @@ export default function ImplantsPage() {
             Document all actions taken.
           </div>
         </section>
+
+        </div>{/* End printable-content */}
 
         {/* Navigation */}
         <div className="flex justify-between mt-10 pt-6 border-t border-gray-200">

@@ -1,4 +1,51 @@
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
+
 export default function MicrowaveDiathermyPage() {
+  // Microwave Diathermy Simulation Function
+  const simulateMicrowaveDiathermy = (params: Record<string, number | string>) => {
+    const power = params.power as number;
+    const treatmentTime = params.treatmentTime as number;
+    const applicatorDistance = params.applicatorDistance as number;
+    const applicatorType = params.applicatorType as string;
+    
+    // Calculate derived parameters
+    const wavelength = 12.2; // cm at 2450 MHz
+    
+    // Power density at treatment area (inverse square law)
+    const applicatorArea = applicatorType === "Round" ? 113 : 72; // cm²
+    const powerDensity = (power * 10) / (applicatorDistance * applicatorDistance); // mW/cm² at distance
+    
+    // Tissue penetration depth
+    const penetrationDepth = 3 + (power / 100); // cm (approximate)
+    
+    // Energy delivered
+    const energyDelivered = (power * treatmentTime * 60) / 1000; // kJ
+    
+    // Temperature rise estimation
+    const tempRise = (powerDensity * treatmentTime * 0.05); // °C
+    
+    // SAR calculation
+    const sar = powerDensity * 0.8; // W/kg (approximate)
+    
+    // Safety thresholds
+    const powerStatus = power > 150 ? "warning" as const : power > 200 ? "danger" as const : "normal" as const;
+    const distanceStatus = applicatorDistance < 5 ? "danger" as const : applicatorDistance < 10 ? "warning" as const : "normal" as const;
+    const densityStatus = powerDensity > 150 ? "danger" as const : powerDensity > 100 ? "warning" as const : "normal" as const;
+    const sarStatus = sar > 4 ? "danger" as const : sar > 2 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Wavelength", value: wavelength.toFixed(1), unit: "cm", status: "normal" as const },
+      { parameter: "Power Density", value: powerDensity.toFixed(1), unit: "mW/cm²", status: densityStatus },
+      { parameter: "Penetration Depth", value: penetrationDepth.toFixed(1), unit: "cm", status: "normal" as const },
+      { parameter: "Energy Delivered", value: energyDelivered.toFixed(1), unit: "kJ", status: "normal" as const },
+      { parameter: "Est. Tissue Temp Rise", value: tempRise.toFixed(1), unit: "°C", status: "normal" as const },
+      { parameter: "SAR", value: sar.toFixed(2), unit: "W/kg", status: sarStatus },
+      { parameter: "Output Power", value: power.toString(), unit: "W", status: powerStatus },
+      { parameter: "Applicator Distance", value: applicatorDistance.toString(), unit: "cm", status: distanceStatus },
+    ];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -29,10 +76,41 @@ export default function MicrowaveDiathermyPage() {
               <div className="text-orange-200 text-sm">60601-2-6 Standard</div>
             </div>
           </div>
+          {/* Print/Export Buttons */}
+          <div className="mt-4">
+            <PrintButton title="Microwave Diathermy - Learning Notes" />
+          </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Simulation Panel */}
+        <SimulationPanel
+          title="Microwave Diathermy Simulator"
+          description="Configure treatment parameters to analyze power density and tissue heating"
+          parameters={[
+            { name: "Output Power", key: "power", unit: "W", min: 10, max: 200, step: 10, default: 50 },
+            { name: "Treatment Time", key: "treatmentTime", unit: "min", min: 5, max: 30, step: 1, default: 15 },
+            { name: "Applicator Distance", key: "applicatorDistance", unit: "cm", min: 5, max: 20, step: 1, default: 10 },
+            { 
+              name: "Applicator Type", 
+              key: "applicatorType", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Round",
+              type: "select",
+              options: [
+                { value: "Round", label: "Round (12cm dia)" },
+                { value: "Rectangular", label: "Rectangular (12×6cm)" },
+              ]
+            },
+          ]}
+          simulate={simulateMicrowaveDiathermy}
+        />
+
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">
@@ -623,6 +701,7 @@ export default function MicrowaveDiathermyPage() {
             </div>
           </div>
         </section>
+        </div>{/* End printable-content */}
 
         {/* Navigation */}
         <div className="flex justify-between mt-10 pt-6 border-t border-gray-200">

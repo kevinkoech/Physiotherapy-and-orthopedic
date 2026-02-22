@@ -1,6 +1,60 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function HotAirOvenPage() {
+  // Hot Air Oven Simulation Function
+  const simulateHotAirOven = (params: Record<string, number | string>) => {
+    const temperature = params.temperature as number;
+    const sterilizationTime = params.sterilizationTime as number;
+    const chamberVolume = params.chamberVolume as number;
+    const loadMass = params.loadMass as number;
+    
+    // Calculate heating time based on volume and load
+    const baseHeatingTime = chamberVolume * 0.5; // minutes per liter
+    const loadHeatingTime = loadMass * 0.3; // minutes per kg
+    const totalHeatingTime = baseHeatingTime + loadHeatingTime;
+    
+    // Total cycle time
+    const totalCycleTime = totalHeatingTime + sterilizationTime;
+    
+    // Energy consumption estimation
+    const powerRating = chamberVolume * 50; // W per liter (approximate)
+    const energyConsumption = (powerRating / 1000) * (totalCycleTime / 60); // kWh
+    
+    // Sterilization assurance level (SAL)
+    // Higher temp + longer time = better SAL
+    let salLog = 0;
+    if (temperature >= 180 && sterilizationTime >= 30) {
+      salLog = 12; // 10^-12 (overkill)
+    } else if (temperature >= 170 && sterilizationTime >= 60) {
+      salLog = 12;
+    } else if (temperature >= 160 && sterilizationTime >= 120) {
+      salLog = 12;
+    } else if (temperature >= 160 && sterilizationTime >= 60) {
+      salLog = 9; // 10^-9
+    } else {
+      salLog = 6; // 10^-6 (minimum acceptable)
+    }
+    
+    // Safety thresholds
+    const tempStatus = temperature > 180 ? "warning" as const : temperature < 160 ? "danger" as const : "normal" as const;
+    const timeStatus = sterilizationTime < 30 ? "danger" as const : sterilizationTime < 60 ? "warning" as const : "normal" as const;
+    const loadStatus = loadMass > chamberVolume * 0.5 ? "warning" as const : "normal" as const;
+    const salStatus = salLog >= 12 ? "normal" as const : salLog >= 9 ? "warning" as const : "danger" as const;
+    
+    return [
+      { parameter: "Est. Heating Time", value: totalHeatingTime.toFixed(0), unit: "min", status: "normal" as const },
+      { parameter: "Total Cycle Time", value: totalCycleTime.toFixed(0), unit: "min", status: "normal" as const },
+      { parameter: "Est. Energy Used", value: energyConsumption.toFixed(2), unit: "kWh", status: "normal" as const },
+      { parameter: "SAL (Log Reduction)", value: `10^-${salLog}`, unit: "", status: salStatus },
+      { parameter: "Sterilization Temp", value: temperature.toString(), unit: "°C", status: tempStatus },
+      { parameter: "Hold Time", value: sterilizationTime.toString(), unit: "min", status: timeStatus },
+      { parameter: "Chamber Volume", value: chamberVolume.toString(), unit: "L", status: "normal" as const },
+      { parameter: "Load Mass", value: loadMass.toString(), unit: "kg", status: loadStatus },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +73,27 @@ export default function HotAirOvenPage() {
             <span key={t} className="bg-yellow-600 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Hot Air Oven - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="Sterilization Cycle Simulator"
+        description="Calculate sterilization parameters, cycle times, and sterility assurance"
+        parameters={[
+          { name: "Temperature", key: "temperature", unit: "°C", min: 140, max: 200, step: 5, default: 170 },
+          { name: "Sterilization Time", key: "sterilizationTime", unit: "min", min: 15, max: 180, step: 5, default: 60 },
+          { name: "Chamber Volume", key: "chamberVolume", unit: "L", min: 20, max: 200, step: 10, default: 50 },
+          { name: "Load Mass", key: "loadMass", unit: "kg", min: 1, max: 30, step: 1, default: 5 },
+        ]}
+        simulate={simulateHotAirOven}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -593,6 +667,7 @@ export default function HotAirOvenPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

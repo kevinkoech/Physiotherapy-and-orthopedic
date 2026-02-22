@@ -1,4 +1,69 @@
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
+
 export default function OrthopaedicSawPage() {
+  // Orthopaedic Saw Simulation Function
+  const simulateOrthopaedicSaw = (params: Record<string, number | string>) => {
+    const speed = params.speed as number;
+    const bladeType = params.bladeType as string;
+    const cuttingDepth = params.cuttingDepth as number;
+    const powerSource = params.powerSource as string;
+    
+    // Calculate derived parameters
+    // Oscillations/strokes per minute
+    const opm = speed * 100; // Oscillations per minute
+    
+    // Blade characteristics
+    let bladeWidth = 0;
+    let toothPitch = 0;
+    let cuttingEfficiency = 0;
+    
+    if (bladeType === "Oscillating") {
+      bladeWidth = 12; // mm
+      toothPitch = 1.5; // mm
+      cuttingEfficiency = 85; // %
+    } else if (bladeType === "Reciprocating") {
+      bladeWidth = 20; // mm
+      toothPitch = 2.0; // mm
+      cuttingEfficiency = 75; // %
+    } else if (bladeType === "Sagittal") {
+      bladeWidth = 15; // mm
+      toothPitch = 1.0; // mm
+      cuttingEfficiency = 90; // %
+    } else {
+      bladeWidth = 25; // mm (bur)
+      toothPitch = 0; // N/A for bur
+      cuttingEfficiency = 95; // %
+    }
+    
+    // Heat generation estimate
+    const heatGenerated = (speed * cuttingDepth * 0.5); // °C per second of cutting
+    
+    // Cutting time estimate for 5cm bone
+    const cuttingTime = (50 / (speed * cuttingEfficiency / 100)) * 10; // seconds
+    
+    // Power consumption
+    const powerConsumption = powerSource === "Pneumatic" 
+      ? (speed / 100) * 0.5 // Nm torque
+      : (speed / 100) * 30; // Watts
+    
+    // Safety thresholds
+    const speedStatus = speed > 120 ? "danger" as const : speed > 100 ? "warning" as const : "normal" as const;
+    const depthStatus = cuttingDepth > 8 ? "warning" as const : "normal" as const;
+    const heatStatus = heatGenerated > 50 ? "danger" as const : heatGenerated > 35 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Oscillations/Min", value: opm.toString(), unit: "OPM", status: speedStatus },
+      { parameter: "Blade Width", value: bladeWidth.toString(), unit: "mm", status: "normal" as const },
+      { parameter: "Tooth Pitch", value: toothPitch.toFixed(1), unit: "mm", status: "normal" as const },
+      { parameter: "Cutting Efficiency", value: cuttingEfficiency.toString(), unit: "%", status: "normal" as const },
+      { parameter: "Est. Heat Generation", value: heatGenerated.toFixed(1), unit: "°C/sec", status: heatStatus },
+      { parameter: "Cutting Time (5cm)", value: cuttingTime.toFixed(1), unit: "sec", status: "normal" as const },
+      { parameter: "Power/Torque", value: powerConsumption.toFixed(1), unit: powerSource === "Pneumatic" ? "Nm" : "W", status: "normal" as const },
+      { parameter: "Cutting Depth", value: cuttingDepth.toString(), unit: "mm", status: depthStatus },
+    ];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -29,10 +94,55 @@ export default function OrthopaedicSawPage() {
               <div className="text-slate-300 text-sm">60601-2-2 Standard</div>
             </div>
           </div>
+          {/* Print/Export Buttons */}
+          <div className="mt-4">
+            <PrintButton title="Orthopaedic Saw - Learning Notes" />
+          </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Simulation Panel */}
+        <SimulationPanel
+          title="Orthopaedic Saw Simulator"
+          description="Configure saw parameters to analyze cutting performance and heat generation"
+          parameters={[
+            { name: "Speed Setting", key: "speed", unit: "%", min: 20, max: 150, step: 5, default: 80 },
+            { name: "Cutting Depth", key: "cuttingDepth", unit: "mm", min: 1, max: 10, step: 0.5, default: 3 },
+            { 
+              name: "Blade Type", 
+              key: "bladeType", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Oscillating",
+              type: "select",
+              options: [
+                { value: "Oscillating", label: "Oscillating Blade" },
+                { value: "Reciprocating", label: "Reciprocating Blade" },
+                { value: "Sagittal", label: "Sagittal Saw" },
+                { value: "Bur", label: "Bur (Rotary)" },
+              ]
+            },
+            { 
+              name: "Power Source", 
+              key: "powerSource", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Pneumatic",
+              type: "select",
+              options: [
+                { value: "Pneumatic", label: "Pneumatic (Air)" },
+                { value: "Electric", label: "Electric (Battery)" },
+              ]
+            },
+          ]}
+          simulate={simulateOrthopaedicSaw}
+        />
+
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">
@@ -557,6 +667,7 @@ export default function OrthopaedicSawPage() {
             </table>
           </div>
         </section>
+        </div>{/* End printable-content */}
 
         {/* Navigation */}
         <div className="flex justify-between mt-10 pt-6 border-t border-gray-200">

@@ -1,6 +1,58 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function MassageTherapyPage() {
+  // Massage Therapy Simulation Function
+  const simulateMassageTherapy = (params: Record<string, number | string>) => {
+    const speed = params.speed as number;
+    const intensity = params.intensity as number;
+    const treatmentTime = params.treatmentTime as number;
+    const massageType = params.massageType as string;
+    
+    // Calculate derived parameters
+    const strokesPerMinute = speed * 10; // Approximate strokes/cycles per minute
+    const totalStrokes = strokesPerMinute * treatmentTime;
+    
+    // Pressure calculation (approximate force in Newtons)
+    const pressure = intensity * 0.5; // N/cm²
+    
+    // Energy expenditure estimation
+    let energyFactor = 1;
+    if (massageType === "Percussion") energyFactor = 1.5;
+    else if (massageType === "Kneading") energyFactor = 1.2;
+    else if (massageType === "Rolling") energyFactor = 0.8;
+    
+    const energyExpended = (speed * intensity * treatmentTime * energyFactor) / 1000; // kcal estimate
+    
+    // Motor load estimation
+    const motorLoad = (speed / 100) * (intensity / 100) * 100; // % of rated load
+    
+    // Tissue penetration estimate
+    let tissueDepth = 0;
+    if (massageType === "Vibration") tissueDepth = 1 + (intensity / 50);
+    else if (massageType === "Percussion") tissueDepth = 2 + (intensity / 30);
+    else if (massageType === "Kneading") tissueDepth = 3 + (intensity / 25);
+    else tissueDepth = 1.5 + (intensity / 40);
+    
+    // Safety thresholds
+    const speedStatus = speed > 80 ? "warning" as const : "normal" as const;
+    const intensityStatus = intensity > 80 ? "danger" as const : intensity > 60 ? "warning" as const : "normal" as const;
+    const motorStatus = motorLoad > 90 ? "danger" as const : motorLoad > 75 ? "warning" as const : "normal" as const;
+    const timeStatus = treatmentTime > 30 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Strokes/Cycles per Minute", value: strokesPerMinute.toString(), unit: "spm", status: speedStatus },
+      { parameter: "Total Treatment Strokes", value: totalStrokes.toLocaleString(), unit: "strokes", status: "normal" as const },
+      { parameter: "Applied Pressure", value: pressure.toFixed(1), unit: "N/cm²", status: intensityStatus },
+      { parameter: "Est. Tissue Depth", value: tissueDepth.toFixed(1), unit: "cm", status: "normal" as const },
+      { parameter: "Motor Load", value: motorLoad.toFixed(0), unit: "%", status: motorStatus },
+      { parameter: "Est. Energy Expended", value: energyExpended.toFixed(1), unit: "kcal", status: "normal" as const },
+      { parameter: "Massage Type", value: massageType, unit: "", status: "normal" as const },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +71,41 @@ export default function MassageTherapyPage() {
             <span key={t} className="bg-green-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Massage Therapy Machine - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="Massage Therapy Simulator"
+        description="Configure massage parameters to see treatment outcomes and motor load"
+        parameters={[
+          { name: "Speed", key: "speed", unit: "%", min: 10, max: 100, step: 5, default: 50 },
+          { name: "Intensity", key: "intensity", unit: "%", min: 10, max: 100, step: 5, default: 50 },
+          { name: "Treatment Time", key: "treatmentTime", unit: "min", min: 5, max: 45, step: 1, default: 20 },
+          { 
+            name: "Massage Type", 
+            key: "massageType", 
+            unit: "", 
+            min: 0, 
+            max: 0, 
+            default: "Kneading",
+            type: "select",
+            options: [
+              { value: "Vibration", label: "Vibration" },
+              { value: "Percussion", label: "Percussion" },
+              { value: "Kneading", label: "Kneading" },
+              { value: "Rolling", label: "Rolling" },
+            ]
+          },
+        ]}
+        simulate={simulateMassageTherapy}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -499,6 +585,7 @@ export default function MassageTherapyPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

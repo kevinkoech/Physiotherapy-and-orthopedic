@@ -1,6 +1,54 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function MuscleStimulatorPage() {
+  // Muscle Stimulator Simulation Function
+  const simulateMuscleStimulator = (params: Record<string, number | string>) => {
+    const pulseWidth = params.pulseWidth as number;
+    const frequency = params.frequency as number;
+    const current = params.current as number;
+    const treatmentTime = params.treatmentTime as number;
+    const mode = params.mode as string;
+    
+    // Calculate derived parameters
+    const pulseCharge = (pulseWidth * current) / 1000; // μC (microcoulombs)
+    const period = 1000 / frequency; // ms
+    const dutyCycle = (pulseWidth / period) * 100; // %
+    const avgCurrent = current * (dutyCycle / 100); // mA average
+    const totalPulses = frequency * treatmentTime * 60;
+    const energyPerPulse = (current * pulseWidth * 0.001) / 1000; // mJ per pulse (assuming ~100V)
+    const totalEnergy = energyPerPulse * totalPulses; // mJ
+    
+    // Determine muscle contraction type based on frequency
+    let contractionType = "";
+    let contractionStatus: "normal" | "warning" | "danger" = "normal";
+    if (frequency < 10) {
+      contractionType = "Twitch (single contractions)";
+    } else if (frequency < 30) {
+      contractionType = "Unfused tetanus";
+    } else {
+      contractionType = "Fused tetanus (sustained)";
+      contractionStatus = frequency > 80 ? "warning" : "normal";
+    }
+    
+    // Safety thresholds
+    const currentStatus = current > 100 ? "danger" as const : current > 80 ? "warning" as const : "normal" as const;
+    const pulseWidthStatus = pulseWidth > 500 ? "warning" as const : "normal" as const;
+    const chargeStatus = pulseCharge > 50 ? "danger" as const : pulseCharge > 30 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Pulse Charge", value: pulseCharge.toFixed(2), unit: "μC", status: chargeStatus },
+      { parameter: "Period", value: period.toFixed(2), unit: "ms", status: "normal" as const },
+      { parameter: "Duty Cycle", value: dutyCycle.toFixed(2), unit: "%", status: "normal" as const },
+      { parameter: "Average Current", value: avgCurrent.toFixed(2), unit: "mA", status: currentStatus },
+      { parameter: "Total Pulses", value: totalPulses.toLocaleString(), unit: "pulses", status: "normal" as const },
+      { parameter: "Contraction Type", value: contractionType, unit: "", status: contractionStatus },
+      { parameter: "Stimulation Mode", value: mode, unit: "", status: "normal" as const },
+      { parameter: "Peak Current", value: current.toString(), unit: "mA", status: currentStatus },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +67,42 @@ export default function MuscleStimulatorPage() {
             <span key={t} className="bg-purple-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Muscle Stimulator Machine - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="Muscle Stimulation Simulator"
+        description="Configure stimulation parameters to see muscle response and safety indicators"
+        parameters={[
+          { name: "Pulse Width", key: "pulseWidth", unit: "μs", min: 50, max: 500, step: 10, default: 200 },
+          { name: "Frequency", key: "frequency", unit: "Hz", min: 1, max: 100, step: 1, default: 50 },
+          { name: "Current", key: "current", unit: "mA", min: 10, max: 120, step: 5, default: 50 },
+          { name: "Treatment Time", key: "treatmentTime", unit: "min", min: 5, max: 30, step: 1, default: 15 },
+          { 
+            name: "Mode", 
+            key: "mode", 
+            unit: "", 
+            min: 0, 
+            max: 0, 
+            default: "TENS",
+            type: "select",
+            options: [
+              { value: "TENS", label: "TENS (Transcutaneous)" },
+              { value: "NMES", label: "NMES (Neuromuscular)" },
+              { value: "FES", label: "FES (Functional)" },
+              { value: "IFC", label: "IFC (Interferential)" },
+            ]
+          },
+        ]}
+        simulate={simulateMuscleStimulator}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -702,6 +785,7 @@ export default function MuscleStimulatorPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

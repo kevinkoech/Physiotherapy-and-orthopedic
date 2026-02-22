@@ -1,6 +1,52 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function InfraredTherapyPage() {
+  // Infrared Therapy Simulation Function
+  const simulateInfraredTherapy = (params: Record<string, number | string>) => {
+    const lampPower = params.lampPower as number;
+    const distance = params.distance as number;
+    const treatmentTime = params.treatmentTime as number;
+    const emitterType = params.emitterType as string;
+    
+    // Calculate derived parameters
+    // Irradiance follows inverse square law: I = P / (4πr²)
+    const irradiance = (lampPower * 0.7) / (4 * Math.PI * Math.pow(distance / 100, 2)); // mW/cm² at distance
+    const energyDelivered = irradiance * treatmentTime * 60 / 1000; // J/cm²
+    
+    // Penetration depth based on emitter type
+    let penetrationDepth = 0;
+    let wavelength = "";
+    if (emitterType === "Luminous") {
+      penetrationDepth = 2 + (lampPower / 500); // mm
+      wavelength = "0.8-1.5 μm";
+    } else {
+      penetrationDepth = 0.5 + (lampPower / 1000); // mm (FIR penetrates less)
+      wavelength = "2-10 μm";
+    }
+    
+    // Skin temperature rise estimation
+    const tempRise = (irradiance * treatmentTime * 0.1) / 10; // °C
+    
+    // Safety thresholds
+    const irradianceStatus = irradiance > 80 ? "danger" as const : irradiance > 50 ? "warning" as const : "normal" as const;
+    const distanceStatus = distance < 30 ? "danger" as const : distance < 45 ? "warning" as const : "normal" as const;
+    const timeStatus = treatmentTime > 30 ? "warning" as const : "normal" as const;
+    const tempStatus = tempRise > 5 ? "danger" as const : tempRise > 3 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Irradiance at Distance", value: irradiance.toFixed(1), unit: "mW/cm²", status: irradianceStatus },
+      { parameter: "Energy Delivered", value: energyDelivered.toFixed(2), unit: "J/cm²", status: "normal" as const },
+      { parameter: "Est. Penetration Depth", value: penetrationDepth.toFixed(1), unit: "mm", status: "normal" as const },
+      { parameter: "Wavelength Range", value: wavelength, unit: "", status: "normal" as const },
+      { parameter: "Est. Skin Temp Rise", value: tempRise.toFixed(1), unit: "°C", status: tempStatus },
+      { parameter: "Treatment Distance", value: distance.toString(), unit: "cm", status: distanceStatus },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus },
+      { parameter: "Emitter Type", value: emitterType, unit: "", status: "normal" as const },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +65,39 @@ export default function InfraredTherapyPage() {
             <span key={t} className="bg-red-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Infrared Therapy Lamp - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="IR Therapy Simulator"
+        description="Calculate irradiance, energy delivery, and safety thresholds for IR treatment"
+        parameters={[
+          { name: "Lamp Power", key: "lampPower", unit: "W", min: 100, max: 1000, step: 50, default: 500 },
+          { name: "Treatment Distance", key: "distance", unit: "cm", min: 30, max: 120, step: 5, default: 60 },
+          { name: "Treatment Time", key: "treatmentTime", unit: "min", min: 5, max: 30, step: 1, default: 15 },
+          { 
+            name: "Emitter Type", 
+            key: "emitterType", 
+            unit: "", 
+            min: 0, 
+            max: 0, 
+            default: "Non-luminous",
+            type: "select",
+            options: [
+              { value: "Luminous", label: "Luminous (Tungsten)" },
+              { value: "Non-luminous", label: "Non-luminous (Ceramic)" },
+            ]
+          },
+        ]}
+        simulate={simulateInfraredTherapy}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -610,6 +688,7 @@ export default function InfraredTherapyPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

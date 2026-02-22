@@ -1,6 +1,56 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function HydroCollatorPage() {
+  // Hydro-Collator Simulation Function
+  const simulateHydroCollator = (params: Record<string, number | string>) => {
+    const waterTemp = params.waterTemp as number;
+    const packSize = params.packSize as string;
+    const heatingPower = params.heatingPower as number;
+    const waterVolume = params.waterVolume as number;
+    
+    // Calculate heating time based on power and volume
+    // Q = mcΔT, where m = volume (L) ≈ mass (kg), c = 4.186 kJ/kg°C
+    const tempRise = waterTemp - 20; // Assuming starting temp of 20°C
+    const energyRequired = waterVolume * 4.186 * tempRise; // kJ
+    const heatingTime = (energyRequired * 1000) / (heatingPower * 0.9); // seconds (90% efficiency)
+    const heatingTimeMin = heatingTime / 60;
+    
+    // Pack heating time (time to reach therapeutic temp when submerged)
+    let packHeatTime = 0;
+    let packSurfaceTemp = 0;
+    if (packSize === "Small") {
+      packHeatTime = 20 + (75 - waterTemp) * 0.5;
+      packSurfaceTemp = waterTemp - 15;
+    } else if (packSize === "Medium") {
+      packHeatTime = 30 + (75 - waterTemp) * 0.7;
+      packSurfaceTemp = waterTemp - 20;
+    } else {
+      packHeatTime = 45 + (75 - waterTemp) * 1.0;
+      packSurfaceTemp = waterTemp - 25;
+    }
+    
+    // Energy consumption
+    const energyPerHour = heatingPower * (waterTemp > 70 ? 0.3 : 0.8); // kWh (duty cycle)
+    
+    // Safety thresholds
+    const tempStatus = waterTemp > 85 ? "danger" as const : waterTemp > 80 ? "warning" as const : "normal" as const;
+    const packTempStatus = packSurfaceTemp > 55 ? "danger" as const : packSurfaceTemp > 50 ? "warning" as const : "normal" as const;
+    const powerStatus = heatingPower > 2000 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Initial Heating Time", value: heatingTimeMin.toFixed(1), unit: "min", status: "normal" as const },
+      { parameter: "Pack Heating Time", value: packHeatTime.toFixed(0), unit: "min", status: "normal" as const },
+      { parameter: "Pack Surface Temp", value: packSurfaceTemp.toFixed(0), unit: "°C", status: packTempStatus },
+      { parameter: "Energy Consumption", value: energyPerHour.toFixed(2), unit: "kWh", status: "normal" as const },
+      { parameter: "Water Temperature", value: waterTemp.toString(), unit: "°C", status: tempStatus },
+      { parameter: "Pack Size", value: packSize, unit: "", status: "normal" as const },
+      { parameter: "Heater Power", value: heatingPower.toString(), unit: "W", status: powerStatus },
+      { parameter: "Water Volume", value: waterVolume.toString(), unit: "L", status: "normal" as const },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +69,40 @@ export default function HydroCollatorPage() {
             <span key={t} className="bg-cyan-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Hydro-Collator Unit - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="Hydro-Collator Simulator"
+        description="Calculate heating times, energy consumption, and pack temperatures"
+        parameters={[
+          { name: "Water Temperature", key: "waterTemp", unit: "°C", min: 60, max: 90, step: 1, default: 75 },
+          { name: "Heater Power", key: "heatingPower", unit: "W", min: 500, max: 2500, step: 100, default: 1500 },
+          { name: "Water Volume", key: "waterVolume", unit: "L", min: 10, max: 50, step: 5, default: 25 },
+          { 
+            name: "Pack Size", 
+            key: "packSize", 
+            unit: "", 
+            min: 0, 
+            max: 0, 
+            default: "Medium",
+            type: "select",
+            options: [
+              { value: "Small", label: "Small (20×30 cm)" },
+              { value: "Medium", label: "Medium (25×35 cm)" },
+              { value: "Large", label: "Large (30×45 cm)" },
+            ]
+          },
+        ]}
+        simulate={simulateHydroCollator}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -587,6 +670,7 @@ export default function HydroCollatorPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">

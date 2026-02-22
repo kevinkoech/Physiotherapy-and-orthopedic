@@ -1,4 +1,70 @@
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
+
 export default function ElectrosurgicalUnitPage() {
+  // ESU Simulation Function
+  const simulateESU = (params: Record<string, number | string>) => {
+    const power = params.power as number;
+    const mode = params.mode as string;
+    const activationTime = params.activationTime as number;
+    const electrodeType = params.electrodeType as string;
+    
+    // Calculate derived parameters
+    // Current density at electrode tip (A/mm²)
+    let tipArea = electrodeType === "Needle" ? 0.5 : electrodeType === "Blade" ? 2 : 5; // mm²
+    const voltage = Math.sqrt(power * 500); // Approximate RMS voltage (assuming 500Ω load)
+    const current = power / voltage * 1000; // mA
+    
+    // Current density
+    const currentDensity = current / tipArea;
+    
+    // Thermal effect based on mode
+    let thermalEffect = "";
+    let tissueEffect = "";
+    let dutyCycle = 0;
+    
+    if (mode === "Cut") {
+      thermalEffect = "Vaporization";
+      tissueEffect = "Cell explosion → cutting";
+      dutyCycle = 100;
+    } else if (mode === "Coag") {
+      thermalEffect = "Desiccation";
+      tissueEffect = "Cell drying → coagulation";
+      dutyCycle = 6;
+    } else if (mode === "Blend1") {
+      thermalEffect = "Cut + mild coag";
+      tissueEffect = "Cutting with hemostasis";
+      dutyCycle = 50;
+    } else if (mode === "Blend2") {
+      thermalEffect = "Cut + moderate coag";
+      tissueEffect = "Cutting with more hemostasis";
+      dutyCycle = 35;
+    } else {
+      thermalEffect = "Cut + high coag";
+      tissueEffect = "Cutting with maximum hemostasis";
+      dutyCycle = 20;
+    }
+    
+    // Energy delivered
+    const energyPerActivation = (power * activationTime) / 1000; // Joules
+    
+    // Safety thresholds
+    const powerStatus = power > 300 ? "danger" as const : power > 200 ? "warning" as const : "normal" as const;
+    const densityStatus = currentDensity > 500 ? "danger" as const : currentDensity > 300 ? "warning" as const : "normal" as const;
+    const timeStatus = activationTime > 10 ? "warning" as const : "normal" as const;
+    
+    return [
+      { parameter: "Output Voltage", value: voltage.toFixed(0), unit: "V RMS", status: "normal" as const },
+      { parameter: "Output Current", value: current.toFixed(0), unit: "mA", status: "normal" as const },
+      { parameter: "Current Density", value: currentDensity.toFixed(0), unit: "mA/mm²", status: densityStatus },
+      { parameter: "Duty Cycle", value: dutyCycle.toString(), unit: "%", status: "normal" as const },
+      { parameter: "Thermal Effect", value: thermalEffect, unit: "", status: "normal" as const },
+      { parameter: "Energy per Activation", value: energyPerActivation.toFixed(1), unit: "J", status: "normal" as const },
+      { parameter: "Set Power", value: power.toString(), unit: "W", status: powerStatus },
+      { parameter: "Activation Time", value: activationTime.toString(), unit: "sec", status: timeStatus },
+    ];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -29,10 +95,57 @@ export default function ElectrosurgicalUnitPage() {
               <div className="text-red-200 text-sm">Applied Part Type</div>
             </div>
           </div>
+          {/* Print/Export Buttons */}
+          <div className="mt-4">
+            <PrintButton title="Electrosurgical Unit - Learning Notes" />
+          </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Simulation Panel */}
+        <SimulationPanel
+          title="ESU Output Simulator"
+          description="Configure ESU parameters to analyze output characteristics and tissue effects"
+          parameters={[
+            { name: "Power Setting", key: "power", unit: "W", min: 10, max: 400, step: 10, default: 50 },
+            { name: "Activation Time", key: "activationTime", unit: "sec", min: 1, max: 15, step: 1, default: 3 },
+            { 
+              name: "Mode", 
+              key: "mode", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Cut",
+              type: "select",
+              options: [
+                { value: "Cut", label: "Cut (Pure Sine)" },
+                { value: "Coag", label: "Coagulate (Damped)" },
+                { value: "Blend1", label: "Blend 1 (75% Cut)" },
+                { value: "Blend2", label: "Blend 2 (50% Cut)" },
+                { value: "Blend3", label: "Blend 3 (25% Cut)" },
+              ]
+            },
+            { 
+              name: "Electrode Type", 
+              key: "electrodeType", 
+              unit: "", 
+              min: 0, 
+              max: 0, 
+              default: "Needle",
+              type: "select",
+              options: [
+                { value: "Needle", label: "Needle Electrode" },
+                { value: "Blade", label: "Blade Electrode" },
+                { value: "Ball", label: "Ball Electrode" },
+              ]
+            },
+          ]}
+          simulate={simulateESU}
+        />
+
+        {/* Printable Content Wrapper */}
+        <div id="printable-content">
 
         {/* Introduction */}
         <section className="mb-10">
@@ -686,6 +799,7 @@ export default function ElectrosurgicalUnitPage() {
             </div>
           </div>
         </section>
+        </div>{/* End printable-content */}
 
         {/* Navigation */}
         <div className="flex justify-between mt-10 pt-6 border-t border-gray-200">

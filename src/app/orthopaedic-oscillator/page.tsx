@@ -1,6 +1,63 @@
 import Link from "next/link";
+import { PrintButton } from "@/components/PrintButton";
+import { SimulationPanel } from "@/components/SimulationPanel";
 
 export default function OrthopaedicOscillatorPage() {
+  // Orthopaedic Oscillator (PEMF) Simulation Function
+  const simulateOrthopaedicOscillator = (params: Record<string, number | string>) => {
+    const frequency = params.frequency as number;
+    const fieldStrength = params.fieldStrength as number;
+    const treatmentTime = params.treatmentTime as number;
+    const coilType = params.coilType as string;
+    
+    // Calculate derived parameters
+    const pulsePeriod = 1000 / frequency; // ms
+    const pulsesPerSession = frequency * treatmentTime * 60;
+    
+    // Energy calculation (simplified)
+    // E = 0.5 * L * I², where I is related to field strength
+    const energyPerPulse = (fieldStrength * fieldStrength * 0.001); // μJ (simplified)
+    const totalEnergy = energyPerPulse * pulsesPerSession / 1000; // mJ
+    
+    // Bone healing stimulation factor (relative)
+    // Optimal is around 15-50 Hz and 1-5 mT
+    let healingFactor = 0;
+    if (frequency >= 10 && frequency <= 50 && fieldStrength >= 1 && fieldStrength <= 5) {
+      healingFactor = 100;
+    } else if (frequency >= 5 && frequency <= 75 && fieldStrength >= 0.5 && fieldStrength <= 8) {
+      healingFactor = 80;
+    } else {
+      healingFactor = 50;
+    }
+    
+    // Coil coverage area
+    let coverageArea = 0;
+    if (coilType === "Helmholtz") {
+      coverageArea = 200; // cm²
+    } else if (coilType === "Solenoid") {
+      coverageArea = 150; // cm²
+    } else {
+      coverageArea = 100; // cm² (local)
+    }
+    
+    // Safety thresholds
+    const frequencyStatus = frequency > 100 ? "warning" as const : "normal" as const;
+    const fieldStatus = fieldStrength > 10 ? "danger" as const : fieldStrength > 8 ? "warning" as const : "normal" as const;
+    const timeStatus = treatmentTime > 12 ? "warning" as const : "normal" as const;
+    const healingStatus = healingFactor >= 80 ? "normal" as const : healingFactor >= 60 ? "warning" as const : "danger" as const;
+    
+    return [
+      { parameter: "Pulse Period", value: pulsePeriod.toFixed(1), unit: "ms", status: "normal" as const },
+      { parameter: "Total Pulses", value: pulsesPerSession.toLocaleString(), unit: "pulses", status: "normal" as const },
+      { parameter: "Est. Energy Delivered", value: totalEnergy.toFixed(2), unit: "mJ", status: "normal" as const },
+      { parameter: "Healing Factor", value: healingFactor.toString(), unit: "%", status: healingStatus },
+      { parameter: "Coverage Area", value: coverageArea.toString(), unit: "cm²", status: "normal" as const },
+      { parameter: "Frequency", value: frequency.toString(), unit: "Hz", status: frequencyStatus },
+      { parameter: "Field Strength", value: fieldStrength.toString(), unit: "mT", status: fieldStatus },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "hrs", status: timeStatus },
+    ];
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Breadcrumb */}
@@ -19,7 +76,40 @@ export default function OrthopaedicOscillatorPage() {
             <span key={t} className="bg-orange-700 px-2 py-1 rounded-full">{t}</span>
           ))}
         </div>
+        {/* Print/Export Buttons */}
+        <div className="mt-4">
+          <PrintButton title="Orthopaedic Oscillator - Learning Notes" />
+        </div>
       </div>
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        title="PEMF Bone Healing Simulator"
+        description="Configure PEMF parameters to optimize bone healing stimulation"
+        parameters={[
+          { name: "Frequency", key: "frequency", unit: "Hz", min: 1, max: 100, step: 1, default: 15 },
+          { name: "Field Strength", key: "fieldStrength", unit: "mT", min: 0.1, max: 15, step: 0.1, default: 2 },
+          { name: "Treatment Time", key: "treatmentTime", unit: "hrs", min: 1, max: 12, step: 1, default: 3 },
+          { 
+            name: "Coil Type", 
+            key: "coilType", 
+            unit: "", 
+            min: 0, 
+            max: 0, 
+            default: "Helmholtz",
+            type: "select",
+            options: [
+              { value: "Helmholtz", label: "Helmholtz (Dual Coil)" },
+              { value: "Solenoid", label: "Solenoid (Single Coil)" },
+              { value: "Local", label: "Local (Small Pad)" },
+            ]
+          },
+        ]}
+        simulate={simulateOrthopaedicOscillator}
+      />
+
+      {/* Printable Content Wrapper */}
+      <div id="printable-content">
 
       {/* Introduction */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -476,6 +566,7 @@ export default function OrthopaedicOscillatorPage() {
           ))}
         </div>
       </div>
+      </div>{/* End printable-content */}
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">
