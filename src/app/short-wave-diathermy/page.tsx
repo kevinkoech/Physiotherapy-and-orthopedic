@@ -26,14 +26,14 @@ export default function ShortWaveDiathermyPage() {
     const timeStatus = treatmentTime > 30 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Wavelength", value: wavelength.toFixed(2), unit: "m", status: "normal" as const },
-      { parameter: "Penetration Depth", value: penetrationDepth.toFixed(1), unit: "cm", status: "normal" as const },
-      { parameter: "Energy Delivered", value: energyDelivered.toFixed(1), unit: "kJ", status: "normal" as const },
-      { parameter: "Est. Tissue Temp Rise", value: tissueTempRise.toFixed(1), unit: "°C", status: tempStatus },
-      { parameter: "SAR (Specific Absorption Rate)", value: sar.toFixed(2), unit: "W/kg", status: sarStatus },
-      { parameter: "Output Power", value: power.toString(), unit: "W", status: powerStatus },
-      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus },
-      { parameter: "Electrode Gap", value: electrodeGap.toString(), unit: "cm", status: "normal" as const },
+      { parameter: "Wavelength", value: wavelength.toFixed(2), unit: "m", status: "normal" as const, numericValue: wavelength, min: 7, max: 25 },
+      { parameter: "Penetration Depth", value: penetrationDepth.toFixed(1), unit: "cm", status: "normal" as const, numericValue: penetrationDepth, min: 3, max: 10 },
+      { parameter: "Energy Delivered", value: energyDelivered.toFixed(1), unit: "kJ", status: "normal" as const, numericValue: energyDelivered, min: 0, max: 500 },
+      { parameter: "Est. Tissue Temp Rise", value: tissueTempRise.toFixed(1), unit: "°C", status: tempStatus, numericValue: tissueTempRise, min: 0, max: 10 },
+      { parameter: "SAR (Specific Absorption Rate)", value: sar.toFixed(2), unit: "W/kg", status: sarStatus, numericValue: sar, min: 0, max: 8 },
+      { parameter: "Output Power", value: power.toString(), unit: "W", status: powerStatus, numericValue: power, min: 10, max: 500 },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus, numericValue: treatmentTime, min: 5, max: 30 },
+      { parameter: "Electrode Gap", value: electrodeGap.toString(), unit: "cm", status: "normal" as const, numericValue: electrodeGap, min: 1, max: 5 },
     ];
   };
 

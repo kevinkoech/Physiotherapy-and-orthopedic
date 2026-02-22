@@ -38,14 +38,14 @@ export default function MicrowaveDiathermyPage() {
     const sarStatus = sar > 4 ? "danger" as const : sar > 2 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Wavelength", value: wavelength.toFixed(1), unit: "cm", status: "normal" as const },
-      { parameter: "Power Density", value: powerDensity.toFixed(1), unit: "mW/cm²", status: densityStatus },
-      { parameter: "Penetration Depth", value: penetrationDepth.toFixed(1), unit: "cm", status: "normal" as const },
-      { parameter: "Energy Delivered", value: energyDelivered.toFixed(1), unit: "kJ", status: "normal" as const },
-      { parameter: "Est. Tissue Temp Rise", value: tempRise.toFixed(1), unit: "°C", status: "normal" as const },
-      { parameter: "SAR", value: sar.toFixed(2), unit: "W/kg", status: sarStatus },
-      { parameter: "Output Power", value: power.toString(), unit: "W", status: powerStatus },
-      { parameter: "Applicator Distance", value: applicatorDistance.toString(), unit: "cm", status: distanceStatus },
+      { parameter: "Wavelength", value: wavelength.toFixed(1), unit: "cm", status: "normal" as const, numericValue: wavelength, min: 1, max: 50 },
+      { parameter: "Power Density", value: powerDensity.toFixed(1), unit: "mW/cm²", status: densityStatus, numericValue: powerDensity, min: 0, max: 500 },
+      { parameter: "Penetration Depth", value: penetrationDepth.toFixed(1), unit: "cm", status: "normal" as const, numericValue: penetrationDepth, min: 1, max: 5 },
+      { parameter: "Energy Delivered", value: energyDelivered.toFixed(1), unit: "kJ", status: "normal" as const, numericValue: energyDelivered, min: 0, max: 200 },
+      { parameter: "Est. Tissue Temp Rise", value: tempRise.toFixed(1), unit: "°C", status: "normal" as const, numericValue: tempRise, min: 0, max: 10 },
+      { parameter: "SAR", value: sar.toFixed(2), unit: "W/kg", status: sarStatus, numericValue: sar, min: 0, max: 10 },
+      { parameter: "Output Power", value: power.toString(), unit: "W", status: powerStatus, numericValue: power, min: 10, max: 250 },
+      { parameter: "Applicator Distance", value: applicatorDistance.toString(), unit: "cm", status: distanceStatus, numericValue: applicatorDistance, min: 1, max: 20 },
     ];
   };
 

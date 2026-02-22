@@ -56,14 +56,14 @@ export default function OrthopaedicSawPage() {
     const heatStatus = heatGenerated > 50 ? "danger" as const : heatGenerated > 35 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Oscillations/Min", value: opm.toString(), unit: "OPM", status: speedStatus },
-      { parameter: "Blade Width", value: bladeWidth.toString(), unit: "mm", status: "normal" as const },
-      { parameter: "Tooth Pitch", value: toothPitch.toFixed(1), unit: "mm", status: "normal" as const },
-      { parameter: "Cutting Efficiency", value: cuttingEfficiency.toString(), unit: "%", status: "normal" as const },
-      { parameter: "Est. Heat Generation", value: heatGenerated.toFixed(1), unit: "°C/sec", status: heatStatus },
-      { parameter: "Cutting Time (5cm)", value: cuttingTime.toFixed(1), unit: "sec", status: "normal" as const },
-      { parameter: "Power/Torque", value: powerConsumption.toFixed(1), unit: powerSource === "Pneumatic" ? "Nm" : "W", status: "normal" as const },
-      { parameter: "Cutting Depth", value: cuttingDepth.toString(), unit: "mm", status: depthStatus },
+      { parameter: "Oscillations/Min", value: opm.toString(), unit: "OPM", status: speedStatus, numericValue: opm, min: 5000, max: 20000 },
+      { parameter: "Blade Width", value: bladeWidth.toString(), unit: "mm", status: "normal" as const, numericValue: bladeWidth, min: 5, max: 30 },
+      { parameter: "Tooth Pitch", value: toothPitch.toFixed(1), unit: "mm", status: "normal" as const, numericValue: toothPitch, min: 0.5, max: 3 },
+      { parameter: "Cutting Efficiency", value: cuttingEfficiency.toString(), unit: "%", status: "normal" as const, numericValue: cuttingEfficiency, min: 0, max: 100 },
+      { parameter: "Est. Heat Generation", value: heatGenerated.toFixed(1), unit: "°C/sec", status: heatStatus, numericValue: heatGenerated, min: 0, max: 5 },
+      { parameter: "Cutting Time (5cm)", value: cuttingTime.toFixed(1), unit: "sec", status: "normal" as const, numericValue: cuttingTime, min: 5, max: 60 },
+      { parameter: "Power/Torque", value: powerConsumption.toFixed(1), unit: powerSource === "Pneumatic" ? "Nm" : "W", status: "normal" as const, numericValue: powerConsumption, min: 0, max: 500 },
+      { parameter: "Cutting Depth", value: cuttingDepth.toString(), unit: "mm", status: depthStatus, numericValue: cuttingDepth, min: 5, max: 100 },
     ];
   };
 

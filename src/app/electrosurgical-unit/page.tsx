@@ -57,14 +57,14 @@ export default function ElectrosurgicalUnitPage() {
     const timeStatus = activationTime > 10 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Output Voltage", value: voltage.toFixed(0), unit: "V RMS", status: "normal" as const },
-      { parameter: "Output Current", value: current.toFixed(0), unit: "mA", status: "normal" as const },
-      { parameter: "Current Density", value: currentDensity.toFixed(0), unit: "mA/mm²", status: densityStatus },
-      { parameter: "Duty Cycle", value: dutyCycle.toString(), unit: "%", status: "normal" as const },
+      { parameter: "Output Voltage", value: voltage.toFixed(0), unit: "V RMS", status: "normal" as const, numericValue: voltage, min: 0, max: 5000 },
+      { parameter: "Output Current", value: current.toFixed(0), unit: "mA", status: "normal" as const, numericValue: current, min: 0, max: 1000 },
+      { parameter: "Current Density", value: currentDensity.toFixed(0), unit: "mA/mm²", status: densityStatus, numericValue: currentDensity, min: 0, max: 50 },
+      { parameter: "Duty Cycle", value: dutyCycle.toString(), unit: "%", status: "normal" as const, numericValue: dutyCycle, min: 0, max: 100 },
       { parameter: "Thermal Effect", value: thermalEffect, unit: "", status: "normal" as const },
-      { parameter: "Energy per Activation", value: energyPerActivation.toFixed(1), unit: "J", status: "normal" as const },
-      { parameter: "Set Power", value: power.toString(), unit: "W", status: powerStatus },
-      { parameter: "Activation Time", value: activationTime.toString(), unit: "sec", status: timeStatus },
+      { parameter: "Energy per Activation", value: energyPerActivation.toFixed(1), unit: "J", status: "normal" as const, numericValue: energyPerActivation, min: 0, max: 500 },
+      { parameter: "Set Power", value: power.toString(), unit: "W", status: powerStatus, numericValue: power, min: 10, max: 400 },
+      { parameter: "Activation Time", value: activationTime.toString(), unit: "sec", status: timeStatus, numericValue: activationTime, min: 1, max: 30 },
     ];
   };
 

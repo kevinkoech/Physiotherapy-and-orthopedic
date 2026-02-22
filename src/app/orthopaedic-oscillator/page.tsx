@@ -49,14 +49,14 @@ export default function OrthopaedicOscillatorPage() {
     const healingStatus = healingFactor >= 80 ? "normal" as const : healingFactor >= 60 ? "warning" as const : "danger" as const;
     
     return [
-      { parameter: "Pulse Period", value: pulsePeriod.toFixed(1), unit: "ms", status: "normal" as const },
-      { parameter: "Total Pulses", value: pulsesPerSession.toLocaleString(), unit: "pulses", status: "normal" as const },
-      { parameter: "Est. Energy Delivered", value: totalEnergy.toFixed(2), unit: "mJ", status: "normal" as const },
-      { parameter: "Healing Factor", value: healingFactor.toString(), unit: "%", status: healingStatus },
-      { parameter: "Coverage Area", value: coverageArea.toString(), unit: "cm²", status: "normal" as const },
-      { parameter: "Frequency", value: frequency.toString(), unit: "Hz", status: frequencyStatus },
-      { parameter: "Field Strength", value: fieldStrength.toString(), unit: "mT", status: fieldStatus },
-      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "hrs", status: timeStatus },
+      { parameter: "Pulse Period", value: pulsePeriod.toFixed(1), unit: "ms", status: "normal" as const, numericValue: pulsePeriod, min: 0, max: 100 },
+      { parameter: "Total Pulses", value: pulsesPerSession.toLocaleString(), unit: "pulses", status: "normal" as const, numericValue: pulsesPerSession, min: 0, max: 500000 },
+      { parameter: "Est. Energy Delivered", value: totalEnergy.toFixed(2), unit: "mJ", status: "normal" as const, numericValue: totalEnergy, min: 0, max: 100 },
+      { parameter: "Healing Factor", value: healingFactor.toString(), unit: "%", status: healingStatus, numericValue: healingFactor, min: 0, max: 100 },
+      { parameter: "Coverage Area", value: coverageArea.toString(), unit: "cm²", status: "normal" as const, numericValue: coverageArea, min: 50, max: 400 },
+      { parameter: "Frequency", value: frequency.toString(), unit: "Hz", status: frequencyStatus, numericValue: frequency, min: 1, max: 100 },
+      { parameter: "Field Strength", value: fieldStrength.toString(), unit: "mT", status: fieldStatus, numericValue: fieldStrength, min: 0, max: 30 },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "hrs", status: timeStatus, numericValue: treatmentTime, min: 1, max: 10 },
     ];
   };
 

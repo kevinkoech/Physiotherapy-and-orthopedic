@@ -40,14 +40,14 @@ export default function MuscleStimulatorPage() {
     const chargeStatus = pulseCharge > 50 ? "danger" as const : pulseCharge > 30 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Pulse Charge", value: pulseCharge.toFixed(2), unit: "μC", status: chargeStatus },
-      { parameter: "Period", value: period.toFixed(2), unit: "ms", status: "normal" as const },
-      { parameter: "Duty Cycle", value: dutyCycle.toFixed(2), unit: "%", status: "normal" as const },
-      { parameter: "Average Current", value: avgCurrent.toFixed(2), unit: "mA", status: currentStatus },
-      { parameter: "Total Pulses", value: totalPulses.toLocaleString(), unit: "pulses", status: "normal" as const },
+      { parameter: "Pulse Charge", value: pulseCharge.toFixed(2), unit: "μC", status: chargeStatus, numericValue: pulseCharge, min: 0, max: 60 },
+      { parameter: "Period", value: period.toFixed(2), unit: "ms", status: "normal" as const, numericValue: period, min: 1, max: 100 },
+      { parameter: "Duty Cycle", value: dutyCycle.toFixed(2), unit: "%", status: "normal" as const, numericValue: dutyCycle, min: 0, max: 50 },
+      { parameter: "Average Current", value: avgCurrent.toFixed(2), unit: "mA", status: currentStatus, numericValue: avgCurrent, min: 0, max: 100 },
+      { parameter: "Total Pulses", value: totalPulses.toLocaleString(), unit: "pulses", status: "normal" as const, numericValue: totalPulses, min: 0, max: 500000 },
       { parameter: "Contraction Type", value: contractionType, unit: "", status: contractionStatus },
       { parameter: "Stimulation Mode", value: mode, unit: "", status: "normal" as const },
-      { parameter: "Peak Current", value: current.toString(), unit: "mA", status: currentStatus },
+      { parameter: "Peak Current", value: current.toString(), unit: "mA", status: currentStatus, numericValue: current, min: 0, max: 150 },
     ];
   };
 

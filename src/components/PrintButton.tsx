@@ -26,6 +26,161 @@ export function PrintButton({ title }: PrintButtonProps) {
       return;
     }
 
+    // Clone content to process simulation panels
+    const clonedContent = content.cloneNode(true) as HTMLElement;
+    
+    // Process simulation panels to capture their results
+    const simulationPanels = clonedContent.querySelectorAll('.simulation-panel');
+    let simulationSectionsHTML = '';
+    
+    simulationPanels.forEach((panel, index) => {
+      const panelElement = panel as HTMLElement;
+      const simTitle = panelElement.getAttribute('data-simulation-title') || `Simulation ${index + 1}`;
+      const resultsData = panelElement.getAttribute('data-simulation-results');
+      const paramsData = panelElement.getAttribute('data-simulation-params');
+      
+      if (resultsData) {
+        try {
+          const results = JSON.parse(resultsData);
+          const params = paramsData ? JSON.parse(paramsData) : {};
+          
+          // Generate chart SVGs for print
+          const numericResults = results.filter((r: any) => r.numericValue !== undefined);
+          const maxValue = Math.max(...numericResults.map((r: any) => r.numericValue || 0));
+          const chartHeight = 200;
+          const barWidth = 60;
+          const gap = 20;
+          const chartWidth = numericResults.length * (barWidth + gap) + 40;
+          
+          // Generate bar chart SVG
+          let barChartSVG = '';
+          if (numericResults.length > 0) {
+            barChartSVG = `
+              <svg width="${chartWidth}" height="${chartHeight + 60}" viewBox="0 0 ${chartWidth} ${chartHeight + 60}">
+                <line x1="30" y1="10" x2="30" y2="${chartHeight + 10}" stroke="#374151" stroke-width="2" />
+                <line x1="30" y1="${chartHeight + 10}" x2="${chartWidth - 10}" y2="${chartHeight + 10}" stroke="#374151" stroke-width="2" />
+                ${[0, 25, 50, 75, 100].map((percent) => `
+                  <line x1="30" y1="${chartHeight + 10 - (percent / 100) * chartHeight}" x2="${chartWidth - 10}" y2="${chartHeight + 10 - (percent / 100) * chartHeight}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4" />
+                  <text x="25" y="${chartHeight + 14 - (percent / 100) * chartHeight}" text-anchor="end" font-size="10" fill="#6b7280">${Math.round(maxValue * percent / 100)}</text>
+                `).join('')}
+                ${numericResults.map((result: any, idx: number) => {
+                  const barHeight = ((result.numericValue || 0) / maxValue) * chartHeight;
+                  const x = 40 + idx * (barWidth + gap);
+                  const y = chartHeight + 10 - barHeight;
+                  let color = "#10b981";
+                  if (result.status === "warning") color = "#f59e0b";
+                  if (result.status === "danger") color = "#ef4444";
+                  return `
+                    <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${color}" rx="4" />
+                    <text x="${x + barWidth / 2}" y="${y - 5}" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">${result.value}</text>
+                    <text x="${x + barWidth / 2}" y="${chartHeight + 25}" text-anchor="middle" font-size="9" fill="#6b7280">${result.parameter.length > 10 ? result.parameter.substring(0, 10) + "..." : result.parameter}</text>
+                    <text x="${x + barWidth / 2}" y="${chartHeight + 38}" text-anchor="middle" font-size="8" fill="#9ca3af">(${result.unit})</text>
+                  `;
+                }).join('')}
+              </svg>
+            `;
+          }
+          
+          // Generate gauges SVG
+          let gaugesSVG = '';
+          const gaugeResults = results.filter((r: any) => r.numericValue !== undefined && r.min !== undefined && r.max !== undefined);
+          if (gaugeResults.length > 0) {
+            gaugesSVG = gaugeResults.map((result: any) => {
+              const percentage = Math.min(100, Math.max(0, ((result.numericValue - result.min) / (result.max - result.min)) * 100));
+              const angle = (percentage / 100) * 180 - 90;
+              const centerX = 100;
+              const centerY = 90;
+              const radius = 70;
+              const needleLength = 55;
+              const needleX = centerX + needleLength * Math.cos((angle * Math.PI) / 180);
+              const needleY = centerY + needleLength * Math.sin((angle * Math.PI) / 180);
+              let color = "#10b981";
+              if (result.status === "warning") color = "#f59e0b";
+              if (result.status === "danger") color = "#ef4444";
+              
+              return `
+                <svg width="200" height="130" viewBox="0 0 200 130" style="margin: 10px;">
+                  <path d="M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}" fill="none" stroke="#e5e7eb" stroke-width="12" stroke-linecap="round" />
+                  <path d="M 30 ${centerY} A ${radius} ${radius} 0 0 1 ${centerX - 30} ${centerY - radius + 10}" fill="none" stroke="#10b981" stroke-width="12" stroke-linecap="round" />
+                  <path d="M ${centerX - 30} ${centerY - radius + 10} A ${radius} ${radius} 0 0 1 ${centerX + 30} ${centerY - radius + 10}" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round" />
+                  <path d="M ${centerX + 30} ${centerY - radius + 10} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round" />
+                  <line x1="${centerX}" y1="${centerY}" x2="${needleX}" y2="${needleY}" stroke="${color}" stroke-width="3" stroke-linecap="round" />
+                  <circle cx="${centerX}" cy="${centerY}" r="8" fill="${color}" />
+                  <text x="${centerX}" y="${centerY + 35}" text-anchor="middle" font-size="16" font-weight="bold" fill="#374151">${result.value} ${result.unit}</text>
+                  <text x="25" y="${centerY + 15}" text-anchor="middle" font-size="10" fill="#6b7280">${result.min}</text>
+                  <text x="175" y="${centerY + 15}" text-anchor="middle" font-size="10" fill="#6b7280">${result.max}</text>
+                  <text x="${centerX}" y="${centerY + 52}" text-anchor="middle" font-size="11" fill="#6b7280">${result.parameter}</text>
+                </svg>
+              `;
+            }).join('');
+          }
+          
+          simulationSectionsHTML += `
+            <div class="simulation-section" style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+              <h2 style="color: #1e40af; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #dbeafe; padding-bottom: 8px;">
+                📊 ${simTitle} - Simulation Results
+              </h2>
+              
+              <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Input Parameters</h3>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                <tr style="background: #f3f4f6;">
+                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Parameter</th>
+                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Value</th>
+                </tr>
+                ${Object.entries(params).map(([key, value]) => `
+                  <tr>
+                    <td style="border: 1px solid #d1d5db; padding: 8px;">${key}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; font-weight: bold;">${value}</td>
+                  </tr>
+                `).join('')}
+              </table>
+              
+              <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Results</h3>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                <tr style="background: #f3f4f6;">
+                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Parameter</th>
+                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Value</th>
+                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Unit</th>
+                  <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Status</th>
+                </tr>
+                ${results.map((r: any) => `
+                  <tr>
+                    <td style="border: 1px solid #d1d5db; padding: 8px;">${r.parameter}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; font-weight: bold;">${r.value}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px;">${r.unit}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; color: ${r.status === 'normal' ? '#059669' : r.status === 'warning' ? '#d97706' : '#dc2626'}; font-weight: bold;">${r.status.toUpperCase()}</td>
+                  </tr>
+                `).join('')}
+              </table>
+              
+              ${barChartSVG ? `
+                <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Results Visualization - Bar Chart</h3>
+                <div style="background: white; padding: 15px; border-radius: 8px; text-align: center; overflow-x: auto;">
+                  ${barChartSVG}
+                </div>
+              ` : ''}
+              
+              ${gaugesSVG ? `
+                <h3 style="color: #374151; font-size: 14px; margin: 15px 0 10px;">Results Visualization - Gauges</h3>
+                <div style="background: white; padding: 15px; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                  ${gaugesSVG}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        } catch (e) {
+          console.error('Error parsing simulation data:', e);
+        }
+      }
+    });
+
+    // Process inline charts from simulation-results divs
+    const chartContainers = clonedContent.querySelectorAll('.simulation-results');
+    chartContainers.forEach((container) => {
+      // Make sure charts are visible
+      (container as HTMLElement).style.display = 'block';
+    });
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -147,10 +302,33 @@ export function PrintButton({ title }: PrintButtonProps) {
               font-weight: 500;
             }
             .simulation-panel {
-              display: none;
+              background: linear-gradient(to bottom right, #eef2ff, #f5f3ff);
+              border: 1px solid #c7d2fe;
+              border-radius: 12px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .simulation-results {
+              display: block !important;
+              background: white;
+              border-radius: 8px;
+              padding: 15px;
+              margin-top: 15px;
+            }
+            .simulation-chart, .simulation-gauge {
+              display: block !important;
             }
             .no-print {
               display: none !important;
+            }
+            .status-indicator {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              padding: 4px 12px;
+              border-radius: 9999px;
+              font-weight: 600;
+              font-size: 12px;
             }
             @media print {
               body {
@@ -159,12 +337,16 @@ export function PrintButton({ title }: PrintButtonProps) {
               .page-break {
                 page-break-before: always;
               }
+              .simulation-section {
+                page-break-inside: avoid;
+              }
             }
           </style>
         </head>
         <body>
           <h1>${title}</h1>
-          ${content.innerHTML}
+          ${clonedContent.innerHTML}
+          ${simulationSectionsHTML}
         </body>
       </html>
     `);

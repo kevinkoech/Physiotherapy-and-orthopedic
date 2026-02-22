@@ -46,14 +46,14 @@ export default function HotAirOvenPage() {
     const salStatus = salLog >= 12 ? "normal" as const : salLog >= 9 ? "warning" as const : "danger" as const;
     
     return [
-      { parameter: "Est. Heating Time", value: totalHeatingTime.toFixed(0), unit: "min", status: "normal" as const },
-      { parameter: "Total Cycle Time", value: totalCycleTime.toFixed(0), unit: "min", status: "normal" as const },
-      { parameter: "Est. Energy Used", value: energyConsumption.toFixed(2), unit: "kWh", status: "normal" as const },
+      { parameter: "Est. Heating Time", value: totalHeatingTime.toFixed(0), unit: "min", status: "normal" as const, numericValue: totalHeatingTime, min: 0, max: 120 },
+      { parameter: "Total Cycle Time", value: totalCycleTime.toFixed(0), unit: "min", status: "normal" as const, numericValue: totalCycleTime, min: 0, max: 240 },
+      { parameter: "Est. Energy Used", value: energyConsumption.toFixed(2), unit: "kWh", status: "normal" as const, numericValue: energyConsumption, min: 0, max: 20 },
       { parameter: "SAL (Log Reduction)", value: `10^-${salLog}`, unit: "", status: salStatus },
-      { parameter: "Sterilization Temp", value: temperature.toString(), unit: "°C", status: tempStatus },
-      { parameter: "Hold Time", value: sterilizationTime.toString(), unit: "min", status: timeStatus },
-      { parameter: "Chamber Volume", value: chamberVolume.toString(), unit: "L", status: "normal" as const },
-      { parameter: "Load Mass", value: loadMass.toString(), unit: "kg", status: loadStatus },
+      { parameter: "Sterilization Temp", value: temperature.toString(), unit: "°C", status: tempStatus, numericValue: temperature, min: 100, max: 200 },
+      { parameter: "Hold Time", value: sterilizationTime.toString(), unit: "min", status: timeStatus, numericValue: sterilizationTime, min: 10, max: 120 },
+      { parameter: "Chamber Volume", value: chamberVolume.toString(), unit: "L", status: "normal" as const, numericValue: chamberVolume, min: 10, max: 200 },
+      { parameter: "Load Mass", value: loadMass.toString(), unit: "kg", status: loadStatus, numericValue: loadMass, min: 0, max: 20 },
     ];
   };
 

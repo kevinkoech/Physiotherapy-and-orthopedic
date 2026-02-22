@@ -42,14 +42,14 @@ export default function HydroCollatorPage() {
     const powerStatus = heatingPower > 2000 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Initial Heating Time", value: heatingTimeMin.toFixed(1), unit: "min", status: "normal" as const },
-      { parameter: "Pack Heating Time", value: packHeatTime.toFixed(0), unit: "min", status: "normal" as const },
-      { parameter: "Pack Surface Temp", value: packSurfaceTemp.toFixed(0), unit: "°C", status: packTempStatus },
-      { parameter: "Energy Consumption", value: energyPerHour.toFixed(2), unit: "kWh", status: "normal" as const },
-      { parameter: "Water Temperature", value: waterTemp.toString(), unit: "°C", status: tempStatus },
+      { parameter: "Initial Heating Time", value: heatingTimeMin.toFixed(1), unit: "min", status: "normal" as const, numericValue: heatingTimeMin, min: 0, max: 60 },
+      { parameter: "Pack Heating Time", value: packHeatTime.toFixed(0), unit: "min", status: "normal" as const, numericValue: packHeatTime, min: 0, max: 40 },
+      { parameter: "Pack Surface Temp", value: packSurfaceTemp.toFixed(0), unit: "°C", status: packTempStatus, numericValue: packSurfaceTemp, min: 40, max: 90 },
+      { parameter: "Energy Consumption", value: energyPerHour.toFixed(2), unit: "kWh", status: "normal" as const, numericValue: energyPerHour, min: 0, max: 5 },
+      { parameter: "Water Temperature", value: waterTemp.toString(), unit: "°C", status: tempStatus, numericValue: waterTemp, min: 60, max: 90 },
       { parameter: "Pack Size", value: packSize, unit: "", status: "normal" as const },
-      { parameter: "Heater Power", value: heatingPower.toString(), unit: "W", status: powerStatus },
-      { parameter: "Water Volume", value: waterVolume.toString(), unit: "L", status: "normal" as const },
+      { parameter: "Heater Power", value: heatingPower.toString(), unit: "W", status: powerStatus, numericValue: heatingPower, min: 500, max: 2000 },
+      { parameter: "Water Volume", value: waterVolume.toString(), unit: "L", status: "normal" as const, numericValue: waterVolume, min: 5, max: 30 },
     ];
   };
 

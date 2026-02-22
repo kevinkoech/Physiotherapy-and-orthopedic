@@ -74,13 +74,13 @@ export default function ImplantsPage() {
     const corrosionStatus = corrosionResistance < 80 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Yield Strength", value: yieldStrength.toString(), unit: "MPa", status: "normal" as const },
-      { parameter: "Elastic Modulus", value: elasticModulus.toString(), unit: "GPa", status: "normal" as const },
-      { parameter: "Density", value: density.toFixed(2), unit: "g/cm³", status: "normal" as const },
-      { parameter: "Corrosion Resistance", value: corrosionResistance.toString(), unit: "%", status: corrosionStatus },
+      { parameter: "Yield Strength", value: yieldStrength.toString(), unit: "MPa", status: "normal" as const, numericValue: yieldStrength, min: 100, max: 1500 },
+      { parameter: "Elastic Modulus", value: elasticModulus.toString(), unit: "GPa", status: "normal" as const, numericValue: elasticModulus, min: 50, max: 250 },
+      { parameter: "Density", value: density.toFixed(2), unit: "g/cm³", status: "normal" as const, numericValue: density, min: 2, max: 20 },
+      { parameter: "Corrosion Resistance", value: corrosionResistance.toString(), unit: "%", status: corrosionStatus, numericValue: corrosionResistance, min: 0, max: 100 },
       { parameter: "Biocompatibility", value: biocompatibility, unit: "", status: "normal" as const },
-      { parameter: "Est. Peak Load", value: estimatedLoad.toFixed(0), unit: "N", status: loadStatus },
-      { parameter: "Safety Factor", value: safetyFactor.toFixed(1), unit: "", status: safetyStatus },
+      { parameter: "Est. Peak Load", value: estimatedLoad.toFixed(0), unit: "N", status: loadStatus, numericValue: estimatedLoad, min: 0, max: 5000 },
+      { parameter: "Safety Factor", value: safetyFactor.toFixed(1), unit: "", status: safetyStatus, numericValue: safetyFactor, min: 1, max: 10 },
       { parameter: "Material", value: material, unit: "", status: "normal" as const },
     ];
   };

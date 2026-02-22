@@ -45,14 +45,14 @@ export default function TractionTherapyPage() {
     const minBodyWeight = tractionType === "Lumbar" ? force * 2 : 0;
     
     return [
-      { parameter: "Total Cycles", value: totalCycles.toString(), unit: "cycles", status: "normal" as const },
-      { parameter: "Total Traction Time", value: totalTractionTime.toString(), unit: "sec", status: "normal" as const },
-      { parameter: "Total Relax Time", value: totalRelaxTime.toString(), unit: "sec", status: "normal" as const },
-      { parameter: "Est. Work Done", value: totalWork.toFixed(1), unit: "J", status: "normal" as const },
-      { parameter: "Est. Disc Decompression", value: decompression.toFixed(1), unit: "mm", status: "normal" as const },
-      { parameter: "Applied Force", value: force.toString(), unit: "kg", status: forceStatus },
+      { parameter: "Total Cycles", value: totalCycles.toString(), unit: "cycles", status: "normal" as const, numericValue: totalCycles, min: 0, max: 50 },
+      { parameter: "Total Traction Time", value: totalTractionTime.toString(), unit: "sec", status: "normal" as const, numericValue: totalTractionTime, min: 0, max: 1800 },
+      { parameter: "Total Relax Time", value: totalRelaxTime.toString(), unit: "sec", status: "normal" as const, numericValue: totalRelaxTime, min: 0, max: 1800 },
+      { parameter: "Est. Work Done", value: totalWork.toFixed(1), unit: "J", status: "normal" as const, numericValue: totalWork, min: 0, max: 5000 },
+      { parameter: "Est. Disc Decompression", value: decompression.toFixed(1), unit: "mm", status: "normal" as const, numericValue: decompression, min: 0, max: 5 },
+      { parameter: "Applied Force", value: force.toString(), unit: "kg", status: forceStatus, numericValue: force, min: 5, max: 50 },
       { parameter: "Hold/Relax Ratio", value: `${holdTime}/${relaxTime}`, unit: "sec", status: holdStatus },
-      { parameter: "Treatment Duration", value: treatmentDuration.toString(), unit: "min", status: durationStatus },
+      { parameter: "Treatment Duration", value: treatmentDuration.toString(), unit: "min", status: durationStatus, numericValue: treatmentDuration, min: 5, max: 30 },
     ];
   };
 

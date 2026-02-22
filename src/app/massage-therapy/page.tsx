@@ -44,14 +44,14 @@ export default function MassageTherapyPage() {
     const timeStatus = treatmentTime > 30 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Strokes/Cycles per Minute", value: strokesPerMinute.toString(), unit: "spm", status: speedStatus },
-      { parameter: "Total Treatment Strokes", value: totalStrokes.toLocaleString(), unit: "strokes", status: "normal" as const },
-      { parameter: "Applied Pressure", value: pressure.toFixed(1), unit: "N/cm²", status: intensityStatus },
-      { parameter: "Est. Tissue Depth", value: tissueDepth.toFixed(1), unit: "cm", status: "normal" as const },
-      { parameter: "Motor Load", value: motorLoad.toFixed(0), unit: "%", status: motorStatus },
-      { parameter: "Est. Energy Expended", value: energyExpended.toFixed(1), unit: "kcal", status: "normal" as const },
+      { parameter: "Strokes/Cycles per Minute", value: strokesPerMinute.toString(), unit: "spm", status: speedStatus, numericValue: strokesPerMinute, min: 10, max: 100 },
+      { parameter: "Total Treatment Strokes", value: totalStrokes.toLocaleString(), unit: "strokes", status: "normal" as const, numericValue: totalStrokes, min: 0, max: 10000 },
+      { parameter: "Applied Pressure", value: pressure.toFixed(1), unit: "N/cm²", status: intensityStatus, numericValue: pressure, min: 0, max: 10 },
+      { parameter: "Est. Tissue Depth", value: tissueDepth.toFixed(1), unit: "cm", status: "normal" as const, numericValue: tissueDepth, min: 0, max: 5 },
+      { parameter: "Motor Load", value: motorLoad.toFixed(0), unit: "%", status: motorStatus, numericValue: motorLoad, min: 0, max: 100 },
+      { parameter: "Est. Energy Expended", value: energyExpended.toFixed(1), unit: "kcal", status: "normal" as const, numericValue: energyExpended, min: 0, max: 500 },
       { parameter: "Massage Type", value: massageType, unit: "", status: "normal" as const },
-      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus, numericValue: treatmentTime, min: 5, max: 60 },
     ];
   };
 

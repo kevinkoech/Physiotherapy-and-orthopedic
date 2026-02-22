@@ -38,13 +38,13 @@ export default function InfraredTherapyPage() {
     const tempStatus = tempRise > 5 ? "danger" as const : tempRise > 3 ? "warning" as const : "normal" as const;
     
     return [
-      { parameter: "Irradiance at Distance", value: irradiance.toFixed(1), unit: "mW/cm²", status: irradianceStatus },
-      { parameter: "Energy Delivered", value: energyDelivered.toFixed(2), unit: "J/cm²", status: "normal" as const },
-      { parameter: "Est. Penetration Depth", value: penetrationDepth.toFixed(1), unit: "mm", status: "normal" as const },
+      { parameter: "Irradiance at Distance", value: irradiance.toFixed(1), unit: "mW/cm²", status: irradianceStatus, numericValue: irradiance, min: 0, max: 200 },
+      { parameter: "Energy Delivered", value: energyDelivered.toFixed(2), unit: "J/cm²", status: "normal" as const, numericValue: energyDelivered, min: 0, max: 50 },
+      { parameter: "Est. Penetration Depth", value: penetrationDepth.toFixed(1), unit: "mm", status: "normal" as const, numericValue: penetrationDepth, min: 0, max: 10 },
       { parameter: "Wavelength Range", value: wavelength, unit: "", status: "normal" as const },
-      { parameter: "Est. Skin Temp Rise", value: tempRise.toFixed(1), unit: "°C", status: tempStatus },
-      { parameter: "Treatment Distance", value: distance.toString(), unit: "cm", status: distanceStatus },
-      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus },
+      { parameter: "Est. Skin Temp Rise", value: tempRise.toFixed(1), unit: "°C", status: tempStatus, numericValue: tempRise, min: 0, max: 15 },
+      { parameter: "Treatment Distance", value: distance.toString(), unit: "cm", status: distanceStatus, numericValue: distance, min: 20, max: 100 },
+      { parameter: "Treatment Duration", value: treatmentTime.toString(), unit: "min", status: timeStatus, numericValue: treatmentTime, min: 5, max: 30 },
       { parameter: "Emitter Type", value: emitterType, unit: "", status: "normal" as const },
     ];
   };
