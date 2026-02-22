@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { SimulationPanel } from "@/components/SimulationPanel";
 
@@ -72,7 +73,7 @@ export default function OrthopaedicSawPage() {
       <div className="bg-gradient-to-r from-slate-700 to-slate-500 text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="breadcrumb mb-4">
-            <a href="/" className="text-slate-300 hover:text-white">Home</a>
+            <Link href="/" className="text-slate-300 hover:text-white">Home</Link>
             <span className="mx-2">›</span>
             <span>Orthopaedic Saw</span>
           </div>

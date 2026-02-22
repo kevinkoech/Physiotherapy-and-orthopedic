@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { SimulationPanel } from "@/components/SimulationPanel";
 
@@ -90,7 +91,7 @@ export default function ImplantsPage() {
       <div className="bg-gradient-to-r from-teal-700 to-teal-500 text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="breadcrumb mb-4">
-            <a href="/" className="text-teal-200 hover:text-white">Home</a>
+            <Link href="/" className="text-teal-200 hover:text-white">Home</Link>
             <span className="mx-2">›</span>
             <span>Orthopaedic Implants</span>
           </div>
@@ -805,12 +806,12 @@ export default function ImplantsPage() {
 
         {/* Navigation */}
         <div className="flex justify-between mt-10 pt-6 border-t border-gray-200">
-          <a href="/orthopaedic-saw" className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+          <Link href="/orthopaedic-saw" className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
             ← Orthopaedic Saw
-          </a>
-          <a href="/" className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+          </Link>
+          <Link href="/" className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
             Back to Home →
-          </a>
+          </Link>
         </div>
       </div>
     </div>

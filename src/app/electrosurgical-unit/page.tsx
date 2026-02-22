@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { SimulationPanel } from "@/components/SimulationPanel";
 
@@ -73,7 +74,7 @@ export default function ElectrosurgicalUnitPage() {
       <div className="bg-gradient-to-r from-red-800 to-red-600 text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="breadcrumb mb-4">
-            <a href="/" className="text-red-200 hover:text-white">Home</a>
+            <Link href="/" className="text-red-200 hover:text-white">Home</Link>
             <span className="mx-2">›</span>
             <span>Electrosurgical Unit</span>
           </div>

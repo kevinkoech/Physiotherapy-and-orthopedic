@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { SimulationPanel } from "@/components/SimulationPanel";
 
@@ -54,7 +55,7 @@ export default function MicrowaveDiathermyPage() {
       <div className="bg-gradient-to-r from-orange-700 to-orange-500 text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="breadcrumb mb-4">
-            <a href="/" className="text-orange-200 hover:text-white">Home</a>
+            <Link href="/" className="text-orange-200 hover:text-white">Home</Link>
             <span className="mx-2">›</span>
             <span>Microwave Diathermy</span>
           </div>
