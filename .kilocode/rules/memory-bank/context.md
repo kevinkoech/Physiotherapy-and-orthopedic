@@ -1,10 +1,10 @@
-# Active Context: Next.js Starter Template
+# Active Context: Physiotherapy Equipment Maintenance Learning App
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**App Status**: ✅ Fully functional with 12 equipment modules
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+The application is a comprehensive physiotherapy equipment maintenance learning notes app with interactive simulations and print/export functionality.
 
 ## Recently Completed
 
@@ -14,75 +14,73 @@ The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. I
 - [x] ESLint configuration
 - [x] Memory bank documentation
 - [x] Recipe system for common features
+- [x] 12 equipment learning modules with detailed content
+- [x] ASCII diagrams and circuit diagrams
+- [x] Fault diagnosis tables
+- [x] Safety tests and calibration guides
+- [x] Assessment sections for all original 8 modules
+- [x] Print/Export PDF functionality for all modules
+- [x] Interactive simulation panels for all 12 equipment types
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
-| `.kilocode/` | AI context & recipes | ✅ Ready |
+| `src/app/page.tsx` | Home page with navigation | ✅ Complete |
+| `src/app/layout.tsx` | Root layout | ✅ Complete |
+| `src/app/globals.css` | Global styles | ✅ Complete |
+| `src/components/PrintButton.tsx` | PDF export component | ✅ Complete |
+| `src/components/SimulationPanel.tsx` | Interactive simulation component | ✅ Complete |
+| `src/app/short-wave-diathermy/` | SWD module | ✅ Complete |
+| `src/app/muscle-stimulator/` | Muscle stimulator module | ✅ Complete |
+| `src/app/infrared-therapy/` | IR therapy module | ✅ Complete |
+| `src/app/hydro-collator/` | Hydro-collator module | ✅ Complete |
+| `src/app/massage-therapy/` | Massage therapy module | ✅ Complete |
+| `src/app/orthopaedic-oscillator/` | Orthopaedic oscillator module | ✅ Complete |
+| `src/app/hot-air-oven/` | Hot air oven module | ✅ Complete |
+| `src/app/traction-therapy/` | Traction therapy module | ✅ Complete |
+| `src/app/electrosurgical-unit/` | ESU module | ✅ Complete |
+| `src/app/microwave-diathermy/` | Microwave diathermy module | ✅ Complete |
+| `src/app/orthopaedic-saw/` | Orthopaedic saw module | ✅ Complete |
+| `src/app/implants/` | Orthopaedic implants module | ✅ Complete |
 
-## Current Focus
+## Features
 
-The template is ready. Next steps depend on user requirements:
+### Print/Export PDF
+- Each equipment page has a "Print/Export PDF" button
+- Opens a new window with formatted printable content
+- Includes all learning notes, diagrams, and tables
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+### Interactive Simulations
+Each equipment page has a simulation panel with:
+- Adjustable parameters (sliders and dropdowns)
+- Real-time calculation of derived values
+- Safety status indicators (normal/warning/danger)
+- Print results functionality
 
-## Quick Start Guide
+### Simulation Parameters by Equipment
 
-### To add a new page:
-
-Create a file at `src/app/[route]/page.tsx`:
-```tsx
-export default function NewPage() {
-  return <div>New page content</div>;
-}
-```
-
-### To add components:
-
-Create `src/components/` directory and add components:
-```tsx
-// src/components/ui/Button.tsx
-export function Button({ children }: { children: React.ReactNode }) {
-  return <button className="px-4 py-2 bg-blue-600 text-white rounded">{children}</button>;
-}
-```
-
-### To add a database:
-
-Follow `.kilocode/recipes/add-database.md`
-
-### To add API routes:
-
-Create `src/app/api/[route]/route.ts`:
-```tsx
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ message: "Hello" });
-}
-```
-
-## Available Recipes
-
-| Recipe | File | Use Case |
-|--------|------|----------|
-| Add Database | `.kilocode/recipes/add-database.md` | Data persistence with Drizzle + SQLite |
-
-## Pending Improvements
-
-- [ ] Add more recipes (auth, email, etc.)
-- [ ] Add example components
-- [ ] Add testing setup recipe
+| Equipment | Parameters |
+|-----------|------------|
+| Short Wave Diathermy | Power, Frequency, Treatment Time, Electrode Gap |
+| Muscle Stimulator | Pulse Width, Frequency, Current, Mode |
+| Infrared Therapy | Lamp Power, Distance, Treatment Time, Emitter Type |
+| Hydro-Collator | Water Temp, Heater Power, Water Volume, Pack Size |
+| Massage Therapy | Speed, Intensity, Treatment Time, Massage Type |
+| Orthopaedic Oscillator | Frequency, Field Strength, Treatment Time, Coil Type |
+| Hot Air Oven | Temperature, Sterilization Time, Chamber Volume, Load Mass |
+| Traction Therapy | Force, Hold/Relax Time, Duration, Traction Type |
+| Electrosurgical Unit | Power, Activation Time, Mode, Electrode Type |
+| Microwave Diathermy | Power, Treatment Time, Applicator Distance, Applicator Type |
+| Orthopaedic Saw | Speed, Cutting Depth, Blade Type, Power Source |
+| Implants | Material Type, Implant Type, Patient Weight, Activity Level |
 
 ## Session History
 
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
-| 2026-02-22 | Built comprehensive physiotherapy equipment maintenance learning notes app with 8 modules, ASCII diagrams, circuit diagrams, fault tables, safety tests, and calibration guides |
+| 2026-02-22 | Built comprehensive physiotherapy equipment maintenance learning notes app with 8 modules |
+| 2026-02-22 | Added 4 additional modules (ESU, Microwave Diathermy, Orthopaedic Saw, Implants) |
+| 2026-02-22 | Added assessment sections to original 8 modules |
+| 2026-02-22 | Added Print/Export PDF and interactive simulation features to all 12 equipment pages |
