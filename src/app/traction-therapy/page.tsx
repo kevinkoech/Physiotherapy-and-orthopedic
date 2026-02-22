@@ -107,6 +107,7 @@ export default function TractionTherapyPage() {
           },
         ]}
         simulate={simulateTractionTherapy}
+        equipmentName="Traction Therapy"
       />
 
       {/* Introduction */}

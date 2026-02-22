@@ -145,6 +145,7 @@ export default function OrthopaedicSawPage() {
             },
           ]}
           simulate={simulateOrthopaedicSaw}
+          equipmentName="Orthopaedic Saw"
         />
 
         {/* Introduction */}

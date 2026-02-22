@@ -75,6 +75,7 @@ export default function ShortWaveDiathermyPage() {
           { name: "Electrode Gap", key: "electrodeGap", unit: "cm", min: 1, max: 5, step: 0.5, default: 2 },
         ]}
         simulate={simulateSWD}
+        equipmentName="Short Wave Diathermy Machine"
       />
 
       {/* Introduction */}

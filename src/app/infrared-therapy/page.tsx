@@ -99,6 +99,7 @@ export default function InfraredTherapyPage() {
           },
         ]}
         simulate={simulateInfraredTherapy}
+        equipmentName="Infrared Therapy"
       />
 
       {/* Introduction */}

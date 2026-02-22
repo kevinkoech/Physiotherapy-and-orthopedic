@@ -148,6 +148,7 @@ export default function ElectrosurgicalUnitPage() {
             },
           ]}
           simulate={simulateESU}
+          equipmentName="Electrosurgical Unit"
         />
 
         {/* Introduction */}

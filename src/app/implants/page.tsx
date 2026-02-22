@@ -178,6 +178,7 @@ export default function ImplantsPage() {
             },
           ]}
           simulate={simulateImplant}
+          equipmentName="Orthopaedic Implants"
         />
 
         {/* Introduction */}

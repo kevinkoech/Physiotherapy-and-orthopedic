@@ -107,6 +107,7 @@ export default function MassageTherapyPage() {
           },
         ]}
         simulate={simulateMassageTherapy}
+        equipmentName="Massage Therapy"
       />
 
       {/* Introduction */}

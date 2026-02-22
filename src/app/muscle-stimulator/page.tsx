@@ -104,6 +104,7 @@ export default function MuscleStimulatorPage() {
           },
         ]}
         simulate={simulateMuscleStimulator}
+        equipmentName="Muscle Stimulator"
       />
 
       {/* Introduction */}

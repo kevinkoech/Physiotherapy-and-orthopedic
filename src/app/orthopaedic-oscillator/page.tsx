@@ -111,6 +111,7 @@ export default function OrthopaedicOscillatorPage() {
           },
         ]}
         simulate={simulateOrthopaedicOscillator}
+        equipmentName="Orthopaedic Oscillator"
       />
 
       {/* Introduction */}

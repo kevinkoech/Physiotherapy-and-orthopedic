@@ -104,6 +104,7 @@ export default function HydroCollatorPage() {
           },
         ]}
         simulate={simulateHydroCollator}
+        equipmentName="Hydro-Collator"
       />
 
       {/* Introduction */}

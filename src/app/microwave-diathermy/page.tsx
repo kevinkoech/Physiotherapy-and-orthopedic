@@ -113,6 +113,7 @@ export default function MicrowaveDiathermyPage() {
             },
           ]}
           simulate={simulateMicrowaveDiathermy}
+          equipmentName="Microwave Diathermy"
         />
 
         {/* Introduction */}

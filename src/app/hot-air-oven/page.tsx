@@ -95,6 +95,7 @@ export default function HotAirOvenPage() {
           { name: "Load Mass", key: "loadMass", unit: "kg", min: 1, max: 30, step: 1, default: 5 },
         ]}
         simulate={simulateHotAirOven}
+        equipmentName="Hot Air Oven"
       />
 
       {/* Introduction */}
