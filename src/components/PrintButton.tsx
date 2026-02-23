@@ -205,11 +205,15 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
     const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
+    // Generate filename: trainee-name-admno-class-practical-topic.pdf
+    const sanitizeFilename = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
+    const filename = `${sanitizeFilename(traineeInfo.name)}-${sanitizeFilename(traineeInfo.registrationNumber)}-${sanitizeFilename(traineeInfo.className)}-${sanitizeFilename(title)}.pdf`;
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
         <head>
-          <title>${title} - Practical Report</title>
+          <title>${filename}</title>
           <style>
             * {
               margin: 0;

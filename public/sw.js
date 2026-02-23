@@ -1,9 +1,10 @@
-const CACHE_NAME = 'physio-maint-v3';
+const CACHE_NAME = 'physio-maint-v4';
 const STATIC_PAGES = [
   '/',
   '/short-wave-diathermy',
   '/muscle-stimulator',
   '/infrared-therapy',
+  '/ultrasound-therapy',
   '/hydro-collator',
   '/massage-therapy',
   '/orthopaedic-oscillator',

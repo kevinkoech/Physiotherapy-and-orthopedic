@@ -30,6 +30,15 @@ const modules = [
   },
   {
     id: 4,
+    title: "Ultrasound Therapy",
+    href: "/ultrasound-therapy",
+    icon: "🔊",
+    color: "bg-sky-600",
+    topics: ["Main parts", "Piezoelectric crystal", "Thermal/Non-thermal effects", "Fault diagnosis", "Safety tests", "Calibration"],
+    description: "Learn about therapeutic ultrasound equipment using high-frequency sound waves for tissue healing.",
+  },
+  {
+    id: 5,
     title: "Hydro-Collator Unit",
     href: "/hydro-collator",
     icon: "🌊",
@@ -38,7 +47,7 @@ const modules = [
     description: "Learn about hydro-collator units that heat moist heat packs for therapeutic applications.",
   },
   {
-    id: 5,
+    id: 6,
     title: "Massage Therapy Machine",
     href: "/massage-therapy",
     icon: "🤲",
@@ -47,7 +56,7 @@ const modules = [
     description: "Study mechanical massage therapy devices used for muscle relaxation and pain management.",
   },
   {
-    id: 6,
+    id: 7,
     title: "Orthopaedic Oscillator",
     href: "/orthopaedic-oscillator",
     icon: "🔧",
@@ -56,7 +65,7 @@ const modules = [
     description: "Understand orthopaedic oscillators used for bone healing and fracture treatment.",
   },
   {
-    id: 7,
+    id: 8,
     title: "Hot Air Oven",
     href: "/hot-air-oven",
     icon: "🌡️",
@@ -65,7 +74,7 @@ const modules = [
     description: "Learn about hot air ovens used for dry heat sterilization of medical equipment.",
   },
   {
-    id: 8,
+    id: 9,
     title: "Traction Therapy Machine",
     href: "/traction-therapy",
     icon: "↔️",
@@ -74,7 +83,7 @@ const modules = [
     description: "Study traction therapy machines used for spinal decompression and musculoskeletal treatment.",
   },
   {
-    id: 9,
+    id: 10,
     title: "Electrosurgical Unit (ESU)",
     href: "/electrosurgical-unit",
     icon: "⚡",
@@ -83,7 +92,7 @@ const modules = [
     description: "Learn about electrosurgical units that use high-frequency current for surgical cutting and coagulation.",
   },
   {
-    id: 10,
+    id: 11,
     title: "Microwave Diathermy",
     href: "/microwave-diathermy",
     icon: "📡",
@@ -92,7 +101,7 @@ const modules = [
     description: "Study microwave diathermy machines that use 2450 MHz radiation for deep tissue heating therapy.",
   },
   {
-    id: 11,
+    id: 12,
     title: "Orthopaedic Saw",
     href: "/orthopaedic-saw",
     icon: "🔧",
@@ -101,7 +110,7 @@ const modules = [
     description: "Understand orthopaedic saws used for bone cutting in joint replacement and fracture surgery.",
   },
   {
-    id: 12,
+    id: 13,
     title: "Orthopaedic Implants",
     href: "/implants",
     icon: "🦴",
@@ -125,7 +134,7 @@ export default function HomePage() {
             for maintaining physiotherapy and rehabilitation equipment.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="bg-blue-800 px-3 py-1 rounded-full">📊 8 Learning Modules</span>
+            <span className="bg-blue-800 px-3 py-1 rounded-full">📊 13 Learning Modules</span>
             <span className="bg-blue-800 px-3 py-1 rounded-full">🔌 Circuit Diagrams</span>
             <span className="bg-blue-800 px-3 py-1 rounded-full">⚙️ Fault Diagnosis</span>
             <span className="bg-blue-800 px-3 py-1 rounded-full">🛡️ Safety Tests</span>
