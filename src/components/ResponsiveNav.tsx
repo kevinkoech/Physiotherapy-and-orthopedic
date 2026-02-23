@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PWAInstallButton } from "./PWAInstallButton";
@@ -30,19 +30,13 @@ export function ResponsiveNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter nav items based on search query
-  const filteredNavItems = useMemo(() => {
-    if (!searchQuery.trim()) return navItems;
-    const query = searchQuery.toLowerCase();
-    return navItems.filter(item => 
-      item.name.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+  const filteredNavItems = navItems.filter(item => 
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,22 +47,14 @@ export function ResponsiveNav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close menu when route changes - use ref to avoid setState in effect
+  // Close menu when route changes
   useEffect(() => {
     if (prevPathnameRef.current !== pathname) {
       prevPathnameRef.current = pathname;
-      // Use a microtask to defer the state update
       const timer = setTimeout(() => setIsOpen(false), 0);
       return () => clearTimeout(timer);
     }
   }, [pathname]);
-
-  // Focus search input when shown
-  useEffect(() => {
-    if (showSearch && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [showSearch]);
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -76,10 +62,6 @@ export function ResponsiveNav() {
 
   const closeMenu = useCallback(() => {
     setIsOpen(false);
-  }, []);
-
-  const handleSearchClick = useCallback(() => {
-    setShowSearch((prev) => !prev);
   }, []);
 
   return (
@@ -110,39 +92,6 @@ export function ResponsiveNav() {
             </div>
             <span className="font-bold text-lg text-gray-800 hidden sm:inline">PhysioMaint</span>
           </Link>
-
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
-            <div className="relative w-full">
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search equipment..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 pl-10 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          </div>
 
           {/* Right side buttons */}
           <div className="flex items-center gap-2">
@@ -220,7 +169,7 @@ export function ResponsiveNav() {
           </div>
         </div>
 
-        {/* Search Bar - Mobile (shown below nav on mobile) */}
+        {/* Search Bar - Mobile */}
         <div className="md:hidden pb-3">
           <div className="relative w-full">
             <input
