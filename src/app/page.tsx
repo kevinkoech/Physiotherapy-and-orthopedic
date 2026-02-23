@@ -118,6 +118,33 @@ const modules = [
     topics: ["Types of implants", "Materials science", "Sterilization", "Failure diagnosis", "Quality control", "Regulatory"],
     description: "Comprehensive guide to orthopaedic implants including fracture fixation, joint replacement, and quality control.",
   },
+  {
+    id: 14,
+    title: "Electrotherapy Equipment",
+    href: "/electrotherapy",
+    icon: "⚡",
+    color: "bg-violet-600",
+    topics: ["TENS", "NMES", "IFC", "Strength-duration curve", "Fault diagnosis", "Safety tests"],
+    description: "Study electrotherapy modalities including TENS, NMES, and Interferential Current therapy.",
+  },
+  {
+    id: 15,
+    title: "Orthotics & Prosthesis",
+    href: "/orthotics-prosthesis",
+    icon: "🦿",
+    color: "bg-rose-600",
+    topics: ["Types", "Materials", "Biomechanics", "Design principles", "Fabrication", "Fitting"],
+    description: "Learn about orthotic and prosthetic devices, design principles, and material selection.",
+  },
+  {
+    id: 16,
+    title: "Rehabilitative Engineering",
+    href: "/rehabilitative-engineering",
+    icon: "♿",
+    color: "bg-lime-600",
+    topics: ["ICF Model", "Assistive technology", "Wheelchair design", "Seating principles", "Accessibility"],
+    description: "Apply engineering principles to rehabilitation and assistive technology design.",
+  },
 ];
 
 export default function HomePage() {
@@ -134,7 +161,7 @@ export default function HomePage() {
             for maintaining physiotherapy and rehabilitation equipment.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="bg-blue-800 px-3 py-1 rounded-full">📊 13 Learning Modules</span>
+            <span className="bg-blue-800 px-3 py-1 rounded-full">📊 16 Learning Modules</span>
             <span className="bg-blue-800 px-3 py-1 rounded-full">🔌 Circuit Diagrams</span>
             <span className="bg-blue-800 px-3 py-1 rounded-full">⚙️ Fault Diagnosis</span>
             <span className="bg-blue-800 px-3 py-1 rounded-full">🛡️ Safety Tests</span>

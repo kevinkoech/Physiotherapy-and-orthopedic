@@ -1,15 +1,43 @@
 {
   "name": "Physiotherapy Equipment Maintenance",
-  "short_name": "PhysioApp",
-  "start_url": "./index.html",
+  "short_name": "PhysioMaint",
+  "description": "Comprehensive learning notes for physiotherapy equipment maintenance with interactive simulations",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "theme_color": "#0f766e",
+  "orientation": "portrait-primary",
+  "scope": "/",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "medical", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Short Wave Diathermy",
+      "url": "/short-wave-diathermy",
+      "description": "SWD equipment module"
+    },
+    {
+      "name": "Muscle Stimulator",
+      "url": "/muscle-stimulator",
+      "description": "Muscle stimulator module"
     }
   ]
 }

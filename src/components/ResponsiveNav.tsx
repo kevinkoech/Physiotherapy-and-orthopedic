@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { name: "Muscle Stimulator", href: "/muscle-stimulator", color: "bg-green-500" },
   { name: "Infrared Therapy", href: "/infrared-therapy", color: "bg-orange-500" },
   { name: "Ultrasound Therapy", href: "/ultrasound-therapy", color: "bg-sky-500" },
+  { name: "Electrotherapy", href: "/electrotherapy", color: "bg-violet-500" },
   { name: "Hydro-Collator", href: "/hydro-collator", color: "bg-cyan-500" },
   { name: "Massage Therapy", href: "/massage-therapy", color: "bg-purple-500" },
   { name: "Orthopaedic Oscillator", href: "/orthopaedic-oscillator", color: "bg-pink-500" },
@@ -25,6 +26,8 @@ const navItems: NavItem[] = [
   { name: "Microwave Diathermy", href: "/microwave-diathermy", color: "bg-teal-500" },
   { name: "Orthopaedic Saw", href: "/orthopaedic-saw", color: "bg-gray-500" },
   { name: "Implants", href: "/implants", color: "bg-emerald-500" },
+  { name: "Orthotics & Prosthesis", href: "/orthotics-prosthesis", color: "bg-rose-500" },
+  { name: "Rehabilitative Engineering", href: "/rehabilitative-engineering", color: "bg-lime-500" },
 ];
 
 export function ResponsiveNav() {

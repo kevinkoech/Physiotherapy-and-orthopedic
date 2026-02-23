@@ -1,10 +1,11 @@
-const CACHE_NAME = 'physio-maint-v4';
+const CACHE_NAME = 'physio-maint-v5';
 const STATIC_PAGES = [
   '/',
   '/short-wave-diathermy',
   '/muscle-stimulator',
   '/infrared-therapy',
   '/ultrasound-therapy',
+  '/electrotherapy',
   '/hydro-collator',
   '/massage-therapy',
   '/orthopaedic-oscillator',
@@ -14,6 +15,8 @@ const STATIC_PAGES = [
   '/microwave-diathermy',
   '/orthopaedic-saw',
   '/implants',
+  '/orthotics-prosthesis',
+  '/rehabilitative-engineering',
 ];
 
 // Install event - cache static pages only
