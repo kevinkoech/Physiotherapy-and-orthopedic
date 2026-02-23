@@ -23,6 +23,9 @@ export default function InfraredTherapyPage() {
     if (emitterType === "Luminous") {
       penetrationDepth = 2 + (lampPower / 500); // mm
       wavelength = "0.8-1.5 μm";
+    } else if (emitterType === "LED") {
+      penetrationDepth = 1.5 + (lampPower / 600); // mm
+      wavelength = "0.85-0.95 μm";
     } else {
       penetrationDepth = 0.5 + (lampPower / 1000); // mm (FIR penetrates less)
       wavelength = "2-10 μm";
@@ -95,6 +98,7 @@ export default function InfraredTherapyPage() {
             options: [
               { value: "Luminous", label: "Luminous (Tungsten)" },
               { value: "Non-luminous", label: "Non-luminous (Ceramic)" },
+              { value: "LED", label: "Luminous LED" },
             ]
           },
         ]}
