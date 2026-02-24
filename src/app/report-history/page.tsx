@@ -81,11 +81,44 @@ export default function ReportHistoryPage() {
     });
   };
 
+  const handleExportExcel = async () => {
+    try {
+      const response = await fetch(`/api/reports/export/excel/trainee/${encodeURIComponent(admissionNumber.trim())}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `trainee-marks-${admissionNumber.trim()}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting Excel file:", error);
+      alert("Failed to export Excel file");
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Report History</h1>
-        <p className="text-gray-600">View and manage your submitted simulation reports</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Report History</h1>
+            <p className="text-gray-600">View and manage your submitted simulation reports</p>
+          </div>
+          {reports.length > 0 && (
+            <button
+              onClick={handleExportExcel}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              Export as Excel
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Search Section */}
@@ -210,7 +243,7 @@ export default function ReportHistoryPage() {
             </svg>
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No reports found</h3>
-          <p className="text-gray-600">You haven't submitted any reports yet. Complete a simulation to get started.</p>
+          <p className="text-gray-600">You haven&apos;t submitted any reports yet. Complete a simulation to get started.</p>
         </div>
       )}
     </div>
