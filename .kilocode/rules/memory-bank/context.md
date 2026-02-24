@@ -27,6 +27,12 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - [x] Standalone simulation report print button next to simulate button
 - [x] Institution header on reports (The Nyeri National Polytechnic, EEE Department, Biomedical Engineering, Unit Trainer: Kevin Koech)
 - [x] Page numbers on printed/exported PDF reports
+- [x] Report archiving and grading system
+- [x] Database integration with Drizzle ORM and SQLite
+- [x] Admin dashboard to manage reports and view statistics
+- [x] Report history page for trainees to view their submissions
+- [x] Automatic grading functionality based on simulation results
+- [x] New filename format for printed reports: `admno_name_class-equipment-topic.pdf`
 
 ## Current Structure
 
@@ -53,6 +59,10 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 | `src/app/orthotics-prosthesis/` | Orthotics & prosthesis module | ✅ Complete |
 | `src/app/rehabilitative-engineering/` | Rehabilitative engineering module | ✅ Complete |
 | `src/app/tissue-engineering/` | Tissue engineering module | ✅ Complete |
+| `src/app/report-history/` | Trainee report history page | ✅ Complete |
+| `src/app/admin/` | Admin dashboard page | ✅ Complete |
+| `src/app/api/reports/` | API routes for report management | ✅ Complete |
+| `src/db/` | Database schema and client | ✅ Complete |
 
 ## Features
 
@@ -83,6 +93,13 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
   - Signature areas for trainee and trainer
 - Opens in new window for printing/saving
 
+### Report Archiving and Grading
+- **Report Submission**: Trainees can submit simulation reports directly from the simulation panel
+- **Automatic Grading**: Reports are automatically graded based on simulation results (percentage of normal parameters)
+- **Report History**: Trainees can view their submitted reports with scores and grades
+- **Admin Dashboard**: Admins can manage all reports, view statistics, and filter by equipment or class
+- **Filename Format**: Reports are saved with the format: `admno_name_class-equipment-topic.pdf`
+
 ### Interactive Simulations
 Each equipment page has a simulation panel with:
 - Adjustable parameters (sliders and dropdowns)
@@ -92,6 +109,7 @@ Each equipment page has a simulation panel with:
 - Results table with parameter values and status
 - Summary showing counts of normal/warning/danger parameters
 - Standalone print report button after simulation runs
+- Report submission button for archiving
 
 ### Simulation Parameters by Equipment
 
@@ -130,3 +148,4 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Added standalone simulation report print feature with trainee info capture - "Print Report" button appears next to simulate button after running simulation |
 | 2026-02-22 | Added institution header (The Nyeri National Polytechnic, EEE Department, Biomedical Engineering, Unit Trainer: Kevin Koech), page numbers, and class field to trainee info in PDF reports |
 | 2026-02-22 | Fixed chunk loading error by updating service worker to use network-first strategy for Next.js static chunks; Fixed chart display issues with CSS visibility and edge case handling |
+| 2026-02-24 | Added report archiving and grading system with database integration, admin dashboard, and report history page |
