@@ -1,6 +1,64 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="64" fill="#0f766e"/>
-  <rect x="96" y="200" width="320" height="112" rx="16" fill="white"/>
-  <rect x="200" y="96" width="112" height="320" rx="16" fill="white"/>
-  <circle cx="256" cy="256" r="40" fill="#0f766e"/>
+  <!-- Background circle with medical green gradient -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f766e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <circle cx="256" cy="256" r="256" fill="url(#bgGrad)" filter="url(#shadow)"/>
+  
+  <!-- Cross symbol for medical/healthcare -->
+  <g transform="translate(256, 256)">
+    <!-- Horizontal bar -->
+    <rect x="-64" y="-16" width="128" height="32" rx="8" fill="white" opacity="0.95"/>
+    <!-- Vertical bar -->
+    <rect x="-16" y="-64" width="32" height="128" rx="8" fill="white" opacity="0.95"/>
+    
+    <!-- Pulse waveform representing physiotherapy/movement -->
+    <path d="M-100,0 Q-80,20 -60,0 T-20,0 T20,0 T60,0 T80,0 T100,0" 
+          stroke="white" 
+          stroke-width="8" 
+          fill="none" 
+          stroke-linecap="round"/>
+    
+    <!-- Equipment/tool representation - two curved handles -->
+    <path d="M-140,-40 C-120,-60 -80,-80 -40,-80 C0,-80 20,-60 20,-40" 
+          stroke="white" 
+          stroke-width="6" 
+          fill="none" 
+          stroke-linecap="round"/>
+    <path d="M140,-40 C120,-60 80,-80 40,-80 C0,-80 -20,-60 -20,-40" 
+          stroke="white" 
+          stroke-width="6" 
+          fill="none" 
+          stroke-linecap="round"/>
+  </g>
+  
+  <!-- Circuit board pattern in background -->
+  <g opacity="0.1">
+    <path d="M100,100 L100,412 L412,412 L412,100 Z" 
+          stroke="white" 
+          stroke-width="4" 
+          fill="none"/>
+    <path d="M150,150 L150,362 L362,362 L362,150 Z" 
+          stroke="white" 
+          stroke-width="3" 
+          fill="none"/>
+    <circle cx="256" cy="256" r="60" stroke="white" stroke-width="2" fill="none"/>
+    
+    <!-- Small circuit nodes -->
+    <circle cx="150" cy="150" r="4" fill="white"/>
+    <circle cx="362" cy="150" r="4" fill="white"/>
+    <circle cx="150" cy="362" r="4" fill="white"/>
+    <circle cx="362" cy="362" r="4" fill="white"/>
+  </g>
+  
+  <!-- App name initials -->
+  <text x="256" y="380" font-family="Arial, sans-serif" font-size="36" font-weight="bold" 
+        fill="white" text-anchor="middle" opacity="0.9">PM</text>
 </svg>
