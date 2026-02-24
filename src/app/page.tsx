@@ -145,6 +145,15 @@ const modules = [
     topics: ["ICF Model", "Assistive technology", "Wheelchair design", "Seating principles", "Accessibility"],
     description: "Apply engineering principles to rehabilitation and assistive technology design.",
   },
+  {
+    id: 17,
+    title: "Tissue Engineering",
+    href: "/tissue-engineering",
+    icon: "🧬",
+    color: "bg-emerald-600",
+    topics: ["Biomaterials", "Cell culture", "Scaffold design", "Bioreactors", "Tissue regeneration", "Quality control"],
+    description: "Learn about tissue engineering principles for creating biological substitutes to replace or repair damaged tissue.",
+  },
 ];
 
 export default function HomePage() {

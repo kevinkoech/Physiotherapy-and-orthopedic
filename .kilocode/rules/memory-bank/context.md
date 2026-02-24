@@ -2,7 +2,7 @@
 
 ## Current State
 
-**App Status**: ✅ Fully functional with 12 equipment modules
+**App Status**: ✅ Fully functional with 17 equipment modules
 
 The application is a comprehensive physiotherapy equipment maintenance learning notes app with interactive simulations and print/export functionality.
 
@@ -49,6 +49,10 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 | `src/app/microwave-diathermy/` | Microwave diathermy module | ✅ Complete |
 | `src/app/orthopaedic-saw/` | Orthopaedic saw module | ✅ Complete |
 | `src/app/implants/` | Orthopaedic implants module | ✅ Complete |
+| `src/app/electrotherapy/` | Electrotherapy module | ✅ Complete |
+| `src/app/orthotics-prosthesis/` | Orthotics & prosthesis module | ✅ Complete |
+| `src/app/rehabilitative-engineering/` | Rehabilitative engineering module | ✅ Complete |
+| `src/app/tissue-engineering/` | Tissue engineering module | ✅ Complete |
 
 ## Features
 
@@ -105,6 +109,10 @@ Each equipment page has a simulation panel with:
 | Microwave Diathermy | Power, Treatment Time, Applicator Distance, Applicator Type |
 | Orthopaedic Saw | Speed, Cutting Depth, Blade Type, Power Source |
 | Implants | Material Type, Implant Type, Patient Weight, Activity Level |
+| Electrotherapy | TENS, NMES, IFC, Strength-duration curve, Fault diagnosis, Safety tests |
+| Orthotics & Prosthesis | Types, Materials, Biomechanics, Design principles, Fabrication, Fitting |
+| Rehabilitative Engineering | ICF Model, Assistive technology, Wheelchair design, Seating principles, Accessibility |
+| Tissue Engineering | Culture Temperature, pH Level, Dissolved Oxygen, Glucose Concentration, Media Injection Volume, Culture Time, Agitation Speed, Injection Interval, CO₂ Concentration, Media Replacement Rate |
 
 ## Session History
 
