@@ -376,6 +376,61 @@ export function SimulationPanel({
     setShowTraineeDialog(true);
   };
 
+  // Submit report
+  const handleSubmitReport = () => {
+    if (!results || !traineeInfo) {
+      setShowTraineeDialog(true);
+      return;
+    }
+
+    submitReport();
+  };
+
+  const submitReport = async () => {
+    if (!results || !traineeInfo) return;
+
+    try {
+      const response = await fetch('/api/reports/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: traineeInfo.name,
+          admissionNumber: traineeInfo.registrationNumber,
+          className: traineeInfo.className,
+          equipmentName: equipmentName || title,
+          simulationData: {
+            parameters: paramValues,
+            results: results,
+            timestamp: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert(`Report submitted successfully! Score: ${data.score}%, Grade: ${data.grade}`);
+      } else {
+        alert('Failed to submit report');
+      }
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      alert('Failed to submit report');
+    }
+  };
+
+  const handleTraineeInfoSubmit = (info: TraineeInfo) => {
+    setTraineeInfo(info);
+    setShowTraineeDialog(false);
+    
+    // If we were in submit mode, submit the report
+    if (showTraineeDialog && results) {
+      submitReport();
+    }
+  };
+
   const generateSimulationReport = (info: TraineeInfo) => {
     setTraineeInfo(info);
     setShowTraineeDialog(false);
@@ -400,6 +455,9 @@ export function SimulationPanel({
       minute: '2-digit',
     });
     
+    // Sanitize filename function
+    const sanitizeFilename = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').toLowerCase();
+    
     // Generate chart SVG
     const chartSvg = generateChartSvg(results, title);
     
@@ -409,7 +467,7 @@ export function SimulationPanel({
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Simulation Report - ${equipmentName || title}</title>
+        <title>${sanitizeFilename(info.registrationNumber)}_${sanitizeFilename(info.name)}_${sanitizeFilename(info.className)}-${sanitizeFilename(equipmentName || title)}.pdf</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
@@ -838,15 +896,26 @@ export function SimulationPanel({
           )}
         </button>
         {results && (
-          <button
-            onClick={handlePrintSimulation}
-            className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
-            </svg>
-            Print Report
-          </button>
+          <>
+            <button
+              onClick={handleSubmitReport}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              Submit Report
+            </button>
+            <button
+              onClick={handlePrintSimulation}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+              </svg>
+              Print Report
+            </button>
+          </>
         )}
         <button
           onClick={resetSimulation}

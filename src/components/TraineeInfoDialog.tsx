@@ -98,7 +98,7 @@ export function TraineeInfoDialog({ isOpen, onClose, onSubmit, title }: TraineeI
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Generate Report
+              Submit
             </button>
           </div>
         </form>

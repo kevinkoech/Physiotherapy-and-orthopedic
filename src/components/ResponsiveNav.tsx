@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
   { name: "Implants", href: "/implants", color: "bg-emerald-500" },
   { name: "Orthotics & Prosthesis", href: "/orthotics-prosthesis", color: "bg-rose-500" },
   { name: "Rehabilitative Engineering", href: "/rehabilitative-engineering", color: "bg-lime-500" },
+  { name: "Tissue Engineering", href: "/tissue-engineering", color: "bg-emerald-600" },
 ];
 
 export function ResponsiveNav() {
@@ -131,6 +132,20 @@ export function ResponsiveNav() {
                     className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
                   >
                     🏠 Home
+                  </Link>
+                  <Link
+                    href="/report-history"
+                    onClick={closeMenu}
+                    className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
+                  >
+                    📊 Report History
+                  </Link>
+                  <Link
+                    href="/admin"
+                    onClick={closeMenu}
+                    className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
+                  >
+                    🔐 Admin Dashboard
                   </Link>
                   <div className="border-t my-2" />
                   <div className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase">Equipment Modules</div>
@@ -242,6 +257,20 @@ export function ResponsiveNav() {
               className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
             >
               🏠 Home
+            </Link>
+            <Link
+              href="/report-history"
+              onClick={closeMenu}
+              className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
+            >
+              📊 Report History
+            </Link>
+            <Link
+              href="/admin"
+              onClick={closeMenu}
+              className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
+            >
+              🔐 Admin Dashboard
             </Link>
             <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase bg-gray-50">Equipment Modules</div>
             {navItems.map((item) => (
