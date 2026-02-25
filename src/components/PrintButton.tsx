@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { TraineeInfoDialog } from "./TraineeInfoDialog";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface PrintButtonProps {
   title: string;
@@ -122,26 +124,74 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
 
   const downloadReport = async (traineeInfo: TraineeInfo) => {
     try {
+      setIsExporting(true);
+      document.body.classList.add("printing");
+      
+      const content = document.getElementById("printable-content");
+      if (!content) {
+        alert("Content not found");
+        return;
+      }
+
+      // Create a clone for PDF generation
+      const clonedContent = content.cloneNode(true) as HTMLElement;
+      
+      // Create a temporary container
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      container.style.width = '800px';
+      document.body.appendChild(container);
+      
       // Generate report HTML
-      const reportHTML = await generateReportHTML(traineeInfo);
+      const reportHTML = generateReportHTMLForPDF(traineeInfo, clonedContent);
+      container.innerHTML = reportHTML;
       
-      // Create a blob from the HTML
-      const blob = new Blob([reportHTML || ''], { type: 'application/pdf' });
+      // Use html2canvas to capture the content
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      });
       
-      // Create a download link
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
+      // Clean up
+      document.body.removeChild(container);
+      
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const scaledWidth = imgWidth * ratio;
+      const scaledHeight = imgHeight * ratio;
+      
+      // If content is longer than one page, split it
+      const totalPages = Math.ceil(scaledHeight / pdfHeight);
+      
+      for (let i = 0; i < totalPages; i++) {
+        if (i > 0) pdf.addPage();
+        
+        const y = -(i * pdfHeight);
+        pdf.addImage(imgData, 'PNG', 0, y, scaledWidth, scaledHeight);
+      }
       
       // Generate filename
       const sanitizeFilename = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').toLowerCase();
       const filename = `${sanitizeFilename(traineeInfo.registrationNumber)}_${sanitizeFilename(traineeInfo.name)}_${sanitizeFilename(traineeInfo.className)}-${sanitizeFilename(title)}.pdf`;
       
-      a.download = filename;
-      a.click();
+      // Download PDF
+      pdf.save(filename);
       
-      // Cleanup
-      URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading report:', error);
       alert('Failed to download report. Please try again.');
@@ -151,17 +201,7 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
     }
   };
 
-  const generateReportHTML = (traineeInfo: TraineeInfo) => {
-    document.body.classList.add("printing");
-    
-    const content = document.getElementById("printable-content");
-    if (!content) {
-      alert("Content not found");
-      return;
-    }
-
-    const clonedContent = content.cloneNode(true) as HTMLElement;
-    
+  const generateReportHTMLForPDF = (traineeInfo: TraineeInfo, clonedContent: HTMLElement) => {
     // Process simulation panels
     const simulationPanels = clonedContent.querySelectorAll('.simulation-panel');
     let simulationSectionsHTML = '';
@@ -235,423 +275,151 @@ export function PrintButton({ title, theoryText, observationsText }: PrintButton
     const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-    // Generate filename: admno_name_class-equipment-topic.pdf
-    const sanitizeFilename = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').toLowerCase();
-    const filename = `${sanitizeFilename(traineeInfo.registrationNumber)}_${sanitizeFilename(traineeInfo.name)}_${sanitizeFilename(traineeInfo.className)}-${sanitizeFilename(title)}.pdf`;
-
     return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${filename}</title>
-          <style>
-            /* Report styles */
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            body {
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              line-height: 1.6;
-              color: #1f2937;
-              padding: 20px;
-              max-width: 100%;
-            }
-            
-            /* Report Header */
-            .report-header {
-              text-align: center;
-              border-bottom: 3px double #1e40af;
-              padding-bottom: 15px;
-              margin-bottom: 20px;
-            }
-            .report-header .institution {
-              font-size: 18px;
-              font-weight: bold;
-              color: #1e40af;
-              margin-bottom: 4px;
-            }
-            .report-header .department {
-              font-size: 14px;
-              color: #374151;
-              margin-bottom: 2px;
-            }
-            .report-header .unit-trainer {
-              font-size: 12px;
-              color: #6b7280;
-              margin-bottom: 10px;
-            }
-            .report-header h1 {
-              font-size: 24px;
-              color: #1e40af;
-              margin-bottom: 8px;
-            }
-            .report-header .subtitle {
-              font-size: 14px;
-              color: #6b7280;
-            }
-            .report-header .date-time {
-              font-size: 12px;
-              color: #9ca3af;
-              margin-top: 8px;
-            }
-            
-            /* Trainee Info Box */
-            .trainee-info {
-              background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-              border: 2px solid #3b82f6;
-              border-radius: 8px;
-              padding: 15px;
-              margin-bottom: 20px;
-              display: flex;
-              justify-content: space-around;
-              align-items: center;
-              flex-wrap: wrap;
-            }
-            .trainee-info .info-item {
-              text-align: center;
-              margin: 5px 10px;
-            }
-            .trainee-info .label {
-              font-size: 11px;
-              color: #6b7280;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            }
-            .trainee-info .value {
-              font-size: 16px;
-              font-weight: bold;
-              color: #1e40af;
-              margin-top: 4px;
-            }
-            
-            /* Section Headers */
-            h2 {
-              font-size: 16px;
-              color: #1e40af;
-              margin-top: 20px;
-              margin-bottom: 10px;
-              border-bottom: 2px solid #dbeafe;
-              padding-bottom: 6px;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            }
-            h3 {
-              font-size: 14px;
-              color: #374151;
-              margin-top: 15px;
-              margin-bottom: 8px;
-            }
-            h4 {
-              font-size: 12px;
-              color: #4b5563;
-              margin-top: 10px;
-              margin-bottom: 6px;
-            }
-            
-            /* Content Sections */
-            .section {
-              margin-bottom: 20px;
-            }
-            .section-title {
-              background: #1e40af;
-              color: white;
-              padding: 8px 15px;
-              border-radius: 6px 6px 0 0;
-              font-weight: bold;
-              font-size: 14px;
-            }
-            .section-content {
-              background: #f8fafc;
-              border: 1px solid #e2e8f0;
-              border-top: none;
-              border-radius: 0 0 6px 6px;
-              padding: 15px;
-            }
-            
-            /* Tables */
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 10px 0;
-            }
-            th, td {
-              border: 1px solid #d1d5db;
-              padding: 8px;
-              text-align: left;
-            }
-            th {
-              background: #f3f4f6;
-              font-weight: 600;
-            }
-            
-            /* Boxes */
-            .diagram-box, .circuit-diagram {
-              background: #f8fafc;
-              border: 1px solid #e2e8f0;
-              border-radius: 6px;
-              padding: 12px;
-              margin: 10px 0;
-              font-family: 'Courier New', monospace;
-              font-size: 10px;
-              white-space: pre;
-              overflow-x: auto;
-            }
-            .note-box {
-              background: #eff6ff;
-              border-left: 4px solid #3b82f6;
-              padding: 10px;
-              margin: 10px 0;
-            }
-            .warning-box {
-              background: #fef3c7;
-              border-left: 4px solid #f59e0b;
-              padding: 10px;
-              margin: 10px 0;
-            }
-            
-            /* Simulation Section */
-            .simulation-section {
-              background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
-              border: 1px solid #e2e8f0;
-              border-radius: 8px;
-              padding: 15px;
-              margin: 15px 0;
-            }
-            
-            /* Sign-off Section */
-            .sign-off-section {
-              margin-top: 40px;
-              page-break-inside: avoid;
-            }
-            .sign-off-section h2 {
-              text-align: center;
-              margin-bottom: 20px;
-            }
-            .sign-off-grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 30px;
-              margin-top: 20px;
-            }
-            .sign-off-box {
-              border: 2px solid #1e40af;
-              border-radius: 8px;
-              padding: 20px;
-              text-align: center;
-            }
-            .sign-off-box .role {
-              font-size: 12px;
-              color: #6b7280;
-              text-transform: uppercase;
-              letter-spacing: 2px;
-              margin-bottom: 10px;
-            }
-            .sign-off-box .name-line {
-              border-bottom: 1px solid #374151;
-              margin: 30px 0 8px 0;
-              height: 1px;
-            }
-            .sign-off-box .label {
-              font-size: 11px;
-              color: #9ca3af;
-            }
-            .sign-off-box .date-line {
-              border-bottom: 1px solid #374151;
-              margin: 20px 0 8px 0;
-              height: 1px;
-            }
-            
-            /* Footer */
-            .report-footer {
-              margin-top: 30px;
-              padding-top: 15px;
-              border-top: 1px solid #e5e7eb;
-              text-align: center;
-              font-size: 11px;
-              color: #9ca3af;
-            }
-            
-            /* Print Styles */
-            @media print {
-              body {
-                padding: 0;
-              }
-              .page-break {
-                page-break-before: always;
-              }
-              .simulation-section {
-                page-break-inside: avoid;
-              }
-              .sign-off-section {
-                page-break-inside: avoid;
-              }
-            }
-            
-            /* Page Number Footer */
-            .page-footer {
-              position: running(footer);
-              text-align: center;
-              font-size: 10px;
-              color: #9ca3af;
-            }
-            
-            @page {
-              margin: 20mm 15mm;
-              @bottom-center {
-                content: "Page " counter(page) " of " counter(pages);
-                font-size: 10px;
-                color: #9ca3af;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <!-- Report Header -->
-          <div class="report-header">
-            <div class="institution">The Nyeri National Polytechnic</div>
-            <div class="department">EEE Department - Biomedical Engineering</div>
-            <div class="unit-trainer">Unit Trainer: Kevin Koech</div>
-            <h1>PRACTICAL REPORT</h1>
-            <div class="subtitle">Physiotherapy Equipment Maintenance Training</div>
-            <div class="date-time">
-              <strong>Date:</strong> ${dateStr} | <strong>Time:</strong> ${timeStr}
-            </div>
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white;">
+        <!-- Report Header -->
+        <div style="text-align: center; border-bottom: 3px double #1e40af; padding-bottom: 15px; margin-bottom: 20px;">
+          <div style="font-size: 18px; font-weight: bold; color: #1e40af; margin-bottom: 4px;">The Nyeri National Polytechnic</div>
+          <div style="font-size: 14px; color: #374151; margin-bottom: 2px;">EEE Department - Biomedical Engineering</div>
+          <div style="font-size: 12px; color: #6b7280; margin-bottom: 10px;">Unit Trainer: Kevin Koech</div>
+          <h1 style="font-size: 24px; color: #1e40af; margin-bottom: 8px;">PRACTICAL REPORT</h1>
+          <div style="font-size: 14px; color: #6b7280;">Physiotherapy Equipment Maintenance Training</div>
+          <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">
+            <strong>Date:</strong> ${dateStr} | <strong>Time:</strong> ${timeStr}
           </div>
-          
-          <!-- Trainee Information -->
-          <div class="trainee-info">
-            <div class="info-item">
-              <div class="label">Trainee Name</div>
-              <div class="value">${traineeInfo.name}</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Admission No.</div>
-              <div class="value">${traineeInfo.registrationNumber}</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Class</div>
-              <div class="value">${traineeInfo.className}</div>
-            </div>
+        </div>
+        
+        <!-- Trainee Information -->
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
+          <div style="text-align: center; margin: 5px 10px;">
+            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px;">Trainee Name</div>
+            <div style="font-size: 16px; font-weight: bold; color: #1e40af; margin-top: 4px;">${traineeInfo.name}</div>
           </div>
-          
-          <!-- 1. EXPERIMENT TITLE / TOPIC -->
-          <div class="section">
-            <div class="section-title">1. EXPERIMENT TITLE / TOPIC</div>
-            <div class="section-content">
-              <h3>${title}</h3>
-              <p style="margin-top: 8px;">This practical session covers the principles, operation, and maintenance of ${title.toLowerCase()} equipment used in physiotherapy applications.</p>
-            </div>
+          <div style="text-align: center; margin: 5px 10px;">
+            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px;">Admission No.</div>
+            <div style="font-size: 16px; font-weight: bold; color: #1e40af; margin-top: 4px;">${traineeInfo.registrationNumber}</div>
           </div>
-          
-          <!-- 2. THEORY -->
-          <div class="section">
-            <div class="section-title">2. THEORY</div>
-            <div class="section-content">
-              ${theoryText || `
-                <p>The theoretical foundation of ${title.toLowerCase()} involves understanding the physical principles, 
-                physiological effects, and clinical applications of this equipment in therapeutic settings.</p>
-                <p style="margin-top: 8px;">Key concepts include:</p>
-                <ul style="margin-left: 20px; margin-top: 5px;">
-                  <li>Physical principles of operation</li>
-                  <li>Physiological effects on tissues</li>
-                  <li>Safety considerations and contraindications</li>
-                  <li>Equipment components and their functions</li>
-                </ul>
-              `}
-              ${clonedContent.innerHTML}
-            </div>
+          <div style="text-align: center; margin: 5px 10px;">
+            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px;">Class</div>
+            <div style="font-size: 16px; font-weight: bold; color: #1e40af; margin-top: 4px;">${traineeInfo.className}</div>
           </div>
-          
-          <!-- 3. OBSERVATIONS -->
-          <div class="section">
-            <div class="section-title">3. OBSERVATIONS</div>
-            <div class="section-content">
-              ${observationsText || `
-                <p>Key observations from the practical session:</p>
-                <ul style="margin-left: 20px; margin-top: 5px;">
-                  <li>Equipment operated within normal parameters during simulation</li>
-                  <li>Safety protocols were followed correctly</li>
-                  <li>Maintenance procedures were demonstrated and understood</li>
-                </ul>
-                <div class="note-box" style="margin-top: 10px;">
-                  <strong>Note:</strong> Additional observations should be documented by the trainee based on hands-on experience with the equipment.
-                </div>
-              `}
-            </div>
+        </div>
+        
+        <!-- 1. EXPERIMENT TITLE / TOPIC -->
+        <div style="margin-bottom: 20px;">
+          <div style="background: #1e40af; color: white; padding: 8px 15px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 14px;">1. EXPERIMENT TITLE / TOPIC</div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 15px;">
+            <h3 style="color: #1e40af;">${title}</h3>
+            <p style="margin-top: 8px;">This practical session covers the principles, operation, and maintenance of ${title.toLowerCase()} equipment used in physiotherapy applications.</p>
           </div>
-          
-          <!-- 4. DATA (Simulation Parameters) -->
-          <div class="section">
-            <div class="section-title">4. DATA</div>
-            <div class="section-content">
-              <p>Technical specifications and operational parameters used in the simulation.</p>
-              ${simulationSectionsHTML}
-            </div>
+        </div>
+        
+        <!-- 2. THEORY -->
+        <div style="margin-bottom: 20px;">
+          <div style="background: #1e40af; color: white; padding: 8px 15px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 14px;">2. THEORY</div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 15px;">
+            ${theoryText || `
+              <p>The theoretical foundation of ${title.toLowerCase()} involves understanding the physical principles, 
+              physiological effects, and clinical applications of this equipment in therapeutic settings.</p>
+              <p style="margin-top: 8px;">Key concepts include:</p>
+              <ul style="margin-left: 20px; margin-top: 5px;">
+                <li>Physical principles of operation</li>
+                <li>Physiological effects on tissues</li>
+                <li>Safety considerations and contraindications</li>
+                <li>Equipment components and their functions</li>
+              </ul>
+            `}
+            ${clonedContent.innerHTML}
           </div>
-          
-          <!-- 5. RESULTS -->
-          <div class="section">
-            <div class="section-title">5. RESULTS</div>
-            <div class="section-content">
-              <p>Simulation results and analysis are documented in the Data section above, including parameter tables and graphical charts.</p>
-              <div class="note-box" style="margin-top: 10px;">
-                <strong>Summary:</strong> The simulation was conducted successfully with all parameters monitored and recorded. Results indicate equipment performance within expected ranges.
+        </div>
+        
+        <!-- 3. OBSERVATIONS -->
+        <div style="margin-bottom: 20px;">
+          <div style="background: #1e40af; color: white; padding: 8px 15px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 14px;">3. OBSERVATIONS</div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 15px;">
+            ${observationsText || `
+              <p>Key observations from the practical session:</p>
+              <ul style="margin-left: 20px; margin-top: 5px;">
+                <li>Equipment operated within normal parameters during simulation</li>
+                <li>Safety protocols were followed correctly</li>
+                <li>Maintenance procedures were demonstrated and understood</li>
+              </ul>
+              <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px; margin-top: 10px;">
+                <strong>Note:</strong> Additional observations should be documented by the trainee based on hands-on experience with the equipment.
               </div>
+            `}
+          </div>
+        </div>
+        
+        <!-- 4. DATA (Simulation Parameters) -->
+        <div style="margin-bottom: 20px;">
+          <div style="background: #1e40af; color: white; padding: 8px 15px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 14px;">4. DATA</div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 15px;">
+            <p>Technical specifications and operational parameters used in the simulation.</p>
+            ${simulationSectionsHTML}
+          </div>
+        </div>
+        
+        <!-- 5. RESULTS -->
+        <div style="margin-bottom: 20px;">
+          <div style="background: #1e40af; color: white; padding: 8px 15px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 14px;">5. RESULTS</div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 15px;">
+            <p>Simulation results and analysis are documented in the Data section above, including parameter tables and graphical charts.</p>
+            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px; margin-top: 10px;">
+              <strong>Summary:</strong> The simulation was conducted successfully with all parameters monitored and recorded. Results indicate equipment performance within expected ranges.
             </div>
           </div>
-          
-          <!-- 6. CONCLUSION -->
-          <div class="section">
-            <div class="section-title">6. CONCLUSION</div>
-            <div class="section-content">
-              <p>Based on the practical session, the following conclusions can be drawn:</p>
-              <ol style="margin-left: 20px; margin-top: 8px;">
-                <li>The ${title.toLowerCase()} equipment functions according to the specified operational parameters.</li>
-                <li>Regular maintenance and calibration are essential for optimal performance.</li>
-                <li>Safety protocols must be strictly followed during operation.</li>
-                <li>Understanding the theoretical principles enhances practical application skills.</li>
-              </ol>
-              <div class="warning-box" style="margin-top: 10px;">
-                <strong>Important:</strong> This practical session should be supplemented with hands-on training under qualified supervision before independent operation.
-              </div>
+        </div>
+        
+        <!-- 6. CONCLUSION -->
+        <div style="margin-bottom: 20px;">
+          <div style="background: #1e40af; color: white; padding: 8px 15px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 14px;">6. CONCLUSION</div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 15px;">
+            <p>Based on the practical session, the following conclusions can be drawn:</p>
+            <ol style="margin-left: 20px; margin-top: 8px;">
+              <li>The ${title.toLowerCase()} equipment functions according to the specified operational parameters.</li>
+              <li>Regular maintenance and calibration are essential for optimal performance.</li>
+              <li>Safety protocols must be strictly followed during operation.</li>
+              <li>Understanding the theoretical principles enhances practical application skills.</li>
+            </ol>
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px; margin-top: 10px;">
+              <strong>Important:</strong> This practical session should be supplemented with hands-on training under qualified supervision before independent operation.
             </div>
           </div>
-          
-          <!-- Sign-off Section -->
-          <div class="sign-off-section">
-            <h2>SIGN-OFF</h2>
-            <div class="sign-off-grid">
-              <div class="sign-off-box">
-                <div class="role">Trainee</div>
-                <div style="font-weight: bold; color: #1e40af;">${traineeInfo.name}</div>
-                <div style="font-size: 11px; color: #6b7280;">Admission No: ${traineeInfo.registrationNumber}</div>
-                <div style="font-size: 11px; color: #6b7280;">Class: ${traineeInfo.className}</div>
-                <div class="name-line"></div>
-                <div class="label">Signature</div>
-                <div class="date-line"></div>
-                <div class="label">Date</div>
-              </div>
-              <div class="sign-off-box">
-                <div class="role">Trainer</div>
-                <div style="font-weight: bold; color: #1e40af;">Kevin Koech</div>
-                <div style="font-size: 11px; color: #6b7280;">Unit Trainer</div>
-                <div class="name-line"></div>
-                <div class="label">Signature</div>
-                <div class="date-line"></div>
-                <div class="label">Date</div>
-              </div>
+        </div>
+        
+        <!-- Sign-off Section -->
+        <div style="margin-top: 40px;">
+          <h2 style="text-align: center; color: #1e40af; margin-bottom: 20px;">SIGN-OFF</h2>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+            <div style="border: 2px solid #1e40af; border-radius: 8px; padding: 20px; text-align: center;">
+              <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Trainee</div>
+              <div style="font-weight: bold; color: #1e40af;">${traineeInfo.name}</div>
+              <div style="font-size: 11px; color: #6b7280;">Admission No: ${traineeInfo.registrationNumber}</div>
+              <div style="font-size: 11px; color: #6b7280;">Class: ${traineeInfo.className}</div>
+              <div style="border-bottom: 1px solid #374151; margin: 30px 0 8px 0; height: 1px;"></div>
+              <div style="font-size: 11px; color: #9ca3af;">Signature</div>
+              <div style="border-bottom: 1px solid #374151; margin: 20px 0 8px 0; height: 1px;"></div>
+              <div style="font-size: 11px; color: #9ca3af;">Date</div>
+            </div>
+            <div style="border: 2px solid #1e40af; border-radius: 8px; padding: 20px; text-align: center;">
+              <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Trainer</div>
+              <div style="font-weight: bold; color: #1e40af;">Kevin Koech</div>
+              <div style="font-size: 11px; color: #6b7280;">Unit Trainer</div>
+              <div style="border-bottom: 1px solid #374151; margin: 30px 0 8px 0; height: 1px;"></div>
+              <div style="font-size: 11px; color: #9ca3af;">Signature</div>
+              <div style="border-bottom: 1px solid #374151; margin: 20px 0 8px 0; height: 1px;"></div>
+              <div style="font-size: 11px; color: #9ca3af;">Date</div>
             </div>
           </div>
-          
-          <!-- Footer -->
-          <div class="report-footer">
-            <p>Generated by Physiotherapy Equipment Maintenance Learning System</p>
-            <p>Report Date: ${dateStr} at ${timeStr}</p>
-          </div>
-        </body>
-      </html>
+        </div>
+        
+        <!-- Footer -->
+        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 11px; color: #9ca3af;">
+          <p>Generated by Physiotherapy Equipment Maintenance Learning System</p>
+          <p>Report Date: ${dateStr} at ${timeStr}</p>
+        </div>
+      </div>
     `;
   };
 

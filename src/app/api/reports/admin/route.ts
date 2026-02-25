@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { users, reports } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all reports with user information
+    // Get all reports with user information including simulation data
     const allReports = await db.select({
       id: reports.id,
       traineeId: reports.traineeId,
       equipmentName: reports.equipmentName,
+      simulationData: reports.simulationData,
       score: reports.score,
       grade: reports.grade,
       status: reports.status,
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
       traineeName: users.name,
       admissionNumber: users.admissionNumber,
       className: users.className,
-    }).from(reports).innerJoin(users, eq(reports.traineeId, users.id)).orderBy(reports.submittedAt);
+    }).from(reports).innerJoin(users, eq(reports.traineeId, users.id)).orderBy(desc(reports.submittedAt));
 
     return NextResponse.json({
       success: true,
