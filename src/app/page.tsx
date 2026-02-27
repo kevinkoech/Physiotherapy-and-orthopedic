@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PWAInstallButton } from "@/components/PWAInstallButton";
 
 const modules = [
   {
@@ -226,6 +227,19 @@ export default function HomePage() {
             </div>
           </Link>
         ))}
+      </div>
+      
+      {/* PWA Install Button */}
+      <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-blue-900 mb-2">📱 Install as App</h3>
+            <p className="text-sm text-blue-700">
+              Add PhysioMaint to your home screen for offline access and a native app experience.
+            </p>
+          </div>
+          <PWAInstallButton />
+        </div>
       </div>
 
       {/* Study Tips */}
