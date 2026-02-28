@@ -6,6 +6,7 @@ import { ResponsiveNav } from "@/components/ResponsiveNav";
 import { Footer } from "@/components/Footer";
 import { OnboardingScreen } from "@/components/OnboardingScreen";
 import { SplashScreen } from "@/components/SplashScreen";
+import { FloatingInstallButton } from "@/components/PWAInstallButton";
 import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
@@ -62,6 +63,8 @@ export default function RootLayout({
           <ServiceWorkerRegistration />
           <SplashScreen />
           <OnboardingScreen />
+          <FloatingInstallButton />
+          <FloatingInstallButton />
           
           {/* Responsive Navigation */}
           <ResponsiveNav />

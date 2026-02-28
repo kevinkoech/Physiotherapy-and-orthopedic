@@ -1,17 +1,29 @@
 {
-  "name": "Physiotherapy Equipment Maintenance",
+  "name": "PhysioMaint - Physiotherapy Equipment Maintenance",
   "short_name": "PhysioMaint",
   "description": "Comprehensive learning notes for physiotherapy equipment maintenance with interactive simulations",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0f766e",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "scope": "/",
   "icons": [
     {
       "src": "/icons/icon.svg",
       "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
@@ -48,6 +60,13 @@
       "name": "Muscle Stimulator",
       "url": "/muscle-stimulator",
       "description": "Muscle stimulator module"
+    },
+    {
+      "name": "My Reports",
+      "url": "/report-history",
+      "description": "View your submitted reports"
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

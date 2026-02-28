@@ -20,6 +20,7 @@ const STATIC_PAGES = [
   '/implants',
   '/orthotics-prosthesis',
   '/rehabilitative-engineering',
+  '/tissue-engineering',
 ];
 
 // Install event - cache static pages only
