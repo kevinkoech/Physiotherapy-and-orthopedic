@@ -1,6 +1,9 @@
 const CACHE_NAME = 'physio-maint-v6';
 const STATIC_PAGES = [
   '/',
+  '/login',
+  '/report-history',
+  '/admin',
   '/short-wave-diathermy',
   '/muscle-stimulator',
   '/infrared-therapy',
