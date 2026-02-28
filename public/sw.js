@@ -1,4 +1,4 @@
-const CACHE_NAME = 'physio-maint-v5';
+const CACHE_NAME = 'physio-maint-v6';
 const STATIC_PAGES = [
   '/',
   '/short-wave-diathermy',
