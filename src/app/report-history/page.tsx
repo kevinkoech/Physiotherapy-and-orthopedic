@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 interface Report {
   id: number;
@@ -22,10 +23,18 @@ export default function ReportHistoryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const { user } = useAuth();
 
-  const fetchReports = async () => {
-    if (!admissionNumber.trim()) {
-      alert("Please enter your admission number");
+  // Auto-fill admission number from logged-in user
+  useEffect(() => {
+    if (user && user.admissionNumber) {
+      setAdmissionNumber(user.admissionNumber);
+      fetchReports(user.admissionNumber);
+    }
+  }, [user]);
+
+  const fetchReports = async (admNumber: string) => {
+    if (!admNumber.trim()) {
       return;
     }
 
@@ -33,7 +42,7 @@ export default function ReportHistoryPage() {
     setError(null);
 
     try {
-      const response = await fetch(`/api/reports/trainee?admissionNumber=${encodeURIComponent(admissionNumber.trim())}`);
+      const response = await fetch(`/api/reports/trainee?admissionNumber=${encodeURIComponent(admNumber.trim())}`);
       const data = await response.json();
 
       if (data.success) {
@@ -55,7 +64,7 @@ export default function ReportHistoryPage() {
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      fetchReports();
+      fetchReports(admissionNumber);
     }
   };
 
@@ -87,13 +96,18 @@ export default function ReportHistoryPage() {
   };
 
   const handleExportExcel = async () => {
+    const admNumber = user?.admissionNumber || admissionNumber;
+    if (!admNumber) {
+      alert("Please enter your admission number");
+      return;
+    }
     try {
-      const response = await fetch(`/api/reports/export/excel/trainee/${encodeURIComponent(admissionNumber.trim())}`);
+      const response = await fetch(`/api/reports/export/excel/trainee/${encodeURIComponent(admNumber.trim())}`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `trainee-marks-${admissionNumber.trim()}.xlsx`;
+      a.download = `trainee-marks-${admNumber.trim()}.xlsx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -106,6 +120,7 @@ export default function ReportHistoryPage() {
 
   // Download individual report as PDF
   const downloadReportPDF = async (report: Report) => {
+    const admNumber = user?.admissionNumber || admissionNumber;
     try {
       const { jsPDF } = await import('jspdf');
       const html2canvas = (await import('html2canvas')).default;
@@ -156,7 +171,7 @@ export default function ReportHistoryPage() {
       }
       
       const sanitizeFilename = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').toLowerCase();
-      const filename = `${sanitizeFilename(admissionNumber)}-${sanitizeFilename(report.equipmentName)}.pdf`;
+      const filename = `${sanitizeFilename(admNumber)}-${sanitizeFilename(report.equipmentName)}.pdf`;
       
       pdf.save(filename);
     } catch (error) {
@@ -167,6 +182,7 @@ export default function ReportHistoryPage() {
 
   // Download individual report as Excel
   const downloadReportExcel = async (report: Report) => {
+    const admNumber = user?.admissionNumber || admissionNumber;
     try {
       const XLSX = (await import('xlsx')).default;
       
@@ -214,7 +230,7 @@ export default function ReportHistoryPage() {
       }
       
       const sanitizeFilename = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').toLowerCase();
-      const filename = `${sanitizeFilename(admissionNumber)}-${sanitizeFilename(report.equipmentName)}.xlsx`;
+      const filename = `${sanitizeFilename(admNumber)}-${sanitizeFilename(report.equipmentName)}.xlsx`;
       
       XLSX.writeFile(workbook, filename);
     } catch (error) {
@@ -365,31 +381,51 @@ export default function ReportHistoryPage() {
 
       {/* Search Section */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-        <div className="flex gap-4 flex-wrap">
-          <div className="flex-1 min-w-[250px]">
-            <label htmlFor="admissionNumber" className="block text-sm font-medium text-gray-700 mb-1">
-              Admission Number
-            </label>
-            <input
-              type="text"
-              id="admissionNumber"
-              value={admissionNumber}
-              onChange={(e) => setAdmissionNumber(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your admission number"
-            />
+        {user ? (
+          <div className="flex gap-4 flex-wrap items-center">
+            <div className="flex-1 min-w-[250px]">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-gray-500">Logged in as:</span>
+                <span className="font-semibold text-gray-900">{user.name}</span>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">{user.role}</span>
+              </div>
+              <label htmlFor="admissionNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                Admission Number
+              </label>
+              <input
+                type="text"
+                id="admissionNumber"
+                value={admissionNumber}
+                onChange={(e) => setAdmissionNumber(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && fetchReports(admissionNumber)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your admission number"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={() => fetchReports(admissionNumber)}
+                disabled={loading}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Loading..." : "View Reports"}
+              </button>
+            </div>
           </div>
-          <div className="flex items-end">
-            <button
-              onClick={fetchReports}
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-gray-600 mb-4">Please sign in to view your reports</p>
+            <a
+              href="/login"
+              className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {loading ? "Loading..." : "View Reports"}
-            </button>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Sign In
+            </a>
           </div>
-        </div>
+        )}
         {error && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600 text-sm">{error}</p>

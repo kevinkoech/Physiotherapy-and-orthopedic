@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 interface Report {
   id: number;
@@ -24,10 +26,18 @@ export default function AdminPage() {
   const [filterEquipment, setFilterEquipment] = useState("");
   const [filterClass, setFilterClass] = useState("");
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
+    // Check if user is admin or trainer
+    if (!user || (user.role !== "admin" && user.role !== "trainer")) {
+      router.push("/login");
+      return;
+    }
     fetchAllReports();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const fetchAllReports = async () => {
     setLoading(true);

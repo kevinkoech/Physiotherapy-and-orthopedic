@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { PWAInstallButton } from "./PWAInstallButton";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavItem {
   name: string;
@@ -36,6 +37,8 @@ export function ResponsiveNav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const prevPathnameRef = useRef(pathname);
 
   // Filter nav items based on search query
@@ -133,20 +136,47 @@ export function ResponsiveNav() {
                   >
                     🏠 Home
                   </Link>
-                  <Link
-                    href="/report-history"
-                    onClick={closeMenu}
-                    className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
-                  >
-                    📊 Report History
-                  </Link>
-                  <Link
-                    href="/admin"
-                    onClick={closeMenu}
-                    className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
-                  >
-                    🔐 Admin Dashboard
-                  </Link>
+                  {user && (
+                    <>
+                      <Link
+                        href="/report-history"
+                        onClick={closeMenu}
+                        className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
+                      >
+                        📊 My Reports
+                      </Link>
+                      {(user.role === "admin" || user.role === "trainer") && (
+                        <Link
+                          href="/admin"
+                          onClick={closeMenu}
+                          className="block px-4 py-2 hover:bg-gray-50 text-gray-700 font-medium"
+                        >
+                          🔐 Admin Dashboard
+                        </Link>
+                      )}
+                    </>
+                  )}
+                  <div className="border-t my-2" />
+                  {!user ? (
+                    <Link
+                      href="/login"
+                      onClick={closeMenu}
+                      className="block px-4 py-2 hover:bg-gray-50 text-blue-600 font-medium"
+                    >
+                      🔑 Sign In
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        logout();
+                        router.push("/");
+                        closeMenu();
+                      }}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600 font-medium"
+                    >
+                      🚪 Sign Out ({user.name})
+                    </button>
+                  )}
                   <div className="border-t my-2" />
                   <div className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase">Equipment Modules</div>
                   {navItems.map((item) => (
@@ -258,20 +288,46 @@ export function ResponsiveNav() {
             >
               🏠 Home
             </Link>
-            <Link
-              href="/report-history"
-              onClick={closeMenu}
-              className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
-            >
-              📊 Report History
-            </Link>
-            <Link
-              href="/admin"
-              onClick={closeMenu}
-              className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
-            >
-              🔐 Admin Dashboard
-            </Link>
+            {user && (
+              <>
+                <Link
+                  href="/report-history"
+                  onClick={closeMenu}
+                  className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
+                >
+                  📊 My Reports
+                </Link>
+                {(user.role === "admin" || user.role === "trainer") && (
+                  <Link
+                    href="/admin"
+                    onClick={closeMenu}
+                    className="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium border-b"
+                  >
+                    🔐 Admin Dashboard
+                  </Link>
+                )}
+              </>
+            )}
+            {!user ? (
+              <Link
+                href="/login"
+                onClick={closeMenu}
+                className="block px-4 py-3 hover:bg-gray-50 text-blue-600 font-medium border-b"
+              >
+                🔑 Sign In
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  logout();
+                  router.push("/");
+                  closeMenu();
+                }}
+                className="block w-full text-left px-4 py-3 hover:bg-gray-50 text-red-600 font-medium border-b"
+              >
+                🚪 Sign Out ({user.name})
+              </button>
+            )}
             <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase bg-gray-50">Equipment Modules</div>
             {navItems.map((item) => (
               <Link
