@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 const ONBOARDING_KEY = "physiomaint-onboarding-complete";
 
 interface OnboardingSlide {
@@ -64,6 +69,29 @@ function getServerSnapshot() {
 export function OnboardingScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstalling, setIsInstalling] = useState(false);
+  
+  // Listen for install prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  }, []);
+
+  // Listen for app installed
+  useEffect(() => {
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+      // Auto-complete onboarding after install
+      handleComplete();
+    };
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => window.removeEventListener("appinstalled", handleAppInstalled);
+  }, []);
   
   // Only check localStorage after mounting to avoid hydration mismatch
   useEffect(() => {
@@ -101,6 +129,26 @@ export function OnboardingScreen() {
       setCurrentSlide((prev) => prev - 1);
     }
   }, [currentSlide]);
+
+  const handleInstallNow = useCallback(async () => {
+    if (!deferredPrompt) {
+      // If no prompt, just mark complete
+      handleComplete();
+      return;
+    }
+    
+    setIsInstalling(true);
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === "accepted") {
+      console.log("PWA installed from onboarding");
+    }
+    
+    setDeferredPrompt(null);
+    setIsInstalling(false);
+    handleComplete();
+  }, [deferredPrompt]);
 
   const handleSkip = useCallback(() => {
     handleComplete();
@@ -162,12 +210,46 @@ export function OnboardingScreen() {
                   Back
                 </button>
               )}
-              <button
-                onClick={handleNext}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium"
-              >
-                {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
-              </button>
+              {currentSlide === slides.length - 1 ? (
+                deferredPrompt ? (
+                  <button
+                    onClick={handleInstallNow}
+                    disabled={isInstalling}
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center gap-2"
+                  >
+                    {isInstalling ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Installing...
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Install & Get Started
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleComplete}
+                    className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium"
+                  >
+                    Get Started
+                  </button>
+                )
+              ) : (
+                <button
+                  onClick={handleNext}
+                  className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium"
+                >
+                  Next
+                </button>
+              )}
             </div>
           </div>
         </div>
