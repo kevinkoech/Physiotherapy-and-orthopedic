@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useSyncExternalStore } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 
 const ONBOARDING_KEY = "physiomaint-onboarding-complete";
 
@@ -63,6 +63,12 @@ function getServerSnapshot() {
 
 export function OnboardingScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  
+  // Only check localStorage after mounting to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Use useSyncExternalStore for onboarding status
   const needsOnboarding = useSyncExternalStore(
@@ -70,6 +76,11 @@ export function OnboardingScreen() {
     getOnboardingSnapshot,
     getServerSnapshot
   );
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   const handleComplete = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, "true");

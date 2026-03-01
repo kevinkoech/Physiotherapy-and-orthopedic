@@ -22,6 +22,7 @@ function getServerSnapshot() {
 export function SplashScreen() {
   const [isFading, setIsFading] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
   // Use useSyncExternalStore for standalone check
   const isStandalone = useSyncExternalStore(
@@ -29,6 +30,10 @@ export function SplashScreen() {
     getStandaloneSnapshot,
     getServerSnapshot
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Only show splash on standalone PWA mode
@@ -52,8 +57,8 @@ export function SplashScreen() {
     };
   }, [isStandalone]);
 
-  // Don't render if not standalone or done
-  if (!isStandalone || isDone) {
+  // Don't render if not mounted, not standalone, or done
+  if (!mounted || !isStandalone || isDone) {
     return null;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface User {
   id: number;
@@ -31,9 +31,16 @@ function getInitialUser(): User | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialize state directly from localStorage to avoid useEffect
-  const [user, setUser] = useState<User | null>(() => getInitialUser());
-  const [isLoading, setIsLoading] = useState(false);
+  // Initialize state with null, then load from localStorage after mount
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load user from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    const stored = getInitialUser();
+    setUser(stored);
+    setIsLoading(false);
+  }, []);
 
   const login = async (admissionNumber: string): Promise<boolean> => {
     try {
