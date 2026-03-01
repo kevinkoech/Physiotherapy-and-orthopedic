@@ -4,6 +4,11 @@ import Link from "next/link";
 import { PWAInstallButton } from "./PWAInstallButton";
 
 export function Footer() {
+  const resetOnboarding = () => {
+    localStorage.removeItem("physiomaint-onboarding-complete");
+    window.location.reload();
+  };
+
   return (
     <footer className="bg-gray-900 text-white py-8 mt-auto">
       <div className="max-w-7xl mx-auto px-4">
@@ -89,6 +94,12 @@ export function Footer() {
               Kevin Koech
             </a>
           </p>
+          <button
+            onClick={resetOnboarding}
+            className="mt-2 text-xs text-gray-600 hover:text-teal-400 underline"
+          >
+            Reset Onboarding
+          </button>
         </div>
       </div>
     </footer>
