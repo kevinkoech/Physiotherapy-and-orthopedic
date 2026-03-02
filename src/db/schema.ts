@@ -20,3 +20,14 @@ export const reports = sqliteTable("reports", {
   submittedAt: integer("submitted_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   gradedAt: integer("graded_at", { mode: "timestamp" }),
 });
+
+export const notifications = sqliteTable("notifications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  imageUrl: text("image_url"),
+  targetRole: text("target_role").notNull().default("all"), // all, trainee, trainer, admin
+  senderId: integer("sender_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  read: integer("read").notNull().default(0),
+});

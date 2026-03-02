@@ -8,6 +8,7 @@ import { OnboardingScreen } from "@/components/OnboardingScreen";
 import { SplashScreen } from "@/components/SplashScreen";
 import { FloatingInstallButton } from "@/components/PWAInstallButton";
 import { AuthProvider } from "@/context/AuthContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,21 +61,23 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen flex flex-col`}
       >
         <AuthProvider>
-          <ServiceWorkerRegistration />
-          <SplashScreen />
-          <OnboardingScreen />
-          <FloatingInstallButton />
-          
-          {/* Responsive Navigation */}
-          <ResponsiveNav />
+          <NotificationProvider>
+            <ServiceWorkerRegistration />
+            <SplashScreen />
+            <OnboardingScreen />
+            <FloatingInstallButton />
+            
+            {/* Responsive Navigation */}
+            <ResponsiveNav />
 
-          {/* Main Content */}
-          <main className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
-            {children}
-          </main>
+            {/* Main Content */}
+            <main className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
+              {children}
+            </main>
 
-          {/* Footer with Credits */}
-          <Footer />
+            {/* Footer with Credits */}
+            <Footer />
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

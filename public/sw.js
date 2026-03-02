@@ -1,4 +1,4 @@
-const CACHE_NAME = 'physio-maint-v6';
+const CACHE_NAME = 'physio-maint-v7';
 const STATIC_PAGES = [
   '/',
   '/login',
@@ -36,6 +36,84 @@ self.addEventListener('install', (event) => {
       })
   );
   self.skipWaiting();
+});
+
+// Push notification event handler
+self.addEventListener('push', (event) => {
+  console.log('Push notification received:', event);
+  
+  let data = {
+    title: 'PhysioMaint',
+    body: 'You have a new notification',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-72.png',
+    image: null,
+    tag: 'default',
+    data: { url: '/' }
+  };
+  
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      data = {
+        ...data,
+        ...payload,
+        data: payload.data || { url: '/' }
+      };
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+  
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+    image: data.image,
+    tag: data.tag,
+    data: data.data,
+    vibrate: [100, 50, 100],
+    actions: [
+      { action: 'open', title: 'Open' },
+      { action: 'dismiss', title: 'Dismiss' }
+    ],
+    requireInteraction: false,
+    renotify: true,
+    silent: false
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+  console.log('Notification click:', event);
+  event.notification.close();
+  
+  if (event.action === 'dismiss') {
+    return;
+  }
+  
+  const urlToOpen = event.notification.data?.url || '/';
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's already a window open
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.navigate(urlToOpen);
+            return client.focus();
+          }
+        }
+        // Open new window if none exists
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
 });
 
 // Fetch event - network first for JS/CSS, cache first for pages

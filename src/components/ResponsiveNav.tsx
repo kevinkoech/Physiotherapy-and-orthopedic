@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { PWAInstallButton } from "./PWAInstallButton";
 import { useAuth } from "@/context/AuthContext";
+import { NotificationBell } from "./NotificationBell";
 
 interface NavItem {
   name: string;
@@ -103,6 +104,9 @@ export function ResponsiveNav() {
 
           {/* Right side buttons */}
           <div className="flex items-center gap-2">
+            {/* Notification Bell - Show when logged in */}
+            {user && <NotificationBell />}
+
             {/* PWA Install Button */}
             <PWAInstallButton />
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 
 interface Report {
   id: number;
@@ -26,8 +27,15 @@ export default function AdminPage() {
   const [filterEquipment, setFilterEquipment] = useState("");
   const [filterClass, setFilterClass] = useState("");
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [showNotificationForm, setShowNotificationForm] = useState(false);
+  const [notificationTitle, setNotificationTitle] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [notificationImage, setNotificationImage] = useState("");
+  const [notificationTarget, setNotificationTarget] = useState("all");
+  const [sendingNotification, setSendingNotification] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+  const { sendNotification } = useNotifications();
 
   useEffect(() => {
     // Check if user is admin or trainer
@@ -183,6 +191,40 @@ export default function AdminPage() {
     } catch (error) {
       console.error("Error exporting zip file:", error);
       alert("Failed to export zip file");
+    }
+  };
+
+  // Handle send notification
+  const handleSendNotification = async () => {
+    if (!notificationTitle.trim() || !notificationMessage.trim()) {
+      alert("Please enter a title and message");
+      return;
+    }
+
+    setSendingNotification(true);
+    try {
+      const success = await sendNotification(
+        notificationTitle,
+        notificationMessage,
+        notificationImage || undefined,
+        notificationTarget
+      );
+
+      if (success) {
+        alert("Notification sent successfully!");
+        setShowNotificationForm(false);
+        setNotificationTitle("");
+        setNotificationMessage("");
+        setNotificationImage("");
+        setNotificationTarget("all");
+      } else {
+        alert("Failed to send notification");
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      alert("Failed to send notification");
+    } finally {
+      setSendingNotification(false);
     }
   };
 
@@ -427,6 +469,15 @@ export default function AdminPage() {
             <p className="text-gray-600">Manage and monitor trainee reports</p>
           </div>
           <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setShowNotificationForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+              </svg>
+              Send Notification
+            </button>
             <button
               onClick={handleExportExcel}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -921,6 +972,105 @@ export default function AdminPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   Download Excel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Notification Modal */}
+      {showNotificationForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                  </svg>
+                  Send Push Notification
+                </h2>
+                <button
+                  onClick={() => setShowNotificationForm(false)}
+                  className="text-white/80 hover:text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-orange-100 mt-1">Send notifications to all trainees</p>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {/* Target Audience */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+                <select
+                  value={notificationTarget}
+                  onChange={(e) => setNotificationTarget(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                >
+                  <option value="all">All Users</option>
+                  <option value="trainee">Trainees Only</option>
+                  <option value="trainer">Trainers Only</option>
+                  <option value="admin">Admins Only</option>
+                </select>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={notificationTitle}
+                  onChange={(e) => setNotificationTitle(e.target.value)}
+                  placeholder="Enter notification title"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  maxLength={100}
+                />
+              </div>
+
+              {/* Message */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Message <span className="text-red-500">*</span></label>
+                <textarea
+                  value={notificationMessage}
+                  onChange={(e) => setNotificationMessage(e.target.value)}
+                  placeholder="Enter notification message"
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Image URL */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (Optional)</label>
+                <input
+                  type="url"
+                  value={notificationImage}
+                  onChange={(e) => setNotificationImage(e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowNotificationForm(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendNotification}
+                  disabled={sendingNotification || !notificationTitle.trim() || !notificationMessage.trim()}
+                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sendingNotification ? "Sending..." : "Send Notification"}
                 </button>
               </div>
             </div>
