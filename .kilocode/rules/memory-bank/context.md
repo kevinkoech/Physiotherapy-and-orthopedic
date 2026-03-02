@@ -153,3 +153,8 @@ Each equipment page has a simulation panel with:
 | 2026-03-01 | Changed database from remote @kilocode/app-builder-db to local SQLite with better-sqlite3 |
 | 2026-03-01 | Updated database connection configuration in src/db/index.ts and src/db/migrate.ts |
 | 2026-03-01 | Installed better-sqlite3 and @types/better-sqlite3 dependencies |
+| 2026-03-02 | Added push notification system - admin can send notifications with text and image |
+| 2026-03-02 | Added NotificationBell component to navbar for viewing notifications |
+| 2026-03-02 | Updated service worker with push event handlers |
+| 2026-03-02 | Added notifications table to database schema |
+| 2026-03-02 | Created NotificationContext for managing notifications in the app |
