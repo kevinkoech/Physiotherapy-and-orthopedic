@@ -38,7 +38,7 @@ export function ResponsiveNav() {
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const prevPathnameRef = useRef(pathname);
 
   // Filter nav items based on search query

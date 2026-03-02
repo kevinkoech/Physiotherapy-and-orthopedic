@@ -19,26 +19,21 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Get initial user from localStorage - safe for SSR
-function getInitialUser(): User | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const stored = localStorage.getItem("physio_user");
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialize state with null, then load from localStorage after mount
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load user from localStorage after mount to avoid hydration mismatch
   useEffect(() => {
-    const stored = getInitialUser();
-    setUser(stored);
+    try {
+      const stored = localStorage.getItem("physio_user");
+      if (stored) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUser(JSON.parse(stored));
+      }
+    } catch {
+      // Ignore errors
+    }
     setIsLoading(false);
   }, []);
 

@@ -149,3 +149,7 @@ Each equipment page has a simulation panel with:
 | 2026-02-22 | Added institution header (The Nyeri National Polytechnic, EEE Department, Biomedical Engineering, Unit Trainer: Kevin Koech), page numbers, and class field to trainee info in PDF reports |
 | 2026-02-22 | Fixed chunk loading error by updating service worker to use network-first strategy for Next.js static chunks; Fixed chart display issues with CSS visibility and edge case handling |
 | 2026-02-24 | Added report archiving and grading system with database integration, admin dashboard, and report history page |
+| 2026-03-01 | Fixed hydration errors in all client components by ensuring consistent hook order |
+| 2026-03-01 | Changed database from remote @kilocode/app-builder-db to local SQLite with better-sqlite3 |
+| 2026-03-01 | Updated database connection configuration in src/db/index.ts and src/db/migrate.ts |
+| 2026-03-01 | Installed better-sqlite3 and @types/better-sqlite3 dependencies |

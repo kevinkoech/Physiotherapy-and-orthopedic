@@ -67,53 +67,17 @@ function getServerSnapshot() {
 }
 
 export function OnboardingScreen() {
+  // State variables - must be declared first and consistently
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
   
-  // Listen for install prompt
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-  }, []);
-
-  // Listen for app installed
-  useEffect(() => {
-    const handleAppInstalled = () => {
-      setDeferredPrompt(null);
-      // Auto-complete onboarding after install
-      handleComplete();
-    };
-    window.addEventListener("appinstalled", handleAppInstalled);
-    return () => window.removeEventListener("appinstalled", handleAppInstalled);
-  }, []);
-  
-  // Only check localStorage after mounting to avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  // Use useSyncExternalStore for onboarding status
-  const needsOnboarding = useSyncExternalStore(
-    subscribeToStorage,
-    getOnboardingSnapshot,
-    getServerSnapshot
-  );
-
-  // Don't render until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return null;
-  }
-
+  // Define callback functions - must be called consistently
   const handleComplete = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, "true");
-    // Trigger storage event to update the store
-    window.dispatchEvent(new StorageEvent("storage"));
+    setNeedsOnboarding(false);
   }, []);
 
   const handleNext = useCallback(() => {
@@ -148,11 +112,47 @@ export function OnboardingScreen() {
     setDeferredPrompt(null);
     setIsInstalling(false);
     handleComplete();
-  }, [deferredPrompt]);
+  }, [deferredPrompt, handleComplete]);
 
   const handleSkip = useCallback(() => {
     handleComplete();
   }, [handleComplete]);
+  
+  // Effects - must be called consistently
+  // Mark as mounted after hydration and check onboarding status
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    // Check if onboarding is needed only after mount
+    const isNeeded = !localStorage.getItem(ONBOARDING_KEY);
+    setNeedsOnboarding(isNeeded);
+  }, []);
+  
+  // Listen for install prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  }, []);
+
+  // Listen for app installed
+  useEffect(() => {
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+      // Auto-complete onboarding after install
+      handleComplete();
+    };
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => window.removeEventListener("appinstalled", handleAppInstalled);
+  }, [handleComplete]);
+
+  // Don't render anything until mounted to avoid hydration issues
+  if (!mounted) {
+    return null;
+  }
 
   if (!needsOnboarding) {
     return null;
