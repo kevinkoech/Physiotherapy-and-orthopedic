@@ -64,11 +64,11 @@ export function SplashScreen() {
       }`}
     >
       {/* Logo */}
-      <div className="mb-8">
-        <div className="w-24 h-24 bg-white rounded-2xl shadow-2xl flex items-center justify-center">
+      <div className="mb-6">
+        <div className="w-16 h-16 bg-white rounded-xl shadow-xl flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-16 w-16 text-teal-600"
+            className="h-10 w-10 text-teal-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -84,8 +84,8 @@ export function SplashScreen() {
       </div>
 
       {/* App Name */}
-      <h1 className="text-4xl font-bold text-white mb-2">PhysioMaint</h1>
-      <p className="text-teal-100 text-lg mb-8">Equipment Maintenance Learning</p>
+      <h1 className="text-2xl font-bold text-white mb-1">PhysioMaint</h1>
+      <p className="text-teal-100 text-sm mb-6">Equipment Maintenance Learning</p>
 
       {/* Loading indicator */}
       <div className="flex gap-1">
