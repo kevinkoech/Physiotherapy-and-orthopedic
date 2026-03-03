@@ -33,6 +33,9 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - [x] Report history page for trainees to view their submissions
 - [x] Automatic grading functionality based on simulation results
 - [x] New filename format for printed reports: `admno_name_class-equipment-topic.pdf`
+- [x] Push notification system with admin UI to send notifications
+- [x] Real-time notification delivery via SSE and BroadcastChannel
+- [x] Notification bell component in navbar with unread count
 
 ## Current Structure
 
@@ -158,3 +161,4 @@ Each equipment page has a simulation panel with:
 | 2026-03-02 | Updated service worker with push event handlers |
 | 2026-03-02 | Added notifications table to database schema |
 | 2026-03-02 | Created NotificationContext for managing notifications in the app |
+| 2026-03-03 | Enhanced push notifications with real-time SSE streaming and BroadcastChannel for instant delivery across all connected clients |
