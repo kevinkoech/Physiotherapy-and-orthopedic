@@ -162,3 +162,4 @@ Each equipment page has a simulation panel with:
 | 2026-03-02 | Added notifications table to database schema |
 | 2026-03-02 | Created NotificationContext for managing notifications in the app |
 | 2026-03-03 | Enhanced push notifications with real-time SSE streaming and BroadcastChannel for instant delivery across all connected clients |
+| 2026-03-03 | Fixed build error: switched from bun:sqlite to better-sqlite3 for production builds |
