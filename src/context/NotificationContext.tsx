@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "./AuthContext";
 
 interface Notification {
@@ -93,12 +93,89 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       });
 
       const data = await response.json();
-      return data.success;
+      
+      if (data.success) {
+        // Broadcast to all open tabs immediately
+        broadcastChannel?.postMessage({
+          type: "NEW_NOTIFICATION",
+          notification: {
+            id: data.notificationId,
+            title,
+            message,
+            imageUrl,
+            targetRole: targetRole || "all",
+            senderId: user.id,
+            createdAt: new Date().toISOString(),
+            read: 0,
+          },
+        });
+        
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error("Error sending notification:", error);
       return false;
     }
   };
+
+  // BroadcastChannel for real-time notifications across tabs
+  const broadcastChannel = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return new BroadcastChannel('notifications');
+  }, []);
+
+  // SSE connection for real-time notifications
+  useEffect(() => {
+    if (typeof window === "undefined" || !user) return;
+
+    let eventSource: EventSource | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
+
+    const connectSSE = () => {
+      eventSource = new EventSource('/api/notifications/stream');
+      
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'NEW_NOTIFICATION') {
+            const newNotification = {
+              ...data.notification,
+              createdAt: new Date(data.notification.createdAt),
+              read: 0,
+            };
+            setNotifications(prev => {
+              if (prev.some(n => n.id === newNotification.id)) return prev;
+              return [newNotification, ...prev];
+            });
+            
+            // Show browser notification if permitted
+            if (Notification.permission === "granted") {
+              new Notification(data.notification.title, {
+                body: data.notification.message,
+                icon: "/icons/icon-192.png",
+              });
+            }
+          }
+        } catch (e) {
+          // Ignore parse errors (e.g., heartbeat)
+        }
+      };
+      
+      eventSource.onerror = () => {
+        eventSource?.close();
+        // Reconnect after 5 seconds
+        reconnectTimeout = setTimeout(connectSSE, 5000);
+      };
+    };
+
+    connectSSE();
+
+    return () => {
+      eventSource?.close();
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    };
+  }, [user]);
 
   // Listen for messages from service worker
   useEffect(() => {
@@ -125,6 +202,30 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       }
     };
 
+    // Listen for BroadcastChannel messages (real-time from other tabs)
+    const handleBroadcast = (event: MessageEvent) => {
+      if (event.data?.type === "NEW_NOTIFICATION") {
+        const newNotification = {
+          ...event.data.notification,
+          createdAt: new Date(event.data.notification.createdAt),
+          read: 0,
+        };
+        setNotifications(prev => {
+          // Avoid duplicates
+          if (prev.some(n => n.id === newNotification.id)) return prev;
+          return [newNotification, ...prev];
+        });
+        
+        // Show browser notification if permitted
+        if (Notification.permission === "granted") {
+          new Notification(event.data.notification.title, {
+            body: event.data.notification.message,
+            icon: "/icons/icon-192.png",
+          });
+        }
+      }
+    };
+
     // Request notification permission
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
@@ -135,12 +236,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       navigator.serviceWorker.addEventListener("message", handleMessage);
     }
 
+    // Listen for BroadcastChannel messages
+    broadcastChannel?.addEventListener("message", handleBroadcast);
+
     return () => {
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.removeEventListener("message", handleMessage);
       }
+      broadcastChannel?.removeEventListener("message", handleBroadcast);
     };
-  }, [user]);
+  }, [user, broadcastChannel]);
 
   // Fetch notifications on mount and when user changes
   useEffect(() => {

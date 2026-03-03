@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useNotifications } from "@/context/NotificationContext";
 
 export function NotificationBell() {
@@ -113,10 +114,12 @@ export function NotificationBell() {
                 >
                   <div className="flex gap-3">
                     {notification.imageUrl ? (
-                      <img
+                      <Image
                         src={notification.imageUrl}
                         alt=""
-                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                        width={48}
+                        height={48}
+                        className="rounded-lg object-cover flex-shrink-0"
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
