@@ -21,6 +21,14 @@ export async function GET(request: NextRequest) {
       className: users.className,
     }).from(reports).innerJoin(users, eq(reports.traineeId, users.id)).orderBy(reports.submittedAt);
 
+    // Check if there are any reports
+    if (allReports.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'No reports found. Trainees need to submit reports first before exporting.',
+      }, { status: 404 });
+    }
+
     // Create Excel workbook and worksheet
     const workbook = XLSX.utils.book_new();
     const worksheetData = allReports.map(report => ({

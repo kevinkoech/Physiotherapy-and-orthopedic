@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useNotifications } from "@/context/NotificationContext";
 
 interface Report {
   id: number;
@@ -35,7 +34,6 @@ export default function AdminPage() {
   const [sendingNotification, setSendingNotification] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
-  const { sendNotification } = useNotifications();
 
   useEffect(() => {
     // Check if user is admin or trainer
@@ -139,6 +137,15 @@ export default function AdminPage() {
   const handleExportExcel = async () => {
     try {
       const response = await fetch("/api/reports/export/excel");
+      const contentType = response.headers.get("content-type");
+      
+      if (!contentType || !contentType.includes("application/vnd")) {
+        // Error response
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to export Excel file");
+        return;
+      }
+      
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -150,7 +157,7 @@ export default function AdminPage() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error exporting Excel file:", error);
-      alert("Failed to export Excel file");
+      alert("Failed to export Excel file. Please try again.");
     }
   };
 
@@ -159,6 +166,15 @@ export default function AdminPage() {
     try {
       const encodedEquipmentName = encodeURIComponent(equipmentName);
       const response = await fetch(`/api/reports/export/excel/${encodedEquipmentName}`);
+      const contentType = response.headers.get("content-type");
+      
+      if (!contentType || !contentType.includes("application/vnd")) {
+        // Error response
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to export Excel file");
+        return;
+      }
+      
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -171,7 +187,7 @@ export default function AdminPage() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error exporting Excel file:", error);
-      alert("Failed to export Excel file");
+      alert("Failed to export Excel file. Please try again.");
     }
   };
 
@@ -179,6 +195,15 @@ export default function AdminPage() {
   const handleExportZip = async () => {
     try {
       const response = await fetch("/api/reports/export/zip");
+      const contentType = response.headers.get("content-type");
+      
+      if (!contentType || !contentType.includes("application/zip")) {
+        // Error response
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to export zip file");
+        return;
+      }
+      
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -190,7 +215,7 @@ export default function AdminPage() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error exporting zip file:", error);
-      alert("Failed to export zip file");
+      alert("Failed to export zip file. Please try again.");
     }
   };
 
@@ -203,14 +228,21 @@ export default function AdminPage() {
 
     setSendingNotification(true);
     try {
-      const success = await sendNotification(
-        notificationTitle,
-        notificationMessage,
-        notificationImage || undefined,
-        notificationTarget
-      );
-
-      if (success) {
+      const response = await fetch("/api/notifications/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: notificationTitle,
+          message: notificationMessage,
+          imageUrl: notificationImage || null,
+          targetRole: notificationTarget,
+          senderId: user?.id,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
         alert("Notification sent successfully!");
         setShowNotificationForm(false);
         setNotificationTitle("");
@@ -218,11 +250,11 @@ export default function AdminPage() {
         setNotificationImage("");
         setNotificationTarget("all");
       } else {
-        alert("Failed to send notification");
+        alert(data.error || "Failed to send notification");
       }
     } catch (error) {
       console.error("Error sending notification:", error);
-      alert("Failed to send notification");
+      alert("Failed to send notification. Please try again.");
     } finally {
       setSendingNotification(false);
     }

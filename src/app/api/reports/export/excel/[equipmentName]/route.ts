@@ -27,6 +27,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .where(eq(reports.equipmentName, equipmentName))
       .orderBy(reports.submittedAt);
 
+    // Check if there are any reports for this equipment
+    if (equipmentReports.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: `No reports found for ${equipmentName}. Trainees need to submit reports for this equipment first.`,
+      }, { status: 404 });
+    }
+
     // Create Excel workbook and worksheet
     const workbook = XLSX.utils.book_new();
     const worksheetData = equipmentReports.map(report => ({
