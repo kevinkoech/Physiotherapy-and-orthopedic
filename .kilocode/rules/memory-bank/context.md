@@ -36,6 +36,9 @@ The application is a comprehensive physiotherapy equipment maintenance learning 
 - [x] Push notification system with admin UI to send notifications
 - [x] Real-time notification delivery via SSE and BroadcastChannel
 - [x] Notification bell component in navbar with unread count
+- [x] Improved error handling for Excel export with descriptive messages when no data exists
+- [x] Better error handling for ZIP export
+- [x] Fixed notification sending to use direct API call with better error messages
 
 ## Current Structure
 
